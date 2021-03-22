@@ -1,0 +1,204 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: simple-vsi-app-pipeline
+spec:
+  params:
+    - name: repository
+      description: The Git Repository for the Application Source Code. If empty, the Repository url will be found from toolchain
+      default: ""
+    - name: branch
+      description: The Branch for the Application Source Code
+      default: "master"
+    - name: revision
+      description: The Revision for the Application Source Code
+      default: ""
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+    - name: api
+      description: The IBM Cloud API Endpoint
+    - name: apikey
+      description: The IBM Cloud API Key
+    - name: fail-on-scanned-issues
+      description: Force failure of task when vulnerability advisor scan issues are found
+      default: "true"
+    - name: app-name
+      description: The name of the application passed as environment variable
+    - name: pipeline-debug
+      default: "0"
+    - name: commit-timestamp
+      description: The Commit Timestamp as set by the Trigger Binding based on the Event Listener invoked. 
+    - name: scm-type
+      description: The Source Code Management Type as set by the Trigger Binding based on the Event Listener invoked. 
+    - name: artifactory
+      description: The variable storing artifactory integration with the toolchain
+    - name: virtual-server-instance
+      description: The IP Address of the Virtual Server Instance
+    - name: host-ssh-keys
+      description: The private SSH Key required to login to the Virtual Server Instance
+    - name: host-user-name
+      description: The username required to login to the Virtual Server Instance
+    - name: host-password
+      description: The password required to login to the Virtual Server Instance
+    - name: project-id
+    - name: inventoryRepo
+      description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: cos-region
+      description: The Region where Cloud Object Storage Instance is created
+    - name: cos-api-key
+      description: The API Key to interact with the Cloud Object Storage Instance
+    - name: target
+      description: The name of the environment where deployment needs to be performed
+    - name: cos-bucket-name
+      description: The Cloud Object Storage Bucket name where build artifact will be stored.
+      default: ""
+    - name: insights
+      description: The variable storing DevOps Insight integration with the toolchain
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: git-clone-inventory-repo
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: repository
+          value: $(params.inventoryRepo)
+        - name: branch
+          value: "master"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: git-credentials-json-file
+          value: credentials.json
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+          subpath: inventory-repo    
+    - name: download-artifacts
+      taskRef:
+        name: download-artifacts
+      runAfter: 
+        - git-clone-inventory-repo 
+      params:
+        - name: api
+          value: $(params.api)
+        - name: apikey
+          value: $(params.apikey)
+        - name: cos-bucket-name
+          value: $(params.cos-bucket-name)
+        - name: cos-region
+          value: $(params.cos-region)
+        - name: cos-api-key
+          value: $(params.cos-api-key)
+        - name: artifactory
+          value: $(params.artifactory)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: deploy
+      taskRef:
+        name: deploy
+      runAfter: [download-artifacts] 
+      params:
+        - name: region
+          value: $(params.region)
+        - name: api
+          value: $(params.api)
+        - name: apikey
+          value: $(params.apikey)
+        - name: appname
+          value: $(params.app-name)
+        - name: artifactory
+          value: $(params.artifactory)
+        - name: virtualserverinstance
+          value: $(params.virtual-server-instance)
+        - name: hostsshkeys
+          value: $(params.host-ssh-keys)
+        - name: hostusername
+          value: $(params.host-user-name)
+        - name: hostpassword
+          value: $(params.host-password)
+        - name: cos-bucket-name
+          value: $(params.cos-bucket-name)
+        - name: cos-region
+          value: $(params.cos-region)
+        - name: inventoryrepo
+          value: $(params.inventoryRepo)
+        - name: objectname
+          value: $(tasks.download-artifacts.results.objectname)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: health-check
+      taskRef:
+        name: health-check-task
+      runAfter: [ deploy ]
+      params:
+        - name: virtualserverinstance
+          value: $(params.virtual-server-instance)
+        - name: inventoryrepo
+          value: $(params.inventoryRepo)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: acceptance-test
+      taskRef:
+        name: acceptance-test
+      runAfter: [ health-check ]
+      params:
+        - name: virtualserverinstance
+          value: $(params.virtual-server-instance)
+        - name: inventoryrepo
+          value: $(params.inventoryRepo)
+    - name: publish-doi-deployrecord
+      taskRef:
+        name: publish-doi-deployrecord
+      runAfter: [deploy]
+      when:
+        - input: $(params.insights)
+          operator: in
+          values: ["draservicebroker"]
+      params:
+        - name: api
+          value: $(params.api)
+        - name: apikey
+          value: $(params.apikey)
+        - name: appname
+          value: $(params.app-name)
+        - name: inventoryrepo
+          value: $(params.inventoryRepo)
+        - name: target
+          value: $(params.target)
+        - name: build_number
+          value: $(tasks.download-artifacts.results.build_number)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+  finally:
+    - name: check-if-roll-back-required
+      taskRef:
+        name: roll-back-deployment-task
+      params:
+        - name: appname
+          value: $(params.app-name)
+        - name: virtualserverinstance
+          value: $(params.virtual-server-instance)
+        - name: hostsshkeys
+          value: $(params.host-ssh-keys)
+        - name: hostusername
+          value: $(params.host-user-name)
+        - name: hostpassword
+          value: $(params.host-password)
+        - name: deployStatus
+          value: "$(tasks.deploy.status)"
+        - name: healthCheckStatus
+          value: "$(tasks.health-check.status)"
+        - name: acceptanceCheckStatus
+          value: "$(tasks.acceptance-test.status)"
+      workspaces:
+        - name: output
+          workspace: pipeline-ws

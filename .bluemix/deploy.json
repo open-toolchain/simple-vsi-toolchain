@@ -1,0 +1,175 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "messages": {
+        "$i18n": "locales.yml"
+    },
+    "title": {
+        "$ref": "#/messages/deploy.title"
+    },
+    "description": {
+        "$ref": "#/messages/deploy.description"
+    },
+    "longDescription": {
+        "$ref": "#/messages/deploy.longDescription"
+    },
+    "type": "object",
+    "properties": {
+        "api-key": {
+            "description": {
+                "$ref": "#/messages/deploy.apikeyDescription"
+            },
+            "type": "string",
+            "pattern": "\\S",
+            "validator": {
+                "v-type": "api-key"
+            }
+        },
+        "vsiRegion": {
+            "description": {
+                "$ref": "#/messages/deploy.vsiRegionLabel"
+            },
+            "type": "string",
+            "validator": {
+                "v-type": "vsi-region",
+                "params": [
+                    "api-key"
+                ]
+            }
+        },
+        "type": {
+            "description": {
+                "$ref": "#/messages/deploy.vsiAuthType"
+            },
+            "title": "Authentication Type",
+            "type": "string",
+            "enum": [
+                "credentials",
+                "ssh_private_key"
+            ]
+        },
+        "host-user-name": {
+            "description": {
+                "$ref": "#/messages/deploy.vsiUserName"
+            },
+            "title": "User Name",
+            "type": "string"
+        },
+        "host-ssh-keys": {
+            "description": {
+                "$ref": "#/messages/deploy.vsiSshKey"
+            },
+            "title": "Content of SSH Key File",
+            "type": "password"
+        },
+        "host-user-password": {
+            "description": {
+                "$ref": "#/messages/deploy.vsiUserPassword"
+            },
+            "title": "Password",
+            "type": "password"
+        },
+        "app-name": {
+            "description": {
+                "$ref": "#/messages/deploy.appDescription"
+            },
+            "type": "string",
+            "pattern": "\\S"
+        },
+        "virtual-server-instance": {
+            "description": {
+                "$ref": "#/messages/deploy.vsiLabel"
+            },
+            "validator": {
+                "v-type": "vsi-instances",
+                "params": [
+                    "vsiRegion"
+                ]
+            },
+            "type": "string",
+            "pattern": "\\S"
+        },
+        "host-user-name": {
+            "title": "Username for Virtual Server Instance",
+            "type": "string"
+        },
+        "host-ssh-keys": {
+            "title": "SSH Key file for Virtual Server Instance",
+            "type": "password"
+        },
+        "host-user-password": {
+            "title": "Password for Virtual Server Instance",
+            "type": "password"
+        }
+    },
+    "required": [
+        "app-name",
+        "api-key",
+        "vsiRegion",
+        "virtual-server-instance"
+    ],
+    "form": [
+        {
+            "type": "validator",
+            "url": "/devops/validator/validator-v1.html"
+        },
+        {
+            "type": "text",
+            "readonly": false,
+            "title": {
+                "$ref": "#/messages/deploy.appName"
+            },
+            "key": "app-name"
+        },
+        {
+            "type": "text",
+            "readonly": false,
+            "title": {
+                "$ref": "#/messages/deploy.apikey"
+            },
+            "key": "api-key"
+        },
+
+        {
+            "type": "select",
+            "title": {
+                "$ref": "#/messages/deploy.vsiRegionTitle"
+            },
+            "key": "vsiRegion"
+        },
+
+        {
+            "type": "select",
+            "title": {
+                "$ref": "#/messages/deploy.vsi"
+            },
+            "key": "virtual-server-instance"
+        },
+        {
+            "type": "selectfieldset",
+            "key": "type",
+            "titleMap": {
+                "credentials": "User Credentials",
+                "ssh_private_key": "User SSH Key"
+            },
+            "items": [
+                {
+                    "type": "section",
+                    "description": "Provide SSH Username and Password for toolchain to perform SSH Login to Virtual Server Instance and deploy your application.",
+                    "items": [
+                        "host-user-name",
+                        "host-user-password"
+
+                    ]
+                }, {
+                    "type": "section",
+                    "description": "Provide SSH Username and Key for toolchain to perform SSH Login to Virtual Server Instance and deploy your application.",
+                    "items": [
+                        "host-user-name",
+                        "host-ssh-keys"
+
+                    ]
+                }
+            ]
+        }
+    ]
+}
