@@ -1,0 +1,385 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: simple-vsi-app-pipeline
+spec:
+  params:
+    - name: repository
+      description: The Git Repository for the Application Source Code. If empty, the Repository url will be found from toolchain
+    - name: branch
+      description: The Branch for the Application Source Code
+      default: "master"
+    - name: revision
+      description: The Revision for the Application Source Code
+      default: ""
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+    - name: api
+      description: The IBM Cloud API Endpoint
+    - name: apikey
+      description: The IBM Cloud API Key
+    - name: fail-on-scanned-issues
+      description: Force failure of task when vulnerability advisor scan issues are found
+      default: "true"
+    - name: app-name
+      description: The name of the application passed as environment variable
+    - name: pipeline-debug
+      default: "0"
+    - name: pr-url
+      description: The Pull Request URL
+    - name: commit-timestamp
+      description: The Commit Timestamp as set by the Trigger Binding based on the Event Listener invoked
+    - name: scm-type
+      description: The Source Code Management Type as set by the Trigger Binding based on the Event Listener invoked
+    - name: artifactory
+      description: The variable storing artifactory integration with the toolchain
+    - name: virtual-server-instance
+      description: The IP Address of the Virtual Server Instance
+    - name: host-ssh-keys
+      description: The private SSH Key required to login to the Virtual Server Instance
+    - name: host-user-name
+      description: The username required to login to the Virtual Server Instance
+    - name: host-password
+      description: The password required to login to the Virtual Server Instance
+    - name: project-id
+      default: ""
+    - name: cos-bucket-name
+      description: The Cloud Object Storage Bucket name where build artifact will be stored
+    - name: inventoryRepo
+      description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: cos-region
+      description: The Region where Cloud Object Storage Instance is created
+    - name: cos-api-key
+      description: The API Key to interact with the Cloud Object Storage Instance
+    - name: insights
+      description: The variable storing DevOps Insight integration with the toolchain
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: git-clone
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(params.revision)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: git-credentials-json-file
+          value: credentials.json          
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: cra-discovery-scan
+      runAfter:
+        - git-clone
+      when:
+        - input: "$(params.cos-region)"
+          operator: in
+          values: [ "ibm:yp:us-south" , "ibm:yp:us-east" ]
+      taskRef:
+        name: cra-discovery
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: revision
+          value: $(params.branch)
+        - name: commit-id
+          value: $(tasks.git-clone.results.git-commit)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: directory-name
+          value: ""
+        - name: commit-timestamp
+          value: $(params.commit-timestamp)
+    - name: code-vulnerability-scan
+      runAfter:
+        - cra-discovery-scan
+      taskRef:
+        name: cra-vulnerability-remediation
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+        - name: secrets
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: source-repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: revision
+          value: $(params.branch)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(tasks.git-clone.results.git-commit)
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id) 
+    - name: cra-cis-check
+      taskRef:
+        name: cra-cis-check
+      runAfter:
+        - cra-discovery-scan
+      workspaces:
+        - name: secrets
+          workspace: pipeline-ws
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: source-repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: revision
+          value: $(params.branch)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(tasks.git-clone.results.git-commit)
+        - name: directory-name
+          value: ""
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id)
+    - name: cra-bom
+      taskRef:
+        name: cra-bom
+      runAfter:
+        - cra-discovery-scan
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+        - name: secrets
+          workspace: pipeline-ws          
+      params:
+        - name: repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: source-repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: revision
+          value: $(params.branch)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(tasks.git-clone.results.git-commit)
+        - name: target-branch
+          value: $(params.branch)
+        - name: target-commit-id
+          value: $(tasks.git-clone.results.git-commit)      
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id)
+    - name: unit-tests
+      taskRef:
+        name: tester-run-tests
+      runAfter: 
+        - git-clone
+      params:
+        - name: tests-script
+          value: |
+            echo "Running tests";
+            mvn clean test;
+            mkdir test-results
+            cp -r target/* test-results/
+            echo -n ./test-results/surefire-reports/*.xml > $(results.test-result-file-paths.path)
+            echo -n unittest > $(results.test-types.path)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: code-coverage
+      runAfter: 
+        - unit-tests
+      taskRef:
+        name: tester-run-tests
+      params:
+        - name: tests-script
+          value: |
+            echo -n ./test-results/site/jacoco/*.xml > $(results.test-result-file-paths.path)
+            echo -n code > $(results.test-types.path)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: build
+      runAfter: 
+        - unit-tests
+      taskRef:
+        name: build-task
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: appname
+          value: $(params.app-name)               
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: publish-doi-buildrecord
+      runAfter: 
+        - build
+      when:
+        - input: $(params.insights)
+          operator: in
+          values: ["draservicebroker"]
+      taskRef:
+        name: doi-publish-buildrecord
+      params:
+        - name: toolchain-apikey-secret-key
+          value: "apikey"
+        - name: app-name
+          value: $(params.app-name)
+        - name: git-repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: git-branch
+          value: $(tasks.git-clone.results.git-branch)
+        - name: git-commit
+          value: $(tasks.git-clone.results.git-commit)
+    - name: publish-doi-code-tests
+      runAfter: 
+        - code-coverage
+      when:
+        - input: $(params.insights)
+          operator: in
+          values: ["draservicebroker"]
+      taskRef:
+        name: doi-publish-testrecord
+      params:
+        - name: toolchain-apikey-secret-key
+          value: "apikey"
+        - name: build-number
+          value: "$(tasks.publish-doi-buildrecord.results.build-number)"
+        - name: app-name
+          value: $(params.app-name)
+        - name: file-locations
+          value: "$(tasks.unit-tests.results.test-result-file-paths)"
+        - name: test-types
+          value: "$(tasks.unit-tests.results.test-types)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: publish-doi-code-coverage-tests
+      runAfter: 
+        - code-coverage
+      when:
+        - input: $(params.insights)
+          operator: in
+          values: ["draservicebroker"]
+      taskRef:
+        name: doi-publish-testrecord
+      params:
+        - name: toolchain-apikey-secret-key
+          value: "apikey"
+        - name: build-number
+          value: "$(tasks.publish-doi-buildrecord.results.build-number)"
+        - name: app-name
+          value: $(params.app-name)
+        - name: file-locations
+          value: "$(tasks.code-coverage.results.test-result-file-paths)"
+        - name: test-types
+          value: "$(tasks.code-coverage.results.test-types)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: evaluate-gate-task
+      runAfter: 
+        - publish-doi-code-tests
+        - publish-doi-code-coverage-tests
+      taskRef:
+        name: doi-evaluate-gate
+      params:
+        - name: toolchain-apikey-secret-key
+          value: "apikey"
+        - name: build-number
+          value: "$(tasks.publish-doi-buildrecord.results.build-number)"
+        - name: app-name
+          value: $(params.app-name)
+        - name: policy
+          value: "Policy to check Unit Tests and code coverage"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: upload-artifacts
+      runAfter: 
+        - build
+        - evaluate-gate-task
+      taskRef:
+        name: upload-artifacts
+      params:
+        - name: region
+          value: $(params.region)
+        - name: api
+          value: $(params.api)
+        - name: apikey
+          value: $(params.apikey)
+        - name: cos-bucket-name
+          value: $(params.cos-bucket-name)
+        - name: cos-region
+          value: $(params.cos-region)
+        - name: artifactory
+          value: $(params.artifactory)
+        - name: objectname
+          value: $(tasks.build.results.objectname)
+        - name: cos-api-key
+          value: $(params.cos-api-key)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: git-clone-inventory-repo
+      runAfter: 
+        - upload-artifacts
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: repository
+          value: $(params.inventoryRepo)
+        - name: branch
+          value: "master"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: git-credentials-json-file
+          value: credentials.json
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+          subpath: inventory-repo
+    - name: git-commit-inventory-repo
+      runAfter: 
+        - git-clone-inventory-repo
+      taskRef:
+        name: git-commit-inventory-repo-task
+      params:
+        - name: repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: appname
+          value: $(params.app-name)       
+        - name: commitid
+          value: $(tasks.git-clone-inventory-repo.results.git-commit)
+        - name: artifact
+          value: $(tasks.build.results.objectname)
+        - name: checksum
+          value: $(tasks.build.results.checksum)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+        - name: output
+          workspace: pipeline-ws
+          subpath: inventory-repo

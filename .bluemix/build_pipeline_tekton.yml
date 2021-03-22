@@ -1,0 +1,78 @@
+---
+inputs:
+  - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: .build_pipeline
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: git
+  - type: git
+    service: ${TEKTON_CATALOG_REPO}
+    branch: master
+    path: toolchain
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: cra
+  - type: git
+    service: ${TEKTON_CATALOG_REPO}
+    branch: master
+    path: devops-insights
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: tester
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: utils
+triggers:
+  - type: git
+    name: commit-push
+    eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
+    service: ${APP_REPO}
+    branch: master
+    events: { "push": true }
+  - type: manual
+    name: manual-run
+    eventListener: manual-run
+    properties: []
+properties:
+  - name: apikey
+    value: ${API_KEY}
+    type: SECURE
+  - name: app-name
+    value: ${APP_NAME}
+    type: text
+  - name: artifactory
+    value: ${ARTIFACTORY}
+    type: Integration     
+  - name : region
+    value: ${REGION}
+    type: text
+  - name: revision
+    value: 'master'
+    type: text
+  - name: cos-bucket-name
+    value: ${COS_BUCKET_NAME}
+    type: text
+  - name: cos-api-key
+    value: ${COS_API_KEY}
+    type: SECURE
+  - name: cos-region
+    value: ${COS_REGION}
+    type: text
+  - name: inventoryRepo
+    value: ${INVENTORY_REPO}
+    type: integration
+    path: parameters.repo_url
+  - name: repository
+    value: ${APP_REPO}
+    type: integration
+    path: parameters.repo_url
+  - name: insights
+    value: ${INSIGHTS}
+    type: integration
+    path: service_id    

@@ -1,0 +1,517 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: download-artifacts
+spec:
+  params:
+    - name: api
+      description: the IBM Cloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: apikey
+      description: The IBM Cloud API Key
+    - name: cos-region
+      description: The Region where Cloud Object Storage Instance is created
+    - name: artifactory
+      description: The variable storing artifactory integration with the toolchain
+    - name: cos-api-key
+      description: The API Key to interact with the Cloud Object Storage Instance
+    - name: cos-bucket-name
+      description: The Cloud Object Storage Bucket name where build artifact will be stored.
+  workspaces:
+    - name: output
+      description: A workspace
+      mountPath: /output
+  results:
+    - name: artifacts-downloaded
+      description: The variable indicating whether artifact is downloaded or not
+    - name: build_number
+      description: The variable storing build number as retrieved from the build metadata
+    - name: objectname
+      description: The name of the build artifact as retrieved from the build metadata
+  steps:
+    - name: download-artifacts
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)
+        - name: ARTIFACTORY
+          value: $(params.artifactory)
+        - name: COSBUCKETNAME
+          value: $(params.cos-bucket-name)
+        - name: COSREGION
+          value: $(params.cos-region)
+        - name: COSAPIKEY
+          value: $(params.cos-api-key)
+        - name: FILE
+          value: inventory.json  
+      script: |
+          #!/bin/bash
+
+          # Code here fetches the artifact metadata as present in the inventory.json.
+          # The task assumes the file /output/inventory-repo/inventory.json is already present as a result of the cloning of the 
+          # by the upstream git-clone-inventory-repo task. The JSON file contains the metadata like the name of the name of the artifact (artifact)
+          # the build number (build_number) among other details. 
+          
+          cd /output/inventory-repo;          
+          if [[ -f "$FILE" ]]; then
+            OBJECTNAME=$(cat $FILE |jq -r '.artifact')
+            BUILD=$(cat $FILE |jq -r '.build_number')
+            echo -n "${BUILD}" > $(results.build_number.path)
+            echo -n "${OBJECTNAME}" > $(results.objectname.path)
+          fi
+
+          # Code here downloads the artifact after processing the information present in the inventory.json.
+          # The downloaded artifacts will be stored in /output directory which can then be utilized by downstream
+          # task to carry out deployment steps on the target Virtual Server instance.
+          cd /output 
+          REGION=$(echo ${COSREGION##*:})
+          if [ -z ${COSAPIKEY} ]; then echo "COSAPIKEY is not set"; COSAPIKEY=$APIKEY; fi;
+          ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
+          ibmcloud plugin install cloud-object-storage;
+
+          #
+          # Function to download the binary artifact from IBM Cloud Object Store
+          # 
+          DownloadFromCOS() {
+            echo "Check if the Bucket with name $COSBUCKETNAME exists"
+            if [ "$(ibmcloud cos bucket-head --bucket "$COSBUCKETNAME" --region $REGION | awk {'print $1'} |head -n 1)" == "OK" ]; then
+                echo "Started downloading of artifacts from IBM Cloud Object Storage"
+                ibmcloud cos object-get --bucket "$COSBUCKETNAME" --key ${OBJECTNAME} ${OBJECTNAME}
+                echo "Finished downloading of artifacts from IBM Cloud Object Storage"
+            else
+                echo "Invalid cos-bucket-name for retreving artifacts"
+                exit 1;
+            fi
+          }
+
+          #
+          # Function to download the binary artifact from Artifactory
+          # 
+          DownloadFromArtifactory() {
+            USERID=$(echo "$ARTIFACTORY" | jq -r '.parameters' | jq -r '.user_id')
+            TOKEN=$(echo "$ARTIFACTORY" | jq -r '.parameters' | jq -r '.token')
+            REPO=$(echo "$ARTIFACTORY" | jq -r '.parameters' | jq -r '.release_url')
+            echo "Started downloading of artifacts from Artifactory"
+            curl -u $USERID:$TOKEN "$REPO/$OBJECTNAME" --output $OBJECTNAME
+            echo "Finished downloading of artifacts from Artifactory"
+          }
+
+          #
+          # Driver Function to download the binary artifact
+          # The function:
+          #   Checks if the Artifactory Integration exists. If yes then it downloads the artifacts from Artifactory.
+          #   If no then it downloads the artifacts from IBM Cloud Object Storage.
+          # 
+          if [ -n "$ARTIFACTORY" ]; then
+            if jq -e . >/dev/null 2>&1 <<<"$ARTIFACTORY"; then
+              echo "Artifactory Configuration found in the toolchain."
+              DownloadFromArtifactory
+            else
+              echo "Artifactory Configuration not found in the toolchain. Proceeding with Cloud Object Storage."
+              DownloadFromCOS
+            fi
+          else
+            echo "Artifactory Configuration not found in the toolchain. Proceeding with Cloud Object Storage."
+            DownloadFromCOS
+          fi
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy
+spec:
+  params:
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
+    - name: api
+      description: the IBM Cloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: apikey
+      description: The IBM Cloud API Key
+    - name: artifactory
+      description: The variable storing artifactory integration with the toolchain
+    - name: appname
+      description: The name of the application passed as environment variable
+    - name: virtualserverinstance
+      description: The IP Address of the Virtual Server Instance
+    - name: host-ssh-keys
+      description: The private SSH Key required to login to the Virtual Server Instance
+    - name: host-user-name
+      description: The username required to login to the Virtual Server Instance
+    - name: host-password
+      description: The password required to login to the Virtual Server Instance
+    - name: cos-region
+      description: The Region where Cloud Object Storage Instance is created
+    - name: cos-bucket-name
+      description: The Cloud Object Storage Bucket name where build artifact will be stored.
+    - name: inventoryrepo
+      description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: objectname
+      description: The name of the build artifact
+  workspaces:
+    - name: output
+      description: A workspace
+      mountPath: /output
+  steps:
+    - name: deploy-script
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: APPNAME
+          value: $(params.appname)
+        - name: HOST_USER_NAME
+          value: $(params.hostusername)
+      script: |
+        #!/bin/bash
+
+        echo "Begin creating the deploy script to be executed on the Virtual Server Instance"
+        # Steps required to deploy your application to the Virtual Server Instance goes here.
+        # This step creates a temporary file with name deploy.sh and runs the file on the host as part of deployment process.
+        # You may modify the contents of the script present between DEPLOY_SCRIPT tags to script the steps needed to carry out
+        # a deployment. These steps may require:
+        #   - Stopping the running application or web server
+        #   - Cleaning up / Backing up the previous
+        #   - Starting the application or web server with new binary
+        
+        cat > deploy.sh << DEPLOY_SCRIPT
+        #!/bin/bash
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        cd ${WORKDIR}/
+        
+        DeployApplication() {
+
+
+          PID=`pgrep -f "java -Dserver.port=8080 -Dserver.address=0.0.0.0 -jar $APPNAME.jar " || true;`
+          if [ -n "$PID" ]; then
+            echo "Stopping the application"
+            echo "The process with PID $PID will be terminated."
+            kill $PID
+            if [ $? == 0 ]; then
+              echo "Successfully terminated process"
+            else
+              echo "Error terminating process"
+            fi
+          fi
+          echo "Starting the application"
+          if [ -s /home/${HOST_USER_NAME}/app/$APPNAME.jar ]; then
+            nohup java -Dserver.port=8080 -Dserver.address=0.0.0.0  -jar /home/${HOST_USER_NAME}/app/$APPNAME.jar > /dev/null 2>&1 &
+            echo "Successfully deployed the app to VSI Instance"
+          else
+            echo "Artifact is not available."
+            exit 1;
+          fi
+        }
+        DeployApplication
+        # Deployment script ends here.
+
+        DEPLOY_SCRIPT
+        echo "Finished creating the deploy script to be executed on the Virtual Server Instance"
+    - name: backup-script
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: APPNAME
+          value: $(params.appname)
+        - name: HOST_USER_NAME
+          value: $(params.hostusername)
+      script: |
+        #!/bin/bash
+        echo "Begin creating the backup script to be executed on the Virtual Server Instance"
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        BACKUPDIR=${WORKDIR}_backup
+        cat > backup.sh << BACKUP_SCRIPT
+         if [ -d "$WORKDIR" ]; then
+          echo "Application Directory [$WORKDIR] exists"
+          if [ -d "$BACKUPDIR" ]; then
+            echo "Application Backup Directory [$BACKUPDIR ]exists"
+            rm -rf $BACKUPDIR
+          fi
+          echo "Moving Application Directory [$WORKDIR] to Application Backup Directory [$BACKUPDIR]"
+          mv $WORKDIR $BACKUPDIR
+        fi
+        echo "Creating new Application Direcroty [$WORKDIR]"
+        mkdir -p $WORKDIR
+        
+        BACKUP_SCRIPT
+        echo "Finished creating the backup script to be executed on the Virtual Server Instance"
+    - name: deploy
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: REGION
+          value: $(params.region)
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)
+        - name: ARTIFACTORY
+          value: $(params.artifactory)
+        - name: APPNAME
+          value: $(params.appname)
+        - name: VIRTUAL_SERVER_INSTANCE
+          value: $(params.virtualserverinstance)
+        - name: HOST_SSH_KEYS
+          value: $(params.hostsshkeys)
+        - name: HOST_USER_NAME
+          value: $(params.hostusername)
+        - name: HOST_PASSWORD
+          value: $(params.hostpassword)
+        - name: COSBUCKETNAME
+          value: $(params.cos-bucket-name)
+        - name: COSREGION
+          value: $(params.cos-region)
+        - name: INVENTORY_REPO
+          value: $(params.inventoryrepo)
+        - name: OBJECTNAME
+          value: $(params.objectname)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+
+        # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
+        # The step: 
+        #   - Assumes that the upstream task has already downloaded the artifact to the /output location 
+        #   - Carries out all the operation within the home directory of the user i.e. /home/${HOST_USER_NAME}
+        #   - Copies the artifact from the /output to /home/${HOST_USER_NAME}/app which is defined as WORKDIR
+        #   - Runs the deploy.sh file as created in the previous step to carry out the step-by-step deployment which may include start/stop of application.
+
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        
+        if [[ -z "$HOST_USER_NAME" ]]; then
+          echo "Please provide User name to log on to Virtual Server Instance"
+          exit 1;
+        elif [[ ! -z "$HOST_PASSWORD" ]]; then
+          echo "Using SSH Password to log on to Virtual Server Instance"
+          sudo apt-get update && sudo apt-get install sshpass -y
+          SSH_CMD="sshpass -p $HOST_PASSWORD"
+          SSH_ARG="-o UserKnownHostsFile=/dev/null"
+        elif [[ ! -z "$HOST_SSH_KEYS" ]]; then
+          echo "Using SSH Key to log on to Virtual Server Instance"
+          echo $HOST_SSH_KEYS > temp.key
+          echo $HOST_SSH_KEYS | base64 -d  > vsi.key
+          chmod 400 vsi.key
+          SSH_ARG="-i vsi.key"
+        else
+          echo "Please provide either SSH Password or SSH Key provided to log on to Virtual Server Instance."
+          exit 1;
+        fi
+
+        echo "Removing the existing artifacts from the host machine and taking backup.."
+        BACKUPDIR=${WORKDIR}_backup
+        $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env WORKDIR=$WORKDIR  BACKUPDIR=$BACKUPDIR 'bash -s' < backup.sh
+
+        echo "Copying the artifacts to the host machine."
+        $SSH_CMD scp $SSH_ARG -o StrictHostKeyChecking=no ${OBJECTNAME} $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE:${WORKDIR}
+
+        echo "Extract the new artifacts in the host machine."
+        $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd /home/$HOST_USER_NAME/app/ && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
+
+        echo "Login to the VSI Instance and process the deployment."
+        $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
+        $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < deploy.sh
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: health-check-task
+spec:
+  params:
+    - name: virtualserverinstance
+      description: The IP Address of the Virtual Server Instance
+    - name: inventoryrepo
+      description: The variable storing git integration for the repository storing build inventory with the toolchain
+  workspaces:
+    - name: output
+      description: A workspace
+      mountPath: /output
+  steps:
+    - name: check-application-health
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: VIRTUAL_SERVER_INSTANCE
+          value: $(params.virtualserverinstance)
+        - name: INVENTORY_REPO
+          value: $(params.inventoryrepo)
+      script: |
+        #!/bin/bash
+        set -e
+        for i in {1..5}
+        do
+          echo "Doing Health check. Attempt Number: ${i}"
+          if [ "$(curl -s -w "%{http_code}\n"  http://${VIRTUAL_SERVER_INSTANCE}:8080/v1/ -o /dev/null)" == "200" ]; then
+            echo "App Health Check passed..."
+            exit 0
+          else
+            sleep 1
+          fi
+          done
+          echo "Application Health check failed...."
+          exit 1
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: acceptance-test
+spec:
+  params:
+    - name: virtualserverinstance
+      description: The IP Address of the Virtual Server Instance
+    - name: inventoryrepo
+      description: The variable storing git integration for the repository storing build inventory with the toolchain
+  steps:
+    - name: check-application-health
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: VIRTUAL_SERVER_INSTANCE
+          value: $(params.virtualserverinstance)
+        - name: INVENTORY_REPO
+          value: $(params.inventoryrepo)
+      script: |
+        #!/bin/bash
+        exit 0
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: roll-back-deployment-task
+spec:
+  params:
+    - name: appname
+      description: The name of the application passed as environment variable
+    - name: virtualserverinstance
+      description: The IP Address of the Virtual Server Instance
+    - name: hostsshkeys
+      description: The private SSH Key required to login to the Virtual Server Instance
+    - name: hostusername
+      description: The username required to login to the Virtual Server Instance
+    - name: hostpassword
+      description: The password required to login to the Virtual Server Instance
+    - name: deployStatus
+      description: The deployment status whether Failed|Passed
+    - name: healthCheckStatus
+      description: The health check status whether Failed|Passed
+    - name: acceptanceCheckStatus
+      description: The acceptance check status whether Failed|Passed
+  workspaces:
+    - name: output
+      description: A workspace
+      mountPath: /output
+  steps:
+    - name: roll-back-deployment
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: APPNAME
+          value: $(params.appname)
+        - name: VIRTUAL_SERVER_INSTANCE
+          value: $(params.virtualserverinstance)
+        - name: HOST_SSH_KEYS
+          value: $(params.hostsshkeys)
+        - name: HOST_USER_NAME
+          value: $(params.hostusername)
+        - name: HOST_PASSWORD
+          value: $(params.hostpassword)
+      script: |
+        #!/bin/bash
+        if [ $(params.deployStatus) == "Failed" ] || [ $(params.healthCheckStatus) == "Failed"  ] | [ $(params.acceptanceCheckStatus) == "Failed"  ]
+              then
+                WORKDIR=/home/${HOST_USER_NAME}/app
+                BACKUPDIR=${WORKDIR}_backup
+                echo "WORKDIR is [$WORKDIR]"
+                echo "BACKUPDIR is [$BACKUPDIR]"
+                if [[ -z "$HOST_USER_NAME" ]]; then
+                  echo "Please provide VSI user credentials"
+                  exit 1;
+                elif [[ ! -z "$HOST_PASSWORD" ]]; then
+                  sudo apt-get update && sudo apt-get install sshpass -y
+                  CMD1="sshpass -p $HOST_PASSWORD"
+                  CMD="-o UserKnownHostsFile=/dev/null"
+                elif [[ ! -z "$HOST_SSH_KEYS" ]]; then
+                  echo $HOST_SSH_KEYS > temp.key
+                  echo $HOST_SSH_KEYS | base64 -d  > vsi.key
+                  chmod 600 vsi.key
+                  CMD="-i vsi.key"
+                else
+                  echo "Please provide VSI user credentials"
+                  exit 1;
+                fi
+                echo "Tasks has failed, Performing Rollback."
+                $CMD1 ssh $CMD  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "rm -rf $WORKDIR && cp -r $BACKUPDIR $WORKDIR "
+                $CMD1 ssh $CMD -o StrictHostKeyChecking=no \
+                $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < deploy.sh
+        else
+           echo "All Checks Passed. Roll Back Not required."
+        fi
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: publish-doi-deployrecord
+spec:
+  params:
+    - name: inventoryrepo
+      description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: api
+      description: The IBM Cloud API Endpoint
+    - name: apikey
+      description: The IBM Cloud API Key
+    - name: appname
+      description: The name of the application passed as environment variable
+    - name: target
+      description: The name of the environment where deployment needs to be performed
+    - name: build_number
+      description: The build number of the build as retreived from the build metadata
+  workspaces:
+    - name: output
+      description: A workspace to store the output of intermittent steps
+      mountPath: /output
+  volumes:
+    - name: cd-config
+      configMap:
+        name: toolchain
+  steps:
+    - name: publish-doi-deployrecord
+      image: ibmcom/pipeline-base-image:2.11
+      volumeMounts:
+        - name: cd-config
+          mountPath: /cd-config
+      workingDir: /artifacts
+      env:
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)
+        - name: APP_NAME
+          value: $(params.appname)
+        - name: TOOLCHAIN_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/toolchain-id']
+        - name: DEPLOY_STATUS
+          value: "pass"
+        - name: TARGET
+          value: $(params.target)
+        - name: INVENTORY_REPO
+          value: $(params.inventoryrepo)
+        - name: JOB_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+        - name: BUILD_NUMBER
+          value: $(params.build_number)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        export HOME="/root"
+        TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
+        export TOOLCHAIN_ID=${TOOLCHAIN_ID} # for doi plugin
+        ibmcloud login -a $API --apikey $APIKEY --no-region
+        ibmcloud doi publishdeployrecord --env "${TARGET}" --status=${DEPLOY_STATUS} --joburl="${JOB_URL}" \
+          --buildnumber="${BUILD_NUMBER}" --logicalappname="${APP_NAME}" ${INVENTORY_REPO}

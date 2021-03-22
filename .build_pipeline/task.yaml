@@ -1,0 +1,349 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-task
+spec:
+  params:
+    - name: repository
+      description: The Git Repository for the Application Source Code
+      default: repository
+    - name: appname
+      description: The name of the application passed as environment variable 
+  workspaces:
+    - name: output
+      description: A workspace to store the output of intermittent steps
+      mountPath: /output
+  results:
+    - name: objectname
+      description: The name of artifact to be passed to downstream tasks for further processing
+    - name: checksum
+      description: The checksum of the artifact to be passed to the downstream tasks for further processing
+  steps:
+    - name: build-binary-image
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env: 
+        - name: APPNAME
+          value: $(params.appname)
+        - name: REPOSITORY
+          value: $(params.repository)
+      script: |
+          #!/bin/bash
+          set -e -o pipefail;
+
+          # Your build script should go here. 
+          # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
+          # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
+          # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
+          # skip this step or comment out the existing lines and move over to copy the contents to /output/binaries folder.
+
+          echo "Started building the binary image."
+          mvn -N io.takari:maven:wrapper
+          ./mvnw install -Dmaven.test.skip=true
+          echo "Finished building the binary image."
+
+          # All the artifacts that your application needs for successful deployment ( for example: binary files, images, configuration files, source files
+          # in case of interperter based projects etc) must be copied over to /output/binaries directory as is done below. In the existig Springboot 
+          # application, the built Java Jar is a self-contained binary with embedded web server and hence does not need anything other than just the Jar. 
+          # All the items placed in the /output/binaries folder will be picked up by subsequent step to be uploaded either to Artifactory/IBM Cloud Object Storage 
+          # based on your selection during toolchain creation.
+          
+          mkdir /output/binaries
+          cp -r /output/target/* /output/binaries
+          echo "Copied the artifacts to the uploads folder."
+    - name: build-binary-info
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env: 
+        - name: APPNAME
+          value: $(params.appname)
+        - name: REPOSITORY
+          value: $(params.repository)
+      script: |          
+          #!/bin/bash
+          set -e -o pipefail;
+
+          # This step creates an archive/zip of your artifacts (source code, binaries, images, configuration files etc.) placed in the
+          # /output/binaries folder to prepare for the upload in the subsequent step. While it creates the archive/zip, it also calculates
+          # the checksum of the archived/zipped contents which will be part of the build metadata to be validated during the download.
+          
+          cd /output/binaries
+          mv *.jar ${APPNAME}.jar
+          
+          OBJECTNAME=binary-`date '+%Y%m%d%H%M%S'`.tar.gz
+          tar -cf ${OBJECTNAME} *
+          echo "Object Name of the archive prepared for upload is" ${OBJECTNAME}
+          
+          CHECKSUM=`md5sum $OBJECTNAME | awk '{ print $1 }'`
+          echo "Checksum of the archive prepared for upload is" ${CHECKSUM}
+
+          # OJBECTNAME and CHECKSUM are the result of this task and will be passed down the pipeline to downstream task for processing.
+          # The lines below pass on the values of these variables to the results of the task in the format results.<result-name>.path.        
+          echo -n "${OBJECTNAME}" > $(results.objectname.path)
+          echo -n "${CHECKSUM}" > $(results.checksum.path)
+---          
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: upload-artifacts
+spec:
+  params:
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
+    - name: api
+      description: The IBM Cloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: apikey
+      description: The IBM Cloud API Key
+    - name: cos-region
+      description: The IBM Cloud Region in which Cloud Object Storage Instance in created
+    - name: cos-bucket-name
+      description: The Cloud Object Storage Bucket name where build artifact will be stored
+    - name: cos-api-key
+      description: The API Key to interact with the Cloud Object Storage Instance
+    - name: objectname
+      description: The name of the artifact to be uploaded to COS/Artifactory
+    - name: artifactory
+      description: The variable storing artifactory integration with the toolchain
+  workspaces:
+    - name: output
+      description: A workspace to store the output of intermittent steps
+      mountPath: /output
+  volumes:
+    - name: cd-config
+      configMap:
+        name: toolchain
+  steps:
+    - name: upload-artifacts
+      image: ibmcom/pipeline-base-image:2.11
+      volumeMounts:
+        - name: cd-config
+          mountPath: /cd-config
+      workingDir: /output
+      env:
+        - name: REGION
+          value: $(params.region)
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)
+        - name: COSAPIKEY
+          value: $(params.cos-api-key)
+        - name: COSBUCKETNAME
+          value: $(params.cos-bucket-name)
+        - name: COSREGION
+          value: $(params.cos-region)
+        - name: OBJECTNAME
+          value: $(params.objectname)
+        - name: ARTIFACTORY
+          value: $(params.artifactory)
+      script: |
+          #!/bin/bash
+          set -e -o pipefail;
+          # Code here uploads the artifact to either Artifactory / IBM Cloud Object Storage based on the selection done at the time of toolchain creation.
+          # As in previous step, all the selected files (source code, binaries, images, configurations) are placed in /output/binaries location.
+          cd /output/binaries;
+
+          #
+          # Function to set expiration of contents in a Cloud Object Storage Bucket
+          # By default, it is set for 7 Days as is eveident from the PAYLOAD variable below.
+          # This configuration holds only for buckets created by the toolchain on behalf of the user.
+          # For the case when user specifies the bucket name during toolchain creation, this control resides with the user
+          # and toolchain does not change the Lifecycle policy of the bucket created and specified by the user.
+          #          
+          SetBucketExpiration() {
+            PAYLOAD="<LifecycleConfiguration>
+              <Rule>
+                <ID>expiration</ID>
+                <Status>Enabled</Status>
+                <Filter>
+                  <Prefix/>
+                </Filter>
+                <Expiration>
+                  <Days>7</Days>
+                </Expiration>
+              </Rule>
+            </LifecycleConfiguration>"
+            TOKEN=$(curl -X POST \
+              'https://iam.cloud.ibm.com/identity/token' \
+              -H 'content-type: application/x-www-form-urlencoded' \
+              -H 'accept: application/json' \
+              -d "grant_type=urn%3Aibm%3Aparams%3Aoauth%3Agrant-type%3Aapikey&apikey=$COSAPIKEY")
+            PAYLOAD_MD5=$(echo -n "$PAYLOAD" | openssl dgst -r -md5 -binary | openssl enc -base64)
+            ACCESS_TOKEN=$(echo $TOKEN | jq -r .access_token)
+            curl -X PUT \
+              -H "Authorization: Bearer $ACCESS_TOKEN" \
+              -H "Content-Type: text/plain" \
+              -H "Content-MD5: $PAYLOAD_MD5" \
+              --data "$PAYLOAD" \
+              https://$COSENDPOINT/$COSBUCKETNAME?lifecycle
+          }
+
+          #
+          # Function to check if the bucket with name COSBUCKETNAME exists in the REGION
+          # If not then the function creates a new bucket with name COSBUCKETNAME in the COS Service Instance with name INSTANCENAME
+          # The function also configures the newly created bucket with a lifecycle policy to expire the bucket contents after 7 days.
+          #    
+          CheckAndCreateBucket() {
+            echo "Bucket Name to be used by toolchain is" $COSBUCKETNAME
+            if ibmcloud cos bucket-head --bucket "$COSBUCKETNAME" --region $REGION ; then
+              echo "Bucket already exists."
+            else
+              TOOLCHAINGUID=$(ibmcloud resource service-instance "$INSTANCENAME" --id)
+              TRIMMEDGUID=$(echo $TOOLCHAINGUID | tr -d '\n')
+              SERVICEID=$(echo $TRIMMEDGUID | awk '{print $NF}')
+              echo "Bucket does not exist. Proceeding with creation."
+              if ibmcloud cos bucket-create --bucket "$COSBUCKETNAME" --ibm-service-instance-id $SERVICEID ; then
+                echo "Bucket with name $COSBUCKETNAME created successfully."
+                SetBucketExpiration
+                echo "Bucket with name $COSBUCKETNAME configured successfully."
+              else
+                echo "Received Bucket Name with invalid characters."
+                echo "Please ensure that Bucket Name must start and end in alphanumeric characters (3 to 63)."
+                echo "Also ensure that characters allowed are lowercase, numbers and non-consecutive dots and hyphens."
+                exit 1;
+              fi
+            fi
+          }
+
+          #
+          # Function to check if the Cloud Object Storage Instance exists in the REGION
+          # If not then the function creates a new bucket with name COSBUCKETNAME in the COS Service Instance with name INSTANCENAME
+          # 
+          CheckAndCreateCOSInstance() {
+            COS_INSTANCE_COUNT=$(ibmcloud resource service-instances --service-name cloud-object-storage | awk {'print $1'} | awk 'NR>3' | wc -l)
+            if [ "$COS_INSTANCE_COUNT" -eq "1" ]; then
+              echo "Cloud Object Storage Instance already exists."
+              INSTANCENAME=$(ibmcloud resource service-instances --output JSON  --service-name cloud-object-storage | jq .[0] | jq -r .name)
+            else
+              echo "Cloud Object Storage Instance does not exist. Proceeding with creation."
+              INSTANCENAME=$COSBUCKETNAME
+              ibmcloud resource service-instance-create "$INSTANCENAME" cloud-object-storage lite global
+            fi                
+          }
+
+          #
+          # Function to upload the binary artifact to IBM Cloud Object Storage
+          # The function:
+          #   Checks if the IBM CLoud Object Storage Instance already exists or not. If not it creates a new instance.
+          #   Checks if the Bucket already exists or not. If not it creates a new bucket.
+          #   Uploads the artifacts to the bucket within the instance.
+          # 
+          UploadToCOStorage() {
+            RESOURCEGROUP=$(cat /cd-config/toolchain.json | jq -r '.container.guid');
+            REGION=$(echo ${COSREGION##*:});
+            COSENDPOINT="s3.${REGION}.cloud-object-storage.appdomain.cloud";
+            COSAPIKEYFLAG=${COSAPIKEY};
+            if [ -z ${COSAPIKEY} ]; then echo "COSAPIKEY is not given, Using default APIKEY"; COSAPIKEY=$APIKEY; fi;
+
+            ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
+            ibmcloud plugin install cloud-object-storage;
+            if [ -z ${COSAPIKEYFLAG} ]; then
+            echo "Target the resource group with ID ${RESOURCEGROUP}"
+            ibmcloud target -g ${RESOURCEGROUP}
+                
+            echo "Check if IBM Cloud Object Storage Instance already exists"
+            CheckAndCreateCOSInstance
+
+            echo "Check if the Bucket required to store artifacts already exists"
+            CheckAndCreateBucket
+            fi
+            echo "Started uploading of artifacts to Cloud Object Storage"
+            ibmcloud cos object-put --bucket $COSBUCKETNAME --key ${OBJECTNAME} --body ${OBJECTNAME}
+            echo "Finished uploading of artifacts to Cloud Object Storage"
+          }
+
+          #
+          # Function to upload the binary artifact to Artifactory
+          # 
+          UploadToArtifactory() {
+            USERID=$(echo "$ARTIFACTORY" | jq -r '.parameters' | jq -r '.user_id')
+            TOKEN=$(echo "$ARTIFACTORY" | jq -r '.parameters' | jq -r '.token')
+            REPO=$(echo "$ARTIFACTORY" | jq -r '.parameters' | jq -r '.release_url')
+
+            echo "Started uploading of artifacts to Artifactory"
+            curl -u $USERID:$TOKEN -X PUT "$REPO/$OBJECTNAME" -T $OBJECTNAME
+            echo "Finished uploading of artifacts to Artifactory"
+          }
+
+          #
+          # Driver Function to upload the binary artifact
+          # The function:
+          #   Checks if the Artifactory Integration exists. If yes then it uploads the artifacts to Artifactory.
+          #   If no then it uploads the artifacts to IBM Cloud Object Storage.
+          # 
+          if [ -z "$ARTIFACTORY" ]; then
+            echo "Artifactory Configuration not found in the toolchain. Proceeding with Cloud Object Storage."
+            UploadToCOStorage
+          else
+            if jq -e . >/dev/null 2>&1 <<<"$ARTIFACTORY"; then
+              echo "Artifactory Configuration found in the toolchain."
+              UploadToArtifactory
+            else
+              echo "Error while uploading artifacts to Artifactory. Proceeding with Cloud Object Storage."
+              UploadToCOStorage
+            fi
+          fi
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git-commit-inventory-repo-task
+spec:
+  params:
+    - name: repository
+      description: The Git Repository for the Application Source Code. If empty, the Repository url will be found from toolchain
+      default: repository
+    - name: appname
+      description: The name of the application passed as environment variable 
+    - name: commitid
+      description: The commit id of the Application Source Code Repository that triggered the build.
+    - name: artifact
+      description: The name of the binary artifact generated by the build
+    - name: checksum
+      description: The checksum of the binary artifact generated by the build
+  workspaces:
+    - name: artifacts
+      description: A workspace to store the output of intermittent steps
+      mountPath: /artifacts
+    - name: output
+      description: A workspace to store the output of intermittent steps
+      mountPath: /output
+  steps:
+    - name: commit-build-metadata
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /artifacts
+      env:
+        - name: REPOSITORY
+          value: $(params.repository)
+        - name: APPNAME
+          value: $(params.appname)
+        - name: BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+        - name: PIPELINE_RUN_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        - name: GIT_COMMIT
+          value: $(params.commitid)
+        - name: ARTIFACT
+          value: $(params.artifact)
+        - name: CHECKSUM
+          value: $(params.checksum)
+        - name: INVENTORY_FILE
+          value: "inventory.json"
+      script: |
+          #!/bin/bash
+          set -e -o pipefail;
+          cd /artifacts/inventory-repo;
+          git config user.email "xxx@yyy.zzz" && git config user.name "xxx"
+          git checkout master
+          echo { \"repository_url\": \"${REPOSITORY}\",\"artifact\": \"${ARTIFACT}\",\"build_number\": ${BUILD_NUMBER},\"commit_sha\": \"${GIT_COMMIT}\",\"name\": \"${APPNAME}\",\"pipeline_run_id\": \"${PIPELINE_RUN_ID}\",\"version\": \"v1\",\"signature\": \"${CHECKSUM}\" } > $INVENTORY_FILE
+          git add ./$INVENTORY_FILE
+          git commit -m "Update Evidence"
+          git tag ${PIPELINE_RUN_ID}
+          git push  origin master
+          git push --tags

@@ -1,0 +1,255 @@
+---
+version: "2"
+messages:
+  $i18n: locales.yml
+template:
+  name:
+    $ref: "#/messages/template.name"
+  description:
+    $ref: "#/messages/template.description"
+  header: "![](images/toolchain.svg?localize)"
+  icon: ./images/vsi.svg
+  required:
+    - deploy
+    - build
+    - repo
+    - tekton-catalog-repo
+    - tekton-gitsecure
+  info:
+    git url: >
+      "[" + $env.repository + "]" +
+        "(" + $env.repository + ")"
+    git branch: >
+      "[" + $env.branch + "]" +
+        "(" + $env.repository +
+          "/tree/" + $env.branch + ")"
+toolchain:
+  name: "simple-vsi-app-toolchain-{{timestamp}}"
+  template:
+    getting_started:
+      $ref: "#/messages/template.gettingStarted"
+services:
+  cos-bucket:
+    service_id: customtool
+    parameters:
+      type: cos-bucket
+      lifecyclePhase: "MANAGE"
+      imageUrl:
+        $ref: ./images/cos-logo.png
+        $refType: image-data-uri
+      documentationUrl: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
+      name: Cloud Object Storage
+      dashboard_url: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
+      description: The information required to connect the toolchain with your Cloud Object Storage instance.
+  repo:
+    service_id: >
+      $env.source_provider ? $env.source_provider : 'hostedgit'
+    parameters:
+      repo_name: "java-spring-app-{{timestamp}}"
+      repo_url: >
+        $env.type === 'link' ?
+          $env.app_repo : 'https://github.com/IBM/java-spring-app'
+      source_repo_url: >
+        $env.type === 'fork' || $env.type === 'clone' ?
+          $env.app_repo : 'https://github.com/IBM/java-spring-app'
+      type: $env.type || 'clone'
+      has_issues: true
+      enable_traceability: true
+      legal: true
+  pipeline-repo:
+    service_id: >
+      $env.source_provider ? $env.source_provider : 'hostedgit'
+    parameters:
+      repo_name: "simple-vsi-app-pipeline-{{timestamp}}"
+      repo_url: $env.repository
+      source_repo_url: "https://github.com/open-toolchain/simple-vsi-toolchain"
+      type: $env.type || 'clone'
+      has_issues: false
+      enable_traceability: false
+      legal: true
+      kind: ['pipeline']
+  tekton-catalog-repo:
+    service_id: githubconsolidated
+    parameters:
+      repo_url: "https://github.com/open-toolchain/tekton-catalog"
+      source_repo_url: "https://github.com/open-toolchain/tekton-catalog"
+      type: "link"
+      has_issues: false
+      enable_traceability: false
+      kind: ['pipeline']
+  inventory-repo:
+    service_id: >
+      $env.source_provider ? $env.source_provider : 'hostedgit' 
+    parameters:
+      repo_name: 'inventory-{{timestamp}}'
+      type: $env.type || 'clone'
+      repo_url: >
+        $env.inventory_repo ? $env.inventory_repo : $env.inventoryRepo ? '{{inventoryRepo}}' : 'https://github.com/open-toolchain/inventory'
+      source_repo_url: >
+        $env.inventory_repo ? $env.inventory_repo : $env.inventoryRepo ? '{{inventoryRepo}}' : 'https://github.com/open-toolchain/inventory'
+      has_issues: false
+      enable_traceability: false
+      legal: true
+  pr:
+    service_id: pipeline
+    parameters:
+      services:
+        - repo
+        - tekton-catalog-repo
+        - devops-insights
+      name: 'pr-pipeline'
+      type: tekton
+      ui-pipeline: true
+      configuration:
+        content:
+          $text: "pr_pipeline_tekton.yml"
+        env:
+          TOOLCHAIN_REGION: $env.env_id
+          PIPELINE_REPO: pipeline-repo
+          APP_REPO: repo
+          INSIGHTS: devops-insights
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
+          APP_NAME: "{{form.pipeline.parameters.app-name}}"
+          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
+          PIPELINE_REPO_BRANCH: >
+            $env.branch ? $env.branch : "master"
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
+          GIT_COMMIT_EVENT_LISTENER_NAME: >
+            if ( $env.source_provider === 'githubconsolidated' ) {
+              'github-pr-listener';
+            } else if ( $env.source_provider === 'gitlab' ) {
+              'gitlab-pr-listener';
+            } else if ( $env.source_provider === 'bitbucketgit' ) {
+              'bitbucket-commit';
+            } else if ( $env.source_provider === 'github_integrated' ) {
+              'github-ent-pr-listener';
+            } else {
+              'gitlab-pr-listener';
+            }
+        execute: false
+  artifactory:
+    service_id: artifactory 
+    parameters:
+      type: maven
+  build:
+    service_id: pipeline
+    parameters:
+      services:
+        - repo
+        - inventory-repo
+        - devops-insights
+      name: 'ci-pipeline'
+      ui-pipeline: true
+      type: tekton
+      configuration:
+        content:
+          $text: "build_pipeline_tekton.yml"
+        env:
+          APP_REPO: repo
+          APP_NAME: "{{form.pipeline.parameters.app-name}}"
+          API_KEY: "{{form.pipeline.parameters.api-key}}"
+          REGION: "{{form.pipeline.parameters.vsiRegion}}"
+          ARTIFACTORY: artifactory
+          COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
+          COS_REGION: $env.env_id
+          COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
+          PIPELINE_REPO: pipeline-repo
+          INVENTORY_REPO: inventory-repo
+          INSIGHTS: devops-insights
+          PIPELINE_REPO_BRANCH: >
+            $env.branch ? $env.branch : "master"
+          TEKTON_CATALOG_REPO: tekton-catalog-repo          
+          GIT_COMMIT_EVENT_LISTENER_NAME: >
+            if ( $env.source_provider === 'githubconsolidated' ) {
+              'github-commit';
+            } else if ( $env.source_provider === 'gitlab' ) {
+              'grit-or-gitlab-commit';
+            } else if ( $env.source_provider === 'bitbucketgit' ) {
+              'bitbucket-commit';
+            } else if ( $env.source_provider === 'github_integrated' ) {
+              'github-ent-commit';
+            } else {
+              'grit-or-gitlab-commit';
+            }
+        execute: false
+  deploy:
+    service_id: pipeline
+    parameters:
+      services:
+        - repo
+        - inventory-repo
+        - devops-insights
+      name: 'cd-pipeline'
+      ui-pipeline: true
+      type: tekton
+      configuration:
+        content:
+          $text: "deploy_pipeline_tekton.yml"
+        env:
+          APP_REPO: repo
+          APP_NAME: "{{form.pipeline.parameters.app-name}}"
+          API_KEY: "{{form.pipeline.parameters.api-key}}"
+          ARTIFACTORY: artifactory
+          INSIGHTS: devops-insights
+          RESOURCE_GROUP: "{{form.pipeline.parameters.resource-group}}"
+          VIRTUAL_SERVER_INSTANCE: "{{form.pipeline.parameters.virtual-server-instance}}"
+          VIRTUAL_SERVER_REGION: "{{form.pipeline.parameters.vsiRegion}}"
+          HOST_SSH_KEYS: '{{form.pipeline.parameters.host-ssh-keys}}'
+          HOST_USER_NAME: '{{form.pipeline.parameters.host-user-name}}'
+          HOST_USER_PASSWORD: '{{form.pipeline.parameters.host-user-password}}'
+          COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
+          COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
+          TARGET: "prod"
+          COS_REGION: $env.env_id
+          REGION: "{{form.pipeline.parameters.vsiRegion}}"
+          PIPELINE_REPO: pipeline-repo
+          INVENTORY_REPO: inventory-repo
+          PIPELINE_REPO_BRANCH: >
+            $env.branch ? $env.branch : "master"
+          TEKTON_CATALOG_REPO: tekton-catalog-repo          
+          GIT_COMMIT_EVENT_LISTENER_NAME: >
+            if ( $env.source_provider === 'githubconsolidated' ) {
+              'github-commit';
+            } else if ( $env.source_provider === 'gitlab' ) {
+              'grit-or-gitlab-commit';
+            } else if ( $env.source_provider === 'bitbucketgit' ) {
+              'bitbucket-commit';
+            } else if ( $env.source_provider === 'github_integrated' ) {
+              'github-ent-commit';
+            } else {
+              'grit-or-gitlab-commit';
+            }
+        execute: false
+  webide:
+    service_id: orion 
+  devops-insights:
+    service_id: 'draservicebroker' 
+    $ref: dra.yml 
+
+form:
+  pipeline:
+    parameters:
+      app-name: >
+        $env.appName ?
+          '{{appName}}' : '{{services.repo.parameters.repo_name}}'
+      api-key: '{{apiKey}}'
+      resource-group: '{{resourceGroup}}'
+      vsiRegion: '{{vsiRegion}}'
+      virtual-server-instance: '{{virtualServerInstance}}'
+      host-ssh-keys: >
+        $env.hostSshKeys ?
+          '{{hostSshKeys}}' : ''
+      host-user-name: >
+        $env.hostUserName ?
+          '{{hostUserName}}' : '' 
+      host-user-password: >
+        $env.hostUserPassword ?
+          '{{hostUserPassword}}' : '' 
+    schema:
+      $ref: deploy.json
+  customtool_cos-bucket:
+    parameters:
+      cos-bucket-name: >
+        $env.cosBucketName ? '{{cosBucketName}}' : 'simple-vsi-app-toolchain-{{timestamp}}'
+    schema:
+      $ref: cos.json
