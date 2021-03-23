@@ -217,7 +217,7 @@ spec:
       runAfter: 
         - unit-tests
       taskRef:
-        name: build-task
+        name: build-binary
       params:
         - name: repository
           value: $(params.repository)
