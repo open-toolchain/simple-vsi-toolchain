@@ -20,13 +20,13 @@ The toolchain implements the following best practices:
 ### Prerequisites:
 
 - **Virtual Server Instance** - 
-This toolchain requires a Virtual Server Instance running in IBM Cloud. If you don't have one, then first thing you need to do is create a Virtual Server Instance(Gen2) in the IBM Cloud which serves as the target host where the Java Application needs to be deployed. More instructions on how to create a Virtual Server Instance can be found [here](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-virtual-servers).   
+This toolchain requires a Virtual Server Instance running in IBM Cloud. If you don't have one, then you need to [create a Virtual Server Instance](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-virtual-servers) in IBM Cloud which serves as the target host where the Java Application should be deployed.   
 
     *   The Virtual Server Instances needs to have a Floating IP that is accessible over the public internet. More instructions on using Floating IP with your instances can be found [here](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console#reserving-a-floating-ip-address)
 
     * The toolchain connects to the Virtual Server Instance Secure Shell (SSH) to carry out the deployment task. Please make sure that the Security Group assigned to the Virtual Server Instance Inbound rules to allow access to the port (default: 22) at which SSH service listens to incoming SSH requests. More instructions on configuring Security Groups for Virtual Server Instance can be found [here](https://cloud.ibm.com/docs/security-groups?topic=security-groups-getting-started).
 
-    * The toolchain needs the login credentials of Virtual Server Instances to deploy and run the built application binaries. The toolchain supports credentials in form of Username/Password or Username/SSH-Keys combination. More instructions on creating the user and creating ssh keys for the Virtual Server Instance can be found [here](https://cloud.ibm.com/docs/vpc-on-classic-vsi?topic=vpc-on-classic-vsi-ssh-keys#ssh-keys).
+    * The toolchain needs the login credentials, preferably of a non-privileged user, to connect to the Virtual Server Instance to deploy and run the built application binaries. The toolchain supports credentials in the form of Username/Password or Username/SSH-Keys combination. Refer to [detailed instructions](https://cloud.ibm.com/docs/vpc-on-classic-vsi?topic=vpc-on-classic-vsi-ssh-keys#ssh-keys) on how to create SSH keys for a given user account..
 
     * The toolchain performs health check of the deployed application. It is required to add a inbound rule for `TCP` allow port `8080` so that application endpoint can be accessed. More information can be found [here](https://cloud.ibm.com/docs/security-groups?topic=security-groups-managing-sg)
 
