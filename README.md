@@ -22,7 +22,7 @@ The toolchain implements the following best practices:
 - **Virtual Server Instance** - 
 This toolchain requires a Virtual Server Instance running in IBM Cloud. If you don't have one, then you need to [create a Virtual Server Instance](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-virtual-servers) in IBM Cloud which serves as the target host where the Java Application should be deployed.   
 
-    *   The Virtual Server Instances needs to have a Floating IP that is accessible over the public internet. More instructions on using Floating IP with your instances can be found [here](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console#reserving-a-floating-ip-address)
+    *   The Virtual Server Instances needs to have a Floating IP that is accessible over the public internet. More instructions on using a Floating IP with your instances can be found [here](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console#reserving-a-floating-ip-address)
 
     * The toolchain connects to the Virtual Server Instance Secure Shell (SSH) to carry out the deployment task. Please make sure that the Security Group assigned to the Virtual Server Instance Inbound rules to allow access to the port (default: 22) at which SSH service listens to incoming SSH requests. More instructions on configuring Security Groups for Virtual Server Instance can be found [here](https://cloud.ibm.com/docs/security-groups?topic=security-groups-getting-started).
 
