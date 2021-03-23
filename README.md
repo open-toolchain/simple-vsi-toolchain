@@ -24,7 +24,7 @@ This toolchain requires a Virtual Server Instance running in IBM Cloud. If you d
 
     *   The Virtual Server Instances needs to have a Floating IP that is accessible over the public internet. More instructions on using a Floating IP with your instances can be found [here](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console#reserving-a-floating-ip-address)
 
-    * The toolchain connects to the Virtual Server Instance Secure Shell (SSH) to carry out the deployment task. Please make sure that the Security Group assigned to the Virtual Server Instance Inbound rules to allow access to the port (default: 22) at which SSH service listens to incoming SSH requests. More instructions on configuring Security Groups for Virtual Server Instance can be found [here](https://cloud.ibm.com/docs/security-groups?topic=security-groups-getting-started).
+    * Please ensure that the Security Group assigned to the Virtual Server Instance Inbound rules allow access to a port, default is usually port 22 where the SSH service listens for the incoming SSH requests. More instructions on configuring Security Groups for a Virtual Server Instance can be found [here](https://cloud.ibm.com/docs/security-groups?topic=security-groups-getting-started).
 
     * The toolchain needs the login credentials, preferably of a non-privileged user, to connect to the Virtual Server Instance to deploy and run the built application binaries. The toolchain supports credentials in the form of Username/Password or Username/SSH-Keys combination. Refer to [detailed instructions](https://cloud.ibm.com/docs/vpc-on-classic-vsi?topic=vpc-on-classic-vsi-ssh-keys#ssh-keys) on how to create SSH keys for a given user account..
 
