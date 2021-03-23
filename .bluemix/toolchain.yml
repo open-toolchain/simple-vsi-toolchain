@@ -171,7 +171,7 @@ services:
             } else {
               'grit-or-gitlab-commit';
             }
-        execute: false
+        execute: manual-run
   deploy:
     service_id: pipeline
     parameters:
