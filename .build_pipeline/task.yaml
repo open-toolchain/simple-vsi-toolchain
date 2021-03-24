@@ -10,7 +10,7 @@ spec:
     - name: appname
       description: The name of the application passed as environment variable 
   workspaces:
-    - name: artifacts
+    - name: output
       description: A workspace to store the output of intermittent steps
       mountPath: /artifacts
   results:
@@ -75,7 +75,7 @@ spec:
     - name: artifactory
       description: The variable storing artifactory integration with the toolchain
   workspaces:
-    - name: artifacts
+    - name: output
       description: A workspace to store the output of intermittent steps
       mountPath: /artifacts
   volumes:

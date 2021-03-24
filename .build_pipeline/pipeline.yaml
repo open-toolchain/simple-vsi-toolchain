@@ -244,7 +244,7 @@ spec:
             cp -r target/* binaries
             echo “Copied the artifacts to the uploads folder.”
       workspaces:
-        - name: artifacts
+        - name: output
           workspace: pipeline-ws          
     - name: build-binary-info
       runAfter: 
@@ -257,7 +257,7 @@ spec:
         - name: appname
           value: $(params.app-name)               
       workspaces:
-        - name: artifacts
+        - name: output
           workspace: pipeline-ws
     - name: publish-doi-buildrecord
       runAfter: 
@@ -370,7 +370,7 @@ spec:
         - name: cos-api-key
           value: $(params.cos-api-key)
       workspaces:
-        - name: artifacts
+        - name: output
           workspace: pipeline-ws
     - name: git-clone-inventory-repo
       runAfter: 
