@@ -138,11 +138,11 @@ spec:
       description: The name of the application passed as environment variable
     - name: virtualserverinstance
       description: The IP Address of the Virtual Server Instance
-    - name: host-ssh-keys
+    - name: hostsshkeys
       description: The private SSH Key required to login to the Virtual Server Instance
-    - name: host-user-name
+    - name: hostusername
       description: The username required to login to the Virtual Server Instance
-    - name: host-password
+    - name: hostpassword
       description: The password required to login to the Virtual Server Instance
     - name: cos-region
       description: The Region where Cloud Object Storage Instance is created
