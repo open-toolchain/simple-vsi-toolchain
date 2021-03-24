@@ -21,7 +21,7 @@ spec:
   steps:
     - name: build-binary-info
       image: ibmcom/pipeline-base-image:2.11
-      workingDir: /output
+      workingDir: /artifacts
       env: 
         - name: APPNAME
           value: $(params.appname)
