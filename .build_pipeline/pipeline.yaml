@@ -214,10 +214,43 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: build
-      runAfter: 
+      runAfter:
         - unit-tests
       taskRef:
-        name: build-binary
+        name: toolchain-build
+      params:
+        - name: custom-script
+          value: |
+            #!/bin/bash
+
+            # Your build script should go here.
+            # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
+            # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
+            # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
+            # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.
+            
+            echo “Started building the binary image.”
+            mvn -N io.takari:maven:wrapper
+            ./mvnw install -Dmaven.test.skip=true
+            echo “Finished building the binary image.”
+
+            # All the artifacts that your application needs for successful deployment ( for example: binary files, images, configuration files, source files
+            # in case of interperter based projects etc) must be copied over to /artifacts/binaries directory as is done below. In the existig Springboot
+            # application, the built Java Jar is a self-contained binary with embedded web server and hence does not need anything other than just the Jar.
+            # All the items placed in the /artifacts/binaries folder will be picked up by subsequent step to be uploaded either to Artifactory/IBM Cloud Object Storage
+            # based on your selection during toolchain creation.
+
+            mkdir binaries
+            cp -r target/* binaries
+            echo “Copied the artifacts to the uploads folder.”
+      workspaces:
+        - name: output
+          workspace: pipeline-ws          
+    - name: build-binary-info
+      runAfter: 
+        - build
+      taskRef:
+        name: build-binary-info
       params:
         - name: repository
           value: $(params.repository)
@@ -228,7 +261,7 @@ spec:
           workspace: pipeline-ws
     - name: publish-doi-buildrecord
       runAfter: 
-        - build
+        - build-binary-info
       when:
         - input: $(params.insights)
           operator: in
@@ -333,7 +366,7 @@ spec:
         - name: artifactory
           value: $(params.artifactory)
         - name: objectname
-          value: $(tasks.build.results.objectname)
+          value: $(tasks.build-binary-info.results.objectname)
         - name: cos-api-key
           value: $(params.cos-api-key)
       workspaces:
@@ -374,9 +407,9 @@ spec:
         - name: commitid
           value: $(tasks.git-clone-inventory-repo.results.git-commit)
         - name: artifact
-          value: $(tasks.build.results.objectname)
+          value: $(tasks.build-binary-info.results.objectname)
         - name: checksum
-          value: $(tasks.build.results.checksum)
+          value: $(tasks.build-binary-info.results.checksum)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
