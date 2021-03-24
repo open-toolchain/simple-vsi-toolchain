@@ -8,7 +8,7 @@ deploy.description: "Toolchain to build and deploy simple Maven Based Java hello
 deploy.longDescription: "The Delivery Pipeline automates continuous build, test and deploy of the standalone application."
 deploy.appDescription: "The name of your Application"
 deploy.appName: "Application Name"
-deploy.apikeyDescription: "The IBM Cloud API key is used to access the IBM Cloud Services. You can obtain your API key with 'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys by clicking **Create API key** (Each API key only can be viewed once)."
+deploy.apikeyDescription: "The IBM Cloud API key is used to access the IBM Cloud Services. You can obtain your API key with 'ibmcloud iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys by clicking **Create API key** (Each API key only can be viewed once)."
 deploy.registryRegionDescription: "The IBM Cloud region for image registry"
 deploy.registrynsDescription: "The namespace in the container image registry. You can set it up with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started."
 deploy.regionDescription: "The IBM Cloud region for production deployment"
