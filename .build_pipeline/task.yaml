@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: build-binary-info
+  name: build-artifacts-info
 spec:
   params:
     - name: repository
@@ -19,7 +19,7 @@ spec:
     - name: checksum
       description: The checksum of the artifact to be passed to the downstream tasks for further processing
   steps:
-    - name: build-binary-info
+    - name: build-artifacts-info
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /artifacts
       env: 
@@ -309,7 +309,8 @@ spec:
           cd /artifacts/inventory-repo;
           git config user.email "xxx@yyy.zzz" && git config user.name "xxx"
           git checkout master
-          echo { \"repository_url\": \"${REPOSITORY}\",\"artifact\": \"${ARTIFACT}\",\"build_number\": ${BUILD_NUMBER},\"commit_sha\": \"${GIT_COMMIT}\",\"name\": \"${APPNAME}\",\"pipeline_run_id\": \"${PIPELINE_RUN_ID}\",\"version\": \"v1\",\"signature\": \"${CHECKSUM}\" } > $INVENTORY_FILE
+          echo { \"repository_url\": \"${REPOSITORY}\",\"artifact\": \"${ARTIFACT}\",\"build_number\": ${BUILD_NUMBER},\"commit_sha\": \"${GIT_COMMIT}\",\"name\": \"${APPNAME}\",\"pipeline_run_id\": \"${PIPELINE_RUN_ID}\",\"version\": \"v1\",\"signature\": \"${CHECKSUM}\" } > inventory-info.json
+          jq . inventory-info.json > $INVENTORY_FILE
           git add ./$INVENTORY_FILE
           git commit -m "Update Evidence"
           git tag ${PIPELINE_RUN_ID}

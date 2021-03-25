@@ -77,9 +77,32 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: cra-discovery-scan
+    - name: build-source
       runAfter:
         - git-clone
+      taskRef:
+        name: toolchain-build
+      params:
+        - name: custom-script
+          value: |
+            #!/bin/bash
+
+            # Your build script should go here.
+            # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
+            # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
+            # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
+            # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.
+            
+            echo “Started compiling the source code.”
+            mvn -N io.takari:maven:wrapper
+            ./mvnw clean compile
+            echo “Finished compiling the source code.”
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: cra-discovery-scan
+      runAfter:
+        - build-source
       when:
         - input: "$(params.cos-region)"
           operator: in
@@ -187,7 +210,7 @@ spec:
       taskRef:
         name: tester-run-tests
       runAfter: 
-        - git-clone
+        - build-source
       params:
         - name: tests-script
           value: |
@@ -213,9 +236,9 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: build
+    - name: package-build-artifacts
       runAfter:
-        - unit-tests
+        - code-coverage
       taskRef:
         name: toolchain-build
       params:
@@ -246,11 +269,11 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws          
-    - name: build-binary-info
+    - name: build-artifacts-info
       runAfter: 
-        - build
+        - package-build-artifacts
       taskRef:
-        name: build-binary-info
+        name: build-artifacts-info
       params:
         - name: repository
           value: $(params.repository)
@@ -261,7 +284,7 @@ spec:
           workspace: pipeline-ws
     - name: publish-doi-buildrecord
       runAfter: 
-        - build-binary-info
+        - build-artifacts-info
       when:
         - input: $(params.insights)
           operator: in
@@ -281,7 +304,7 @@ spec:
           value: $(tasks.git-clone.results.git-commit)
     - name: publish-doi-code-tests
       runAfter: 
-        - code-coverage
+        - unit-tests
       when:
         - input: $(params.insights)
           operator: in
@@ -348,7 +371,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: upload-artifacts
       runAfter: 
-        - build
+        - package-build-artifacts
         - evaluate-gate-task
       taskRef:
         name: upload-artifacts
@@ -366,7 +389,7 @@ spec:
         - name: artifactory
           value: $(params.artifactory)
         - name: objectname
-          value: $(tasks.build-binary-info.results.objectname)
+          value: $(tasks.build-artifacts-info.results.objectname)
         - name: cos-api-key
           value: $(params.cos-api-key)
       workspaces:
@@ -374,7 +397,8 @@ spec:
           workspace: pipeline-ws
     - name: git-clone-inventory-repo
       runAfter: 
-        - upload-artifacts
+        - package-build-artifacts
+        - evaluate-gate-task
       taskRef:
         name: git-clone-repo
       params:
@@ -397,6 +421,7 @@ spec:
     - name: git-commit-inventory-repo
       runAfter: 
         - git-clone-inventory-repo
+        - upload-artifacts
       taskRef:
         name: git-commit-inventory-repo-task
       params:
@@ -407,9 +432,9 @@ spec:
         - name: commitid
           value: $(tasks.git-clone-inventory-repo.results.git-commit)
         - name: artifact
-          value: $(tasks.build-binary-info.results.objectname)
+          value: $(tasks.build-artifacts-info.results.objectname)
         - name: checksum
-          value: $(tasks.build-binary-info.results.checksum)
+          value: $(tasks.build-artifacts-info.results.checksum)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
