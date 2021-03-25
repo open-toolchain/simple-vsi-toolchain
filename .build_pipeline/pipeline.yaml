@@ -95,7 +95,7 @@ spec:
             
             echo “Started compiling the source code.”
             mvn -N io.takari:maven:wrapper
-            ./mvnw -Dmaven.repo.local=/output/m2/repository clean compile
+            ./mvnw -Dmaven.repo.local=./m2/repository clean compile
             echo “Finished compiling the source code.”
       workspaces:
         - name: output
@@ -216,7 +216,7 @@ spec:
           value: |
             ls -alrt ./
             echo "Running tests";
-            mvn -Dmaven.repo.local=/artifacts/m2/repository clean test;
+            mvn -Dmaven.repo.local=./m2/repository clean test;
             mkdir test-results
             cp -r target/* test-results/
             echo -n ./test-results/surefire-reports/*.xml > $(results.test-result-file-paths.path)
@@ -255,7 +255,7 @@ spec:
             
             echo “Started building the binary image.”
             mvn -N io.takari:maven:wrapper
-            ./mvnw install -Dmaven.test.skip=true -Dmaven.repo.local=/output/m2/repository
+            ./mvnw install -Dmaven.test.skip=true -Dmaven.repo.local=./m2/repository
             echo “Finished building the binary image.”
 
             # All the artifacts that your application needs for successful deployment ( for example: binary files, images, configuration files, source files
