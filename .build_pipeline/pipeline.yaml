@@ -421,6 +421,7 @@ spec:
     - name: git-commit-inventory-repo
       runAfter: 
         - git-clone-inventory-repo
+        - upload-artifacts
       taskRef:
         name: git-commit-inventory-repo-task
       params:
