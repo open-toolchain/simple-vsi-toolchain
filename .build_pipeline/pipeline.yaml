@@ -94,8 +94,7 @@ spec:
             # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.
             
             echo “Started compiling the source code.”
-            mvn -N io.takari:maven:wrapper
-            ./mvnw clean compile
+            mvn -Dmaven.repo.local=./m2/repository clean compile
             echo “Finished compiling the source code.”
       workspaces:
         - name: output
@@ -215,11 +214,11 @@ spec:
         - name: tests-script
           value: |
             echo "Running tests";
-            mvn clean test;
+            mvn -Dmaven.repo.local=./m2/repository clean test;
             mkdir test-results
             cp -r target/* test-results/
             echo -n ./test-results/surefire-reports/*.xml > $(results.test-result-file-paths.path)
-            echo -n unittest > $(results.test-types.path)
+            echo -n unittest > $(results.test-types.path)            
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -253,8 +252,7 @@ spec:
             # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.
             
             echo “Started building the binary image.”
-            mvn -N io.takari:maven:wrapper
-            ./mvnw install -Dmaven.test.skip=true
+            mvn install -Dmaven.test.skip=true -Dmaven.repo.local=./m2/repository
             echo “Finished building the binary image.”
 
             # All the artifacts that your application needs for successful deployment ( for example: binary files, images, configuration files, source files
