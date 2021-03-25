@@ -77,7 +77,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: build
+    - name: build-source
       runAfter:
         - git-clone
       taskRef:
@@ -103,7 +103,7 @@ spec:
           workspace: pipeline-ws
     - name: cra-discovery-scan
       runAfter:
-        - git-clone
+        - build-source
       when:
         - input: "$(params.cos-region)"
           operator: in
@@ -211,7 +211,7 @@ spec:
       taskRef:
         name: tester-run-tests
       runAfter: 
-        - build
+        - build-source
       params:
         - name: tests-script
           value: |
@@ -238,7 +238,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: package-binary-build
+    - name: package-build-artifacts
       runAfter:
         - code-coverage
       taskRef:
@@ -271,11 +271,11 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws          
-    - name: build-binary-info
+    - name: build-artifacts-info
       runAfter: 
-        - package-binary-build
+        - package-build-artifacts
       taskRef:
-        name: build-binary-info
+        name: build-artifacts-info
       params:
         - name: repository
           value: $(params.repository)
@@ -286,7 +286,7 @@ spec:
           workspace: pipeline-ws
     - name: publish-doi-buildrecord
       runAfter: 
-        - build-binary-info
+        - build-artifacts-info
       when:
         - input: $(params.insights)
           operator: in
@@ -306,7 +306,7 @@ spec:
           value: $(tasks.git-clone.results.git-commit)
     - name: publish-doi-code-tests
       runAfter: 
-        - code-coverage
+        - unit-tests
       when:
         - input: $(params.insights)
           operator: in
@@ -373,7 +373,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: upload-artifacts
       runAfter: 
-        - build
+        - package-build-artifacts
         - evaluate-gate-task
       taskRef:
         name: upload-artifacts
@@ -391,7 +391,7 @@ spec:
         - name: artifactory
           value: $(params.artifactory)
         - name: objectname
-          value: $(tasks.build-binary-info.results.objectname)
+          value: $(tasks.build-artifacts-info.results.objectname)
         - name: cos-api-key
           value: $(params.cos-api-key)
       workspaces:
@@ -399,7 +399,8 @@ spec:
           workspace: pipeline-ws
     - name: git-clone-inventory-repo
       runAfter: 
-        - upload-artifacts
+        - package-build-artifacts
+        - evaluate-gate-task
       taskRef:
         name: git-clone-repo
       params:
@@ -422,6 +423,7 @@ spec:
     - name: git-commit-inventory-repo
       runAfter: 
         - git-clone-inventory-repo
+        - upload-artifacts
       taskRef:
         name: git-commit-inventory-repo-task
       params:
@@ -432,9 +434,9 @@ spec:
         - name: commitid
           value: $(tasks.git-clone-inventory-repo.results.git-commit)
         - name: artifact
-          value: $(tasks.build-binary-info.results.objectname)
+          value: $(tasks.build-artifacts-info.results.objectname)
         - name: checksum
-          value: $(tasks.build-binary-info.results.checksum)
+          value: $(tasks.build-artifacts-info.results.checksum)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
