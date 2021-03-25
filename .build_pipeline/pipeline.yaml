@@ -97,6 +97,7 @@ spec:
             mvn -N io.takari:maven:wrapper
             ./mvnw -Dmaven.repo.local=./m2/repository clean compile
             echo “Finished compiling the source code.”
+            ls -alrt ./
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -220,6 +221,7 @@ spec:
             cp -r target/* test-results/
             echo -n ./test-results/surefire-reports/*.xml > $(results.test-result-file-paths.path)
             echo -n unittest > $(results.test-types.path)
+            ls -alrt ./
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -266,6 +268,7 @@ spec:
             mkdir binaries
             cp -r target/* binaries
             echo “Copied the artifacts to the uploads folder.”
+            ls -alrt ./
       workspaces:
         - name: output
           workspace: pipeline-ws          
