@@ -215,7 +215,8 @@ spec:
         - name: tests-script
           value: |
             echo "Running tests";
-            mvn clean test -T10 --offline;
+            MAVEN_OPTS= -DdependencyLocationsEnabled=false
+            mvn clean test -T10;
             mkdir test-results
             cp -r target/* test-results/
             echo -n ./test-results/surefire-reports/*.xml > $(results.test-result-file-paths.path)
