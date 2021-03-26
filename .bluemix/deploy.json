@@ -134,6 +134,7 @@
             "title": {
                 "$ref": "#/messages/deploy.vsiRegionTitle"
             },
+            "placeholder": "No region found where VSI is provisoned.",
             "key": "vsiRegion"
         },
 
@@ -142,6 +143,7 @@
             "title": {
                 "$ref": "#/messages/deploy.vsi"
             },
+            "placeholder": "No Virtual Server Instance found.",
             "key": "virtual-server-instance"
         },
         {
