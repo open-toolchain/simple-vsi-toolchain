@@ -7,15 +7,9 @@
 
 By following this tutorial, you can create an open toolchain, and then use the toolchain and DevOps practices to develop a simple Java web application that you deploy to the IBM Cloud® Virtual Server Instance.
 
-  
-
 This Simple Java application exposes an HTTP Endpoint at port 8080 of the host machine to present a Hello World Greeting message at the **http://{VSI-IP-ADDRESS}:8080/v1/** HTTP Path. The application utilizes a maven build system to provide build and test capability. The application comes preconfigured for a DevOps toolchain that provides continuous delivery with source control, issue tracking, online editing, and deployment to the IBM Virtual Server Instance.
 
-  
-
-The application code is stored in the application source control repository whereas the build and deploy scripts are stored in the pipeline source control repository. The build and deploy scripts can be customized to suit the development needs of the application.
-
-  
+The application code is maintained in the application source control repository whereas the build and deploy scripts are maintained in the pipeline source control repository. The build and deploy scripts can be customized to suit the development needs of the application.
 
 The toolchain implements the following best practices:
 
@@ -25,9 +19,7 @@ The toolchain implements the following best practices:
 
 - For advanced users with versioning requirements for the build artifacts, the toolchain also supports Artifactory as artifact store. An existing artifactory repository can be configured and integrated with the toolchain to support the versioning of the build artifacts.
 
-- GitOps Flow to deploy changes to the Deployment Environment.
-
-  
+- GitOps Flow to deploy changes to the Deployment Environment. 
   
 
 # ![Icon](https://github.com/open-toolchain/simple-vsi-toolchain/blob/master/.bluemix/images/toolchain.png)
@@ -64,15 +56,11 @@ This toolchain requires a Virtual Server Instance running a variant of Linux/Uni
 
 Note:
 
-1. If you are providing SSH private key as credentials, convert the SSH key into **base64**, as explained later in this article.
-
-2. If you are providing Username and Password, enable **PasswordAuthentication** in the Virtual Server Instance.
+If you are providing Username and Password, enable **PasswordAuthentication** in the Virtual Server Instance.
 
   
 
 ### Advanced User Scenarios:
-
-  
 
 The Continuous Integration (CI) Pipeline listens to changes in the application source code and triggers a CI Pipeline Run whenever a change is pushed to the application repository. The result of a successful CI Run is a artifact which is pushed to an intermediate storage (IBM Cloud Object Store or Artifactory). The Continuous Deployment (CD) Pipeline copies this artifact to the target Virtual Server Instance and performs application deployment. The toolchain provides user with an option to use either IBM Cloud Object Store (COS) or Artifactory as an intermediate storage to store the build binaries.
 
@@ -151,11 +139,11 @@ Please note:
 4. Authentication Type - User Credentials / SSH Key.
     - User Credentials:
         - User Name - Username of the Virtual Server Instance user with permission to deploy and run the application.
-        - Password - Password (base64 encoded) of the Virtual Server Instance user with permission to deploy and run the application.
+        - Password - Password of the Virtual Server Instance user with permission to deploy and run the application.
 
     - SSH Credentials:
         - User Name - Username of the Virtual Server Instance user with permission to deploy and run the application.
-        - SSH KEY - Private SSH Key (base64 encoded) of the Virtual Server Instance user to deploy and run the application.
+        - SSH KEY - Private SSH Key of the Virtual Server Instance user to deploy and run the application.
 
 ![Virtual Server Instance Details](https://github.com/open-toolchain/simple-vsi-toolchain/blob/master/.bluemix/docs-images/Deliver-pipeline.png)
 
@@ -203,48 +191,46 @@ If you want to revert your current deployed version of application and install l
   
 
 1.  Clone the Inventory Repository. 
-```
-git clone <inventory-repo-url>
-```
+    ```
+    git clone <inventory-repo-url>
+    ```
 
 2. List commits pushed by CI pipeline after each successful CI Pipeline Run.
-```
-git log 
-```
+	```
+	git log 
+	```
 3.  Checkout master branch of Inventory Repository.
-```
-git checkout master
-```
+	```
+	git checkout master
+	```
 4.  Fetch the ID of the last commit made to the Inventory Repository.
-```
-lastCommitID=$(git log --format="%H" -n 1)
-``` 
+	```
+	lastCommitID=$(git log --format="%H" -n 1)
+	``` 
 5. Revert the last commit. Please provide a commit message for this revert.
-```
-git revert $lastCommitID
-``` 
+	```
+	git revert $lastCommitID
+	``` 
 6.  Push the change to inventory repo. Note: The action triggers the CD Pipeline Run for application deployment.
-```
-git push origin master --force
-```  
+	```
+	git push origin master --force
+	```  
 
 #### GitOps Flow  
 
-Simple VSI Toolchain follows the GitOps Workflow model. The model stores build metadata from each successful build in a separate repository (Inventory Repository). The default configuration of Continuous Deployment Pipeline triggers a pipeline run whenever a successful build metadata is pushed to the master branch. 
+Simple VSI Toolchain follows the GitOps Workflow model. The model stores build metadata from each successful build in a separate repository (Inventory Repository). The default out-of-box configuration of Continuous Deployment Pipeline triggers a pipeline run whenever a successful build metadata is pushed to the master branch. 
 
-As best practice, user can create a branch in Inventory Repository for each deployment environment. The latest commit to the branch contains metadata of the artifact version deployed in the corresponding environment. Below steps guides user to create a workflow 
+As best practice, user can create a branch in Inventory Repository for each deployment environment. The latest commit to the branch contains metadata of the artifact version deployed in the corresponding environment. So, while all the successful CI Builds commits the corressponding build metadata to the master branch of the Inventory Repository, the deployment of the build to environment is controlled by user. A specific commit from master branch can then be deployed to a given environment by creating a pull request in Inventory Repository to merge specific commit from master branch to branch specific to the environment. When this pull request is merged, CD Pipeline is triggered which carries out the task to pull the build artifact from transient storage and deploy them to the environment. Below steps guides user to create a workflow 
 
 1. Create a VSI Toolchain. 
 
 2. Once the toolchain is configured successfully, click on the Inventory Repository.
 
-3. Create a branch for each of deployment environment ( For example: Production)
+3. Create a branch for each of deployment environment (For example: prod)
 
-3. Navigate to CD Pipeline > Triggers. Modify the trigger with Source as Inventory Repository with the branch which you want to trigger the CD-Pipeline(Master).
+4. Navigate to CD Pipeline > Triggers. Modify the trigger with Source as Inventory Repository with the branch which you want to trigger the CD-Pipeline (prod).
 
-4. Now modify your CI pipeline to commit to respective inventory repo after successful integration.
-
-5. Raise Pull Request to merge changes from master branch to target environment branch. This action will trigger the CD Pipeline to copy the artifact version from 
+5. Raise Pull Request to merge changes from master branch to target environment branch. This action will trigger the CD Pipeline to copy the artifact version from source branch (master) to destination branch (prod).
 
 
 #### Create New User in the Virtual Server Instance
@@ -259,10 +245,5 @@ ssh-keygen -C cloud.ibm.com
 
 ssh-copy-id -i .ssh/id_rsa.pub <UserName>@<xx.yy.zz.aa>
 
-# Encode the key in base64 format
-
-echo $(cat .ssh/id_rsa | base64 -w 0) #for linux environment
-
-echo $(cat .ssh/id_rsa | base64 -b 0) #for mac users:
 
 ```
