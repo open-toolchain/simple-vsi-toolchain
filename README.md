@@ -3,10 +3,10 @@
 # Develop a Simple Java Application and Deploy on Virtual Server (Virtual Machine)
 
 + [Prerequisites](#prerequisites-)
++ [Advanced User Scenarios](#advanced-user-scenarios-)
 + [Application Repository Configuration](#application-repository-configuration)
 + [Inventory Repository Configuration](#inventory-repository-configuration)
-+ [Delivery Pipeline Configurations](#delivery-pipeline-configurations) 
-+ [Advanced User Scenarios](#advanced-user-scenarios-)
++ [Delivery Pipeline Configurations](#delivery-pipeline-configurations)
 + [Additional Information](#additional-information)
     - [RollBack to an older version of deployed application](#rollback-to-an-older-version-of-deployed-application)
     - [GitOps Flow](#gitops-flow)
@@ -19,7 +19,7 @@
 
   
 
-By following this tutorial, you can create an open toolchain, and then use the toolchain and DevOps practices to develop a simple Java web application that you deploy to the IBM Cloud® Virtual Server Instance.  
+By following this tutorial, you can create an IBM Cloud Continuous Delivery Toolchain, and then use the toolchain and DevOps practices to develop a simple Java web application that you deploy to the IBM Cloud® Virtual Server Instance.  
 
 This Simple Java application exposes an HTTP Endpoint at port 8080 of the host machine to present a Hello World Greeting message at the **http://{VSI-IP-ADDRESS}:8080/v1/** HTTP Path. The application utilizes a maven build system to provide build and test capability. The application comes preconfigured for a DevOps toolchain that provides continuous delivery with source control, issue tracking, online editing, and deployment to the IBM Virtual Server Instance.  
 
