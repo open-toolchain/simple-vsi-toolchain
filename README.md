@@ -2,6 +2,19 @@
 
 # Develop a Simple Java Application and Deploy on Virtual Server (Virtual Machine)
 
++ [Prerequisites](#prerequisites-)
++ [Application Repository Configuration](#application-repository-configuration)
++ [Inventory Repository Configuration](#inventory-repository-configuration)
++ [Delivery Pipeline Configurations](#delivery-pipeline-configurations) 
++ [Advanced User Scenarios](#advanced-user-scenarios-)
++ [Additional Information](#additional-information)
+    - [RollBack to an older version of deployed application](#rollback-to-an-older-version-of-deployed-application)
+    - [GitOps Flow](#gitops-flow)
+    - [Customise the build and deploy script](#customise-the-build-and-deploy-script)
+        - [Modify the Continous Integration Pipeline task](#modify-the-continous-integration-pipeline-task)
+        - [Modify the Continuous Deployment Pipeline task](#modify-the-continous-deployment-pipeline-task)
++ [Learn more](#learn-more)
+
 ### Continuously Deliver a Java Application to the Virtual Server Instance.
 
   
