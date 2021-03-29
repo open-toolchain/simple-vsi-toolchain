@@ -39,7 +39,13 @@ Note:
 
 Any change to the source triggers the CI Pipeline. The result of a successful CI Run is a new build/binary artifact which is stored first to an intermediate storage and then deployed to the target Virtual Server Instance. The toolchain provides user with an option to use either IBM Cloud Object Store or Artifactory as an intermediate storage to store the build binaries.
 
- - **Cloud Object Store (Default)** -  The toolchain leverages the IBM Cloud Store to archive intermediate application build binaries. In case user does not have an instance of IBM Cloud Object Store, the toolchain creates one on behalf of user. The toolchain then creates a bucket to store all the built application binaries. In cases when user intends to use an existing instance of IBM Cloud Store and Bucket, user can configure the toolchain to utilize the same. More instructions on creating an instance of Cloud Object Store can be found [here](https://cloud.ibm.com/docs/cloud-object-storage/basics?topic=cloud-object-storage-provision)
+ - **Cloud Object Store (Default)** -  The toolchain leverages the IBM Cloud Store to archive intermediate application build binaries. In case user does not have an instance of IBM Cloud Object Store, the toolchain creates one on behalf of user. The toolchain then creates a bucket to store all the built application binaries. In cases when user intends to use an existing instance of IBM Cloud Store and Bucket, user can configure the toolchain to utilize the same. More instructions on creating an instance of Cloud Object Store can be found [here](https://cloud.ibm.com/docs/cloud-object-storage/basics?topic=cloud-object-storage-provision).
+
+    The Following are the various COS Instance scenarious which describes toolchain behaviour.
+    - If the user does not have any COS instance, a COS instance with same name as toolchain name will be created and it would be used to create the bucket.
+    - If the user has only one COS Instance, the same instance will be used for the creating the bucket.
+    - If the user has two or more COS Instances, a COS instance with the same name as that of the toolchain will be created and it will be used for creating the bucket.
+
 
  - **Artifactory (Optional)** - The toolchain provides the capability to utilize an existing instance of JFrog Artifactory as a storage for the build/binary artifacts (for ex. jar, exe).  This TaaS-based Artifactory instance is accessible only with valid IBM credentials. Refer to the TaaS Guide https://taas.cloud.ibm.com/guides#artifactory 
 Please note: 
