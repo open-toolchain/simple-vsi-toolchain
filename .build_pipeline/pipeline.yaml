@@ -110,6 +110,8 @@ spec:
           value: |
             #!/bin/bash
 
+            ls -lart .
+            
             # Your build script should go here.
             # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
             # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
