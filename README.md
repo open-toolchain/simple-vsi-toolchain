@@ -19,7 +19,7 @@
 
   
 
-By following this tutorial, you can create an IBM Cloud Continuous Delivery Toolchain, and then use the toolchain and DevOps practices to develop a simple Java web application that you deploy to the IBM Cloud® Virtual Server Instance.  
+By following this tutorial, you can create an IBM Cloud Continuous Delivery Toolchain and then use the toolchain and DevOps practices to develop a simple Java web application that you deploy to the IBM Cloud® Virtual Server Instance.
 
 This Simple Java application exposes an HTTP Endpoint at port 8080 of the host machine to present a Hello World Greeting message at the **http://{VSI-IP-ADDRESS}:8080/v1/** HTTP Path. The application utilizes a maven build system to provide build and test capability. The application comes preconfigured for a DevOps toolchain that provides continuous delivery with source control, issue tracking, online editing, and deployment to the IBM Virtual Server Instance.  
 
@@ -64,19 +64,19 @@ If you are providing Username and Password, enable **PasswordAuthentication** in
 
 ### Advanced User Scenarios:
 
-The Continuous Integration (CI) Pipeline listens to changes in the application source code and triggers a CI Pipeline Run whenever a change is pushed to the application repository. The result of a successful CI Run is a artifact which is pushed to an intermediate storage (IBM Cloud Object Store or Artifactory). The Continuous Deployment (CD) Pipeline copies this artifact to the target Virtual Server Instance and performs application deployment. The toolchain provides user with an option to use either IBM Cloud Object Store (COS) or Artifactory as an intermediate storage to store the build binaries.
+The Continuous Integration (CI) Pipeline listens to changes in the application source code and triggers a CI Pipeline Run whenever a change is pushed to the application repository. The result of a successful CI Run is an artifact which is pushed to an intermediate storage). The Continuous Deployment (CD) Pipeline copies this artifact to the target Virtual Server Instance and performs the deployment of the application. The toolchain provides a user with options to use either IBM Cloud Object Store (COS) or Artifactory as an intermediate storage location for binary builds.
 
--  **Cloud Object Store (Default)** - The toolchain utilizes IBM Cloud Store (COS) to store transient application artifacts. In case user does not have an instance of IBM COS, toolchain creates one on behalf of user. The toolchain uses this newly created instance of IBM COS to create a bucket which will store the application artifacts. Alternately, user can also configure the toolchain to utilise an existing IBM COS Bucket or [Create Bucket](https://cloud.ibm.com/docs/cloud-object-storage/basics?topic=cloud-object-storage-provision)
+-  **Cloud Object Store (Default)** - The toolchain utilizes IBM Cloud Object Storage (COS) to store transient application artifacts. If a user does not have an instance of IBM COS, the toolchain will go ahead and create an instance for them. The toolchain uses this newly created instance of IBM COS to create a bucket which will store the application artifacts. Alternatively, a user can also configure the toolchain to utilise an existing IBM COS Bucket or Create a Bucket
 
--  **Artifactory (Optional)** - The toolchain also provides the capability to utilize an existing instance of JFrog Artifactory as intermittent storage to store the application artifacts (for ex. jar, exe).
+-  **Artifactory (Optional)** - The toolchain also provides the capability to utilize an existing instance of JFrog Artifactory as intermittent storage location for application artifacts (e.g. jar, exe).
 
 Please note:
 
-- If artifactory is configured and integrated then artifactory is used.
+- If the Artifactory integration is configured correctly with the required fields filled in then that integration is used when determining what store to use for built artifacts.
 
-- If the COS bucket name is configured then corressponding bucket is used.
+- If the COS bucket field name is configured then the corresponding bucket is used.
 
-- If neither Artifatory nor COS bucket name is configured, then toolchain creates a COS instance in the default resource group. Once a COS Instance is successfully created, toolchain creates a bucket within the newly created COS Instance and use the same for storing artifacts.
+- If neither the Artifactory or COS integration are configured, then toolchain creates a COS instance in the user’s default resource group. After a COS instance is successfully created, the pipeline creates a bucket within the newly created COS instance and uses this bucket for storing artifacts.
 
 ---
 
@@ -110,7 +110,7 @@ Please note:
 
 1. Inventory repo is used to capture the build and artifact metadata.
 
-2. Successful CI Build uploads the artifact to COS/Artifactory and commits the build metadata in JSON Format to Inventory Repository. The CD Pipeline triggers pipeline run to fetch the artifact  from COS/Artifactory and deploys it to the Virtual Server Instance. 
+2. A successful CI build uploads the artifact to COS/Artifactory and commits the build metadata in JSON Format to the Inventory Repository. The CD Pipeline listens for changes in the inventory and triggers a pipeline run to fetch the artifact from COS/Artifactory and deploys that artifact to the Virtual Server Instance.
 
 ![Toolchain Details](https://github.com/open-toolchain/simple-vsi-toolchain/blob/master/.bluemix/docs-images/inventory-repo.png)
 
@@ -198,7 +198,7 @@ git push origin master --force
 
 Simple VSI Toolchain follows the GitOps Workflow model. The model stores build metadata from each successful build in a separate repository (Inventory Repository). The default configuration of Continuous Deployment Pipeline triggers a pipeline run whenever a successful build metadata is pushed to the master branch. 
 
-As best practice, user can create a branch in Inventory Repository for each deployment environment. The latest commit to the branch contains metadata of the artifact version deployed in the corresponding environment. Below steps guides user to create a workflow 
+As a best practice, user's can create a branch in the Inventory repository for each deployment environment. The latest commit to the branch contains metadata of the artifact version deployed in the corresponding environment. The steps below guide a user on how to follow this workflow
 
 1. Create a VSI Toolchain. 
 
@@ -228,7 +228,7 @@ As best practice, user can create a branch in Inventory Repository for each depl
 
 #### Customise the build and deploy script
 
-Simple VSI Toolchain leverages tekton perform the pipeline tasks for the build and deploy pipelines. Users can configure the build and deploy steps by making changes to the Pipeline Code which is maintained in the Pipeline Repository. 
+The simple VSI toolchain leverages Tekton to perform the pipeline tasks for the build and deploy pipelines. Users can configure the build and deploy steps by making changes to the pipeline code which is maintained in the pipeline repository.
 
 ##### Modify the Continous Integration Pipeline task
 
