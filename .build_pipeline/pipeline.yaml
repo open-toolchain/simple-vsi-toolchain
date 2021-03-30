@@ -109,11 +109,6 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
-            echo "Contents of root"
-            ls -lart /
-
-            echo "Contents of root"
-            ls -lart /output
 
             # Your build script should go here.
             # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
@@ -127,7 +122,6 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-          subpath: pipeline-repo
     - name: cra-discovery-scan
       runAfter:
         - build-source
