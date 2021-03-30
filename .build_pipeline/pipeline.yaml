@@ -80,6 +80,8 @@ spec:
         - name: output
           workspace: pipeline-ws
     - name: git-clone-pipeline-repo
+      runAfter: 
+        - git-clone
       taskRef:
         name: git-clone-repo
       params:
@@ -87,16 +89,16 @@ spec:
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
-        - name: repository   
+        - name: repository
           value: $(params.pipeline-repository)
+        - name: branch
+          value: "master"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: git-credentials-json-file
-          value: credentials.json          
       workspaces:
         - name: output
           workspace: pipeline-ws
-          subpath: toolchain-repo   
+          subpath: pipeline-repo  
     - name: build-source
       runAfter:
         - git-clone
