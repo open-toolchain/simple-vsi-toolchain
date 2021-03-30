@@ -87,7 +87,7 @@ spec:
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
-        - name: repository
+        - name:   
           value: $(params.pipeline-repository)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
@@ -96,7 +96,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-          subpath: inventory-repo   
+          subpath: toolchain-repo   
     - name: build-source
       runAfter:
         - git-clone
