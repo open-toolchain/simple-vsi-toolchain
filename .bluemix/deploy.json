@@ -134,6 +134,9 @@
             "title": {
                 "$ref": "#/messages/deploy.vsiRegionTitle"
             },
+            "placeholder": {
+                "$ref": "#/messages/deploy.regionPlaceHolder"
+            },
             "key": "vsiRegion"
         },
 
@@ -141,6 +144,9 @@
             "type": "select",
             "title": {
                 "$ref": "#/messages/deploy.vsi"
+            },
+            "placeholder": {
+                "$ref": "#/messages/deploy.vsiPlaceHolder"
             },
             "key": "virtual-server-instance"
         },
