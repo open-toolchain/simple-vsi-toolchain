@@ -12,6 +12,8 @@ spec:
     - name: revision
       description: The Revision for the Application Source Code
       default: ""
+    - name: pipeline-repository
+      description: The Git Repository for the Pipeline Source Code. If empty, the Repository url will be found from toolchain      
     - name: region
       description: The IBM Cloud Region in which Virtual Server Instance is running
     - name: api
@@ -77,6 +79,23 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+    - name: git-clone-pipeline-repo
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: repository
+          value: $(params.pipeline-repository)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: git-credentials-json-file
+          value: credentials.json          
+      workspaces:
+        - name: pipeline-code
+          workspace: pipeline-ws    
     - name: build-source
       runAfter:
         - git-clone
@@ -86,7 +105,12 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
+            echo "Pipeline Source Code"
+            ls -lart /pipeline-code
 
+            echo "Application Source Code"
+            ls -lart /output
+            
             # Your build script should go here.
             # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
             # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
@@ -99,6 +123,8 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+        - name: pipeline-code
+          workspace: pipeline-ws  
     - name: cra-discovery-scan
       runAfter:
         - build-source
