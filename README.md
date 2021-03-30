@@ -66,17 +66,21 @@ If you are providing Username and Password, enable **PasswordAuthentication** in
 
 The Continuous Integration (CI) Pipeline listens to changes in the application source code and triggers a CI Pipeline Run whenever a change is pushed to the application repository. The result of a successful CI Run is an artifact which is pushed to an intermediate storage). The Continuous Deployment (CD) Pipeline copies this artifact to the target Virtual Server Instance and performs the deployment of the application. The toolchain provides a user with options to use either IBM Cloud Object Store (COS) or Artifactory as an intermediate storage location for binary builds.
 
--  **Cloud Object Store (Default)** - The toolchain utilizes IBM Cloud Object Storage (COS) to store transient application artifacts. If a user does not have an instance of IBM COS, the toolchain will go ahead and create an instance for them. The toolchain uses this newly created instance of IBM COS to create a bucket which will store the application artifacts. Alternatively, a user can also configure the toolchain to utilise an existing IBM COS Bucket or Create a Bucket
+    - If the Artifactory integration is configured correctly with the required fields filled in then that integration is used when determining what store to use for built artifacts.
+
+    - If the COS bucket field name is configured then the corresponding bucket is used.
+
+    - If neither the Artifactory or COS integration are configured, then toolchain creates a COS instance in the user’s default resource group. After a COS instance is successfully created, the pipeline creates a bucket within the newly created COS instance and uses this bucket for storing artifacts.
+
+
+-  **Cloud Object Store (Default)** - The toolchain utilizes IBM Cloud Object Storage (COS) to store transient application artifacts. If a user does not have an instance of IBM COS, the toolchain will go ahead and create an instance for them. The toolchain uses this newly created instance of IBM COS to create a bucket which will store the application artifacts. Alternatively, a user can also configure the toolchain to utilise an existing IBM COS Bucket or Create a Bucket.
+Please note: Based on existing COS Instances and Buckets in your account, toolchain exhibits behaviour as described in below scenarios:
+    
+    - If the user does not have any COS instance, a COS instance with same name as toolchain name will be created and it would be used to create the bucket.
+    - If the user has only one COS Instance, the same instance will be used for the creating the bucket.
+    - If the user has two or more COS Instances, a COS instance with the same name as that of the toolchain will be created and it will be used for creating the bucket.
 
 -  **Artifactory (Optional)** - The toolchain also provides the capability to utilize an existing instance of JFrog Artifactory as intermittent storage location for application artifacts (e.g. jar, exe).
-
-Please note:
-
-- If the Artifactory integration is configured correctly with the required fields filled in then that integration is used when determining what store to use for built artifacts.
-
-- If the COS bucket field name is configured then the corresponding bucket is used.
-
-- If neither the Artifactory or COS integration are configured, then toolchain creates a COS instance in the user’s default resource group. After a COS instance is successfully created, the pipeline creates a bucket within the newly created COS instance and uses this bucket for storing artifacts.
 
 ---
 
