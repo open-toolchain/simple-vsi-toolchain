@@ -178,17 +178,28 @@ spec:
           #
           # Function to check if the Cloud Object Storage Instance exists in the REGION
           # If not then the function creates a new bucket with name COSBUCKETNAME in the COS Service Instance with name INSTANCENAME
-          # 
+          # 1. User does not have any COS instance, Toolchain will create a COS instance in Lite Plan with same name as toolchain name and use it for creating the bucket.
+          # 2. User has only one COS Instance, The user could be on Lite Plan. We will reuse the same instance for the creating the bucket.
+          # 3. User has two or more COS Instances, Create a COS instance where the name of the instance will be same as the toolchain name and use it for creating the bucket. This will help the user to easily identify the bucket in which the artifacts will be stored.
           CheckAndCreateCOSInstance() {
             COS_INSTANCE_COUNT=$(ibmcloud resource service-instances --service-name cloud-object-storage | awk {'print $1'} | awk 'NR>3' | wc -l)
             if [ "$COS_INSTANCE_COUNT" -eq "1" ]; then
-              echo "Cloud Object Storage Instance already exists."
-              INSTANCENAME=$(ibmcloud resource service-instances --output JSON  --service-name cloud-object-storage | jq .[0] | jq -r .name)
-            else
-              echo "Cloud Object Storage Instance does not exist. Proceeding with creation."
+              INSTANCENAME=$(ibmcloud resource service-instances --output JSON --service-name cloud-object-storage | jq .[0] | jq -r .name)
+              echo "${INSTANCENAME} will be used to create the bucket."
+            elif [ "$COS_INSTANCE_COUNT" -eq "0" ]; then
               INSTANCENAME=$COSBUCKETNAME
-              ibmcloud resource service-instance-create "$INSTANCENAME" cloud-object-storage lite global
-            fi                
+              {
+              echo "Cloud Object Storage Instance does not exist. Proceeding with creation of Cloud Object Storage Instance named "$INSTANCENAME" under Lite plan.";
+              ibmcloud resource service-instance-create "$INSTANCENAME" cloud-object-storage lite global && echo "Instance creation successfull.."
+              } || {
+              echo "Failed to create an instance with Lite plan. Proceeding with creation of Cloud Object Storage Instance named "$INSTANCENAME" under Standard plan.";
+              ibmcloud resource service-instance-create "$INSTANCENAME" cloud-object-storage standard global && echo "Instance creation successfull.."
+              }
+            else
+              INSTANCENAME=$COSBUCKETNAME
+              echo "Multiple Cloud object storage instance detected. Proceeding with creation of instance named ${INSTANCENAME} with standard plan."
+              ibmcloud resource service-instance-create "$INSTANCENAME" cloud-object-storage standard global
+            fi
           }
 
           #
