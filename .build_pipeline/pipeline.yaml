@@ -94,11 +94,12 @@ spec:
         - name: git-credentials-json-file
           value: credentials.json          
       workspaces:
-        - name: pipeline-code
+        - name: output
           workspace: pipeline-ws    
     - name: build-source
       runAfter:
         - git-clone
+        - git-clone-pipeline-repo
       taskRef:
         name: toolchain-build
       params:
@@ -107,6 +108,9 @@ spec:
             #!/bin/bash
             echo "Contents of root"
             ls -lart /
+
+            echo "Contents of root"
+            ls -lart /output
 
             # Your build script should go here.
             # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
