@@ -124,6 +124,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+          subPath: pipeline-repository
     - name: cra-discovery-scan
       runAfter:
         - build-source
