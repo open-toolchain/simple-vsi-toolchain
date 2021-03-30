@@ -105,12 +105,9 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
-            echo "Pipeline Source Code"
-            ls -lart /pipeline-code
+            echo "Contents of root"
+            ls -lart /
 
-            echo "Application Source Code"
-            ls -lart /output
-            
             # Your build script should go here.
             # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
             # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
@@ -123,8 +120,6 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-        - name: pipeline-code
-          workspace: pipeline-ws  
     - name: cra-discovery-scan
       runAfter:
         - build-source
