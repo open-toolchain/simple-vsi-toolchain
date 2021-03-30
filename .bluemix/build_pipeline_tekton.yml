@@ -72,6 +72,10 @@ properties:
     value: ${APP_REPO}
     type: integration
     path: parameters.repo_url
+  - name: pipeline-repository
+    value: ${PIPELINE_REPO}
+    type: integration
+    path: parameters.repo_url    
   - name: insights
     value: ${INSIGHTS}
     type: integration
