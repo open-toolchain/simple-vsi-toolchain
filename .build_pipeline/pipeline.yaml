@@ -87,7 +87,7 @@ spec:
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
-        - name:   
+        - name: repository   
           value: $(params.pipeline-repository)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
