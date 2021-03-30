@@ -95,7 +95,8 @@ spec:
           value: credentials.json          
       workspaces:
         - name: output
-          workspace: pipeline-ws    
+          workspace: pipeline-ws
+          subpath: inventory-repo   
     - name: build-source
       runAfter:
         - git-clone
@@ -124,7 +125,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-          subPath: pipeline-repository
+          subpath: pipeline-repo
     - name: cra-discovery-scan
       runAfter:
         - build-source
