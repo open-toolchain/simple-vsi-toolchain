@@ -317,6 +317,12 @@ spec:
               name: secure-properties
               key: host-password
               optional: true
+        - name: DEPLOY_STATUS
+          value: $(params.deployStatus)
+        - name: HEALTH_CHECK_STATUS
+          value: $(params.healthCheckStatus)
+        - name: ACCEPTANCE_TEST_STATUS
+          value: $(params.acceptanceCheckStatus)         
       script: |
         #!/bin/bash
         source ./application-repo/scripts/rollback-deploy.sh
