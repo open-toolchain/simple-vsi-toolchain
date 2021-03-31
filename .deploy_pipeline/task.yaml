@@ -276,9 +276,17 @@ spec:
           value: $(params.objectname)
         - name: BUILD_NUMBER
           value: $(params.build_number)
+        - name: FILE
+          value: inventory.json  
       script: |
         #!/bin/bash
-        echo "BUILD_NUMBER is ${BUILD_NUMBER}"
+        cd /output/inventory-repo;          
+        if [[ -f "$FILE" ]]; then
+          PIPELINERUNID=$(cat $FILE |jq -r '.pipeline_run_id')
+        fi
+
+
+        echo "PIPELINERUNID is ${PIPELINERUNID}"
         set -e -o pipefail
 
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -425,6 +433,8 @@ spec:
           value: $(params.hostsshkeys)
         - name: HOST_USER_NAME
           value: $(params.hostusername)
+        - name: FILE
+          value: inventory.json 
         - name: HOST_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -433,7 +443,11 @@ spec:
               optional: true
       script: |
         #!/bin/bash
-        echo "BUILD_NUMBER is ${BUILD_NUMBER}"
+        cd /output/inventory-repo;          
+        if [[ -f "$FILE" ]]; then
+          PIPELINERUNID=$(cat $FILE |jq -r '.pipeline_run_id')
+        fi
+        echo "PIPELINERUNID is ${PIPELINERUNID}"
         if [ $(params.deployStatus) == "Failed" ] || [ $(params.healthCheckStatus) == "Failed"  ] | [ $(params.acceptanceCheckStatus) == "Failed"  ]
               then
                 WORKDIR=/home/${HOST_USER_NAME}/app
