@@ -255,6 +255,10 @@ spec:
       description: The IP Address of the Virtual Server Instance
     - name: inventoryrepo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
+  workspaces:
+    - name: output
+      description: A workspace
+      mountPath: /output  
   steps:
     - name: check-application-health
       image: ibmcom/pipeline-base-image:2.11
