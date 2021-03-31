@@ -87,15 +87,18 @@ spec:
           value: |
             #!/bin/bash
             
+            echo "Running Application Source Code Build."
+            source ./scripts/build.sh
+
             # Your build script should go here.
             # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
             # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
             # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
             # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.
             
-            echo “Started compiling the source code.”
-            mvn -Dmaven.repo.local=./m2/repository clean compile
-            echo “Finished compiling the source code.”
+            # echo “Started compiling the source code.”
+            # mvn -Dmaven.repo.local=./m2/repository clean compile
+            # echo “Finished compiling the source code.”
       workspaces:
         - name: output
           workspace: pipeline-ws
