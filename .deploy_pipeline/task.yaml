@@ -167,7 +167,7 @@ spec:
           value: $(params.hostusername)
       script: |
         #!/bin/bash
-        source ./scripts/deploy-app.sh
+        source ./application-repo/scripts/deploy-app.sh
     - name: backup-script
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
