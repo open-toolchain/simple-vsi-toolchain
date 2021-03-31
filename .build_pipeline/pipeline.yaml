@@ -207,7 +207,12 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Unit Test Script"
-            source ./scripts/unit-tests.sh         
+            source ./scripts/unit-tests.sh
+
+            # Publish the results of the unit tests as result of this task.
+            # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
+            echo -n ./test-results/surefire-reports/*.xml > $(results.test-result-file-paths.path)
+            echo -n unittest > $(results.test-types.path)        
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -222,6 +227,11 @@ spec:
             #!/bin/bash            
             echo "Running Code Coverage Script"
             source ./scripts/code-coverage.sh
+
+            # Publish the results of the code coverage as result of this task.
+            # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
+            echo -n ./test-results/site/jacoco/*.xml > $(results.test-result-file-paths.path)
+            echo -n code > $(results.test-types.path)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
