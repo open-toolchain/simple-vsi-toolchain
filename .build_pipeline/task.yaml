@@ -30,7 +30,8 @@ spec:
       script: |          
           #!/bin/bash
           set -e -o pipefail;
-
+          source ./scripts/build-artifact-info.sh
+          
           # OJBECTNAME and CHECKSUM are the result of this task and will be passed down the pipeline to downstream task for processing.
           # The lines below pass on the values of these variables to the results of the task in the format results.<result-name>.path.        
           echo -n "${OBJECTNAME}" > $(results.objectname.path)
