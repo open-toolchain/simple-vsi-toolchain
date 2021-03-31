@@ -77,6 +77,10 @@ properties:
     value: ${INVENTORY_REPO}
     type: integration
     path: parameters.repo_url
+  - name: repository
+    value: ${APP_REPO}
+    type: integration
+    path: parameters.repo_url    
   - name: target
     value: ${TARGET}
     type: text
