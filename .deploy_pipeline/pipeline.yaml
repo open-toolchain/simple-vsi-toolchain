@@ -130,6 +130,8 @@ spec:
           value: $(params.inventoryRepo)
         - name: objectname
           value: $(tasks.download-artifacts.results.objectname)
+        - name: build_number
+          value: $(tasks.download-artifacts.results.build_number)
       workspaces:
         - name: output
           workspace: pipeline-ws

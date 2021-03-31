@@ -152,6 +152,8 @@ spec:
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: objectname
       description: The name of the build artifact
+    - name: build_number
+      description: The build number of the build as retreived from the build metadata
   workspaces:
     - name: output
       description: A workspace
@@ -272,8 +274,11 @@ spec:
           value: $(params.inventoryrepo)
         - name: OBJECTNAME
           value: $(params.objectname)
+        - name: BUILD_NUMBER
+          value: $(params.build_number)
       script: |
         #!/bin/bash
+        echo "BUILD_NUMBER is ${BUILD_NUMBER}"
         set -e -o pipefail
 
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -428,6 +433,7 @@ spec:
               optional: true
       script: |
         #!/bin/bash
+        echo "BUILD_NUMBER is ${BUILD_NUMBER}"
         if [ $(params.deployStatus) == "Failed" ] || [ $(params.healthCheckStatus) == "Failed"  ] | [ $(params.acceptanceCheckStatus) == "Failed"  ]
               then
                 WORKDIR=/home/${HOST_USER_NAME}/app
