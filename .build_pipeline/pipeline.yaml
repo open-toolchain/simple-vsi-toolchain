@@ -85,20 +85,9 @@ spec:
       params:
         - name: custom-script
           value: |
-            #!/bin/bash
-            
-            echo "Running Application Source Code Build."
+            #!/bin/bash            
+            echo "Running Application Source Code Build Script"
             source ./scripts/build.sh
-
-            # Your build script should go here.
-            # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
-            # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
-            # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
-            # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.
-            
-            # echo “Started compiling the source code.”
-            # mvn -Dmaven.repo.local=./m2/repository clean compile
-            # echo “Finished compiling the source code.”
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -216,12 +205,9 @@ spec:
       params:
         - name: tests-script
           value: |
-            echo "Running tests";
-            mvn -Dmaven.repo.local=./m2/repository clean test;
-            mkdir test-results
-            cp -r target/* test-results/
-            echo -n ./test-results/surefire-reports/*.xml > $(results.test-result-file-paths.path)
-            echo -n unittest > $(results.test-types.path)            
+            #!/bin/bash            
+            echo "Running Unit Test Script"
+            source ./scripts/unit-tests.sh         
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -233,8 +219,9 @@ spec:
       params:
         - name: tests-script
           value: |
-            echo -n ./test-results/site/jacoco/*.xml > $(results.test-result-file-paths.path)
-            echo -n code > $(results.test-types.path)
+            #!/bin/bash            
+            echo "Running Code Coverage Script"
+            source ./scripts/code-coverage.sh
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -247,26 +234,7 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
-
-            # Your build script should go here.
-            # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
-            # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
-            # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
-            # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.
-            
-            echo “Started building the binary image.”
-            mvn install -Dmaven.test.skip=true -Dmaven.repo.local=./m2/repository
-            echo “Finished building the binary image.”
-
-            # All the artifacts that your application needs for successful deployment ( for example: binary files, images, configuration files, source files
-            # in case of interperter based projects etc) must be copied over to /artifacts/binaries directory as is done below. In the existig Springboot
-            # application, the built Java Jar is a self-contained binary with embedded web server and hence does not need anything other than just the Jar.
-            # All the items placed in the /artifacts/binaries folder will be picked up by subsequent step to be uploaded either to Artifactory/IBM Cloud Object Storage
-            # based on your selection during toolchain creation.
-
-            mkdir binaries
-            cp -r target/* binaries
-            echo “Copied the artifacts to the uploads folder.”
+            source ./scripts/package-build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws          
