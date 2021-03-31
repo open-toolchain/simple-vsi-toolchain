@@ -12,9 +12,7 @@ spec:
       default: "master"
     - name: revision
       description: The Revision for the Application Source Code
-      default: ""
-    - name: pipeline-repository
-      description: The Git Repository for the Pipeline Source Code. If empty, the Repository url will be found from toolchain      
+      default: ""    
     - name: region
       description: The IBM Cloud Region in which Virtual Server Instance is running
     - name: api
@@ -128,9 +126,7 @@ spec:
           - name: cos-api-key
             value: $(params.cos-api-key)
           - name: inventoryRepo
-            value: $(params.inventoryRepo)
-          - name: pipeline-repository
-            value: $(params.pipeline-repository)            
+            value: $(params.inventoryRepo)       
           - name: insights
             value: $(params.insights)                                                         
         workspaces:
