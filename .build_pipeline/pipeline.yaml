@@ -211,6 +211,7 @@ spec:
 
             # Publish the results of the unit tests as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
+            echo $UNIT_TEST_RESULTS_LOC 
             echo -n $UNIT_TEST_RESULTS_LOC > $(results.test-result-file-paths.path)
             echo -n unittest > $(results.test-types.path)        
       workspaces:
@@ -230,6 +231,7 @@ spec:
 
             # Publish the results of the code coverage as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
+            echo $CODE_COVERAGE_RESULTS_LOC
             echo -n $CODE_COVERAGE_RESULTS_LOC > $(results.test-result-file-paths.path)
             echo -n code > $(results.test-types.path)
       workspaces:
