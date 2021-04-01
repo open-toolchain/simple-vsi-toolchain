@@ -250,7 +250,7 @@ spec:
           rm ${WORKDIR} || echo "No Existing Symlink Exists."
           echo "Creating the new symlink of the build directory."
           ln -s ${BUILDDIR} ${WORKDIR}
-          echo ${OLDLINK} >> ${RESTOREFILE}
+          echo \${OLDLINK} >> ${RESTOREFILE}
         else
           echo "Creating the new symlink of the build directory."
           ln -s ${BUILDDIR} ${WORKDIR}
@@ -470,7 +470,7 @@ spec:
           echo "Removing the symlink...";
           rm ${WORKDIR} ; 
           echo "Restoring the symlink to previous build...";
-          ln -s ${RESTOREDIR} ${WORKDIR} 
+          ln -s \${RESTOREDIR} ${WORKDIR} 
         else 
           echo "Previous build info file does not exits"; 
           exit 1 
