@@ -413,7 +413,7 @@ spec:
           value: $(params.inventoryrepo)
       script: |
         #!/bin/bash
-        exit 0
+        exit 1
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
