@@ -245,7 +245,7 @@ spec:
           
           echo "Application Directory [${WORKDIR}] exists."
           echo "Capturing the existing symlink of the build directory."
-          OLDLINK=$(readlink -f ${WORKDIR})
+          OLDLINK=\$(readlink -f ${WORKDIR})
           echo "removing the existing symlink of the build directory."
           rm ${WORKDIR} || echo "No Existing Symlink Exists."
           echo "Creating the new symlink of the build directory."
@@ -465,7 +465,7 @@ spec:
 
         if [ -f ${RESTOREFILE} ]; 
         then 
-          RESTOREDIR=`head -n 1 ${RESTOREFILE}`
+          RESTOREDIR=\$(head -n 1 ${RESTOREFILE})
           echo "RESTOREDIR is ${RESTOREDIR} "
           echo "Removing the symlink...";
           rm ${WORKDIR} ; 
