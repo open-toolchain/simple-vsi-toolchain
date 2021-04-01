@@ -277,8 +277,6 @@ spec:
           value: $(params.inventoryrepo)
         - name: OBJECTNAME
           value: $(params.objectname)
-        - name: BUILD_NUMBER
-          value: $(params.build_number)
         - name: FILE
           value: inventory.json  
       script: |
