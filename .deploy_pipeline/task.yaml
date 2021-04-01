@@ -219,6 +219,7 @@ spec:
         - name: HOST_USER_NAME
           value: $(params.hostusername)
       script: |
+        #!/bin/bash
         echo "Begin creating the symlink script to be executed on the Virtual Server Instance"
         
         cat > symlink.sh << SYMLINK_SCRIPT
