@@ -250,7 +250,7 @@ spec:
           rm ${WORKDIR} || echo "No Existing Symlink Exists."
           echo "Creating the new symlink of the build directory."
           ln -s ${BUILDDIR} ${WORKDIR}
-          echo ${OLDLINK} >> $RESTOREFILE
+          echo ${OLDLINK} >> ${RESTOREFILE}
         else
           echo "Creating the new symlink of the build directory."
           ln -s ${BUILDDIR} ${WORKDIR}
