@@ -228,21 +228,24 @@ spec:
         fi
 
         cd /output
-        echo "Begin creating the symlink script to be executed on the Virtual Server Instance"
+        
         WORKDIR=/home/${HOST_USER_NAME}/app
         BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
+        RESTOREFILE=${WORKDIR}/previous_build.info
+        echo "Begin creating the symlink script to be executed on the Virtual Server Instance"
+
         cat > symlink.sh << SYMLINK_SCRIPT
         #!/bin/bash
-        echo "Check if the app directory and a symlink exists"
-   
+        
         echo "WORKDIR is ${WORKDIR}"
         echo "BUILDDIR is ${BUILDDIR}"
-
+        
+        echo "Check if the app directory and a symlink exists"
         if [ -d ${WORKDIR} ]; then
-          RESTOREFILE=${WORKDIR}/previous_build.info
+          
           echo "Application Directory [${WORKDIR}] exists."
           echo "Capturing the existing symlink of the build directory."
-          OLDLINK=$(readlink -f ${WORKDIR})
+          OLDLINK=`readlink -f ${WORKDIR}`
           echo "removing the existing symlink of the build directory."
           rm ${WORKDIR} || echo "No Existing Symlink Exists."
           echo "Creating the new symlink of the build directory."
