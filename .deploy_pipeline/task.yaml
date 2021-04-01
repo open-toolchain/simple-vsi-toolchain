@@ -218,8 +218,16 @@ spec:
           value: $(params.appname)
         - name: HOST_USER_NAME
           value: $(params.hostusername)
+        - name: FILE
+          value: inventory.json 
       script: |
         #!/bin/bash
+        cd /output/inventory-repo;          
+        if [[ -f "$FILE" ]]; then
+          PIPELINERUNID=$(cat $FILE |jq -r '.pipeline_run_id')
+        fi
+
+        cd /output
         echo "Begin creating the symlink script to be executed on the Virtual Server Instance"
         
         cat > symlink.sh << SYMLINK_SCRIPT
@@ -334,7 +342,7 @@ spec:
         cat symlink.sh 
         echo "Creating the symlink to the build directory.."
         $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
-        $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env HOST_USER_NAME=$HOST_USER_NAME PIPELINERUNID=$PIPELINERUNID 'bash -s' < symlink.sh 
+        $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE 'bash -s' < symlink.sh 
 
         echo "Login to the VSI Instance and process the deployment."
         $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
