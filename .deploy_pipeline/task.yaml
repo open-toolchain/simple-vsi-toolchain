@@ -225,6 +225,8 @@ spec:
         echo "Check if the app directory and a symlink exists"
         WORKDIR=/home/${HOST_USER_NAME}/app
         BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
+        echo "WORKDIR is $WORKDIR"
+        echo "WORKDIR is $BUILDDIR"
 
         if [ -d "$WORKDIR" ]; then
           restoreFile=${WORKDIR}/previous_build.info
