@@ -452,6 +452,10 @@ spec:
           value: $(params.hostusername)
       script: |
         #!/bin/bash
+       
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        RESTOREFILE=${WORKDIR}/previous_build.info
+
         echo "Begin creating the restore script to be executed on the Virtual Server Instance"
         cat > restore.sh << RESTORE_SCRIPT
         #!/bin/bash
@@ -461,7 +465,7 @@ spec:
 
         if [ -f ${RESTOREFILE} ]; 
         then 
-          RESTOREDIR=$(head -n 1 ${RESTOREFILE}) 
+          RESTOREDIR=`head -n 1 ${RESTOREFILE}`
           echo "RESTOREDIR is ${RESTOREDIR} "
           echo "Removing the symlink...";
           rm ${WORKDIR} ; 
