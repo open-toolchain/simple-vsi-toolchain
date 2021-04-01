@@ -238,16 +238,16 @@ spec:
         echo "WORKDIR is ${WORKDIR}"
         echo "BUILDDIR is ${BUILDDIR}"
 
-        if [ -d "$WORKDIR" ]; then
-          restoreFile=${WORKDIR}/previous_build.info
-          echo "Application Directory [$WORKDIR] exists."
+        if [ -d ${WORKDIR} ]; then
+          RESTOREFILE=${WORKDIR}/previous_build.info
+          echo "Application Directory [${WORKDIR}] exists."
           echo "Capturing the existing symlink of the build directory."
-          oldLink=$(readlink -f ${WORKDIR})
+          OLDLINK=$(readlink -f ${WORKDIR})
           echo "removing the existing symlink of the build directory."
           rm ${WORKDIR} || echo "No Existing Symlink Exists."
           echo "Creating the new symlink of the build directory."
           ln -s ${BUILDDIR} ${WORKDIR}
-          echo "$oldLink" >> $restoreFile
+          echo ${OLDLINK} >> $RESTOREFILE
         else
           echo "Creating the new symlink of the build directory."
           ln -s ${BUILDDIR} ${WORKDIR}
