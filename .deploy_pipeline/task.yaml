@@ -330,8 +330,10 @@ spec:
         echo "Extract the new artifacts in the host machine."
         $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd ${BUILDDIR} && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
         
+        cat symlink.sh 
         echo "Creating the symlink to the build directory.."
-        $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env HOST_USER_NAME=$HOST_USER_NAME PIPELINERUNID=$PIPELINERUNID    'bash -s' < symlink.sh 
+        $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
+        $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env HOST_USER_NAME=$HOST_USER_NAME PIPELINERUNID=$PIPELINERUNID 'bash -s' < symlink.sh 
 
         echo "Login to the VSI Instance and process the deployment."
         $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
