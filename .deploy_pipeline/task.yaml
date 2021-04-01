@@ -229,12 +229,12 @@ spec:
 
         cd /output
         echo "Begin creating the symlink script to be executed on the Virtual Server Instance"
-        
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
         cat > symlink.sh << SYMLINK_SCRIPT
         #!/bin/bash
         echo "Check if the app directory and a symlink exists"
-        WORKDIR=/home/${HOST_USER_NAME}/app
-        BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
+   
         echo "WORKDIR is ${WORKDIR}"
         echo "BUILDDIR is ${BUILDDIR}"
 
