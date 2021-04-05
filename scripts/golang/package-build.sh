@@ -21,8 +21,11 @@ source ./pipeline-repo/scripts/golang/go-run-time.sh
 rm -rf binaries
 mkdir ../binaries
 export GO111MODULE=on
+ls -lrta
+pwd
 go build ./...
 go build
+ls -lrta 
 mv go-gin-app ${APPNAME}
 cp -rf * ../binaries/
 mv ../binaries binaries
