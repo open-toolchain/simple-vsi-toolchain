@@ -8,7 +8,9 @@ spec:
       description: The Git Repository for the Application Source Code
       default: repository
     - name: appname
-      description: The name of the application passed as environment variable 
+      description: The name of the application passed as environment variable
+    - name: runtime
+      description: The application lanugage runtime  
   workspaces:
     - name: output
       description: A workspace to store the output of intermittent steps
@@ -27,24 +29,13 @@ spec:
           value: $(params.appname)
         - name: REPOSITORY
           value: $(params.repository)
+        - name: RUNTIME
+          value: $(params.runtime) 
       script: |          
           #!/bin/bash
           set -e -o pipefail;
-
-          # This step creates an archive/zip of your artifacts (source code, binaries, images, configuration files etc.) placed in the
-          # /output/binaries folder to prepare for the upload in the subsequent step. While it creates the archive/zip, it also calculates
-          # the checksum of the archived/zipped contents which will be part of the build metadata to be validated during the download.
+          source ./pipeline-repo/scripts/${RUNTIME}/build-artifact-info.sh
           
-          cd binaries
-          mv *.jar ${APPNAME}.jar
-          
-          OBJECTNAME=binary-`date '+%Y%m%d%H%M%S'`.tar.gz
-          tar -cf ${OBJECTNAME} *
-          echo "Object Name of the archive prepared for upload is" ${OBJECTNAME}
-          
-          CHECKSUM=`md5sum $OBJECTNAME | awk '{ print $1 }'`
-          echo "Checksum of the archive prepared for upload is" ${CHECKSUM}
-
           # OJBECTNAME and CHECKSUM are the result of this task and will be passed down the pipeline to downstream task for processing.
           # The lines below pass on the values of these variables to the results of the task in the format results.<result-name>.path.        
           echo -n "${OBJECTNAME}" > $(results.objectname.path)
@@ -178,17 +169,28 @@ spec:
           #
           # Function to check if the Cloud Object Storage Instance exists in the REGION
           # If not then the function creates a new bucket with name COSBUCKETNAME in the COS Service Instance with name INSTANCENAME
-          # 
+          # 1. User does not have any COS instance, Toolchain will create a COS instance in Lite Plan with same name as toolchain name and use it for creating the bucket.
+          # 2. User has only one COS Instance, The user could be on Lite Plan. We will reuse the same instance for the creating the bucket.
+          # 3. User has two or more COS Instances, Create a COS instance where the name of the instance will be same as the toolchain name and use it for creating the bucket. This will help the user to easily identify the bucket in which the artifacts will be stored.
           CheckAndCreateCOSInstance() {
             COS_INSTANCE_COUNT=$(ibmcloud resource service-instances --service-name cloud-object-storage | awk {'print $1'} | awk 'NR>3' | wc -l)
             if [ "$COS_INSTANCE_COUNT" -eq "1" ]; then
-              echo "Cloud Object Storage Instance already exists."
-              INSTANCENAME=$(ibmcloud resource service-instances --output JSON  --service-name cloud-object-storage | jq .[0] | jq -r .name)
-            else
-              echo "Cloud Object Storage Instance does not exist. Proceeding with creation."
+              INSTANCENAME=$(ibmcloud resource service-instances --output JSON --service-name cloud-object-storage | jq .[0] | jq -r .name)
+              echo "${INSTANCENAME} will be used to create the bucket."
+            elif [ "$COS_INSTANCE_COUNT" -eq "0" ]; then
               INSTANCENAME=$COSBUCKETNAME
-              ibmcloud resource service-instance-create "$INSTANCENAME" cloud-object-storage lite global
-            fi                
+              {
+              echo "Cloud Object Storage Instance does not exist. Proceeding with creation of Cloud Object Storage Instance named "$INSTANCENAME" under Lite plan.";
+              ibmcloud resource service-instance-create "$INSTANCENAME" cloud-object-storage lite global && echo "Instance creation successfull.."
+              } || {
+              echo "Failed to create an instance with Lite plan. Proceeding with creation of Cloud Object Storage Instance named "$INSTANCENAME" under Standard plan.";
+              ibmcloud resource service-instance-create "$INSTANCENAME" cloud-object-storage standard global && echo "Instance creation successfull.."
+              }
+            else
+              INSTANCENAME=$COSBUCKETNAME
+              echo "Multiple Cloud object storage instance detected. Proceeding with creation of instance named ${INSTANCENAME} with standard plan."
+              ibmcloud resource service-instance-create "$INSTANCENAME" cloud-object-storage standard global
+            fi
           }
 
           #
