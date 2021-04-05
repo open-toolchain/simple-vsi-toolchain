@@ -57,7 +57,7 @@ spec:
       description: The variable storing DevOps Insight integration with the toolchain
     - name: runtime
       description: The variable storing language runtime
-      default: "java"     
+      default: "golang"     
   workspaces:
     - name: pipeline-ws
   tasks:
