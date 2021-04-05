@@ -84,7 +84,7 @@ spec:
           workspace: pipeline-ws
     - name: git-clone-pipeline-repo
       taskRef:
-        name: git-clone-repo
+        name: git-clone-application-repo
       runAfter:
         - git-clone        
       params:
