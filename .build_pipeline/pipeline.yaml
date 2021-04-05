@@ -272,8 +272,6 @@ spec:
       taskRef:
         name: toolchain-build
       params:
-        - name: runtime
-          value: $(params.runtime) 
         - name: custom-script
           value: |
             #!/bin/bash
