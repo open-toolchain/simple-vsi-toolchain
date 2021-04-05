@@ -116,7 +116,7 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Application Source Code Build Script"
-            source ./pipeline-repo/scripts/$(params.runtime)/build.sh
+            source ./pipeline-repo/scripts/$runtime)/build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws
