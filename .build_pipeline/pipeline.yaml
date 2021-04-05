@@ -113,7 +113,7 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Application Source Code Build Script"
-            ls -lart ./
+            ls -lart ./pipeline-repo/
             source ./pipeline-repo/scripts/build.sh
       workspaces:
         - name: output
