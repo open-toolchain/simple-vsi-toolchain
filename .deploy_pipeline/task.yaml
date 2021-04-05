@@ -308,7 +308,7 @@ spec:
         echo "DEPLOY_STATUS=$DEPLOY_STATUS"
         echo "HEALTH_CHECK_STATUS=$HEALTH_CHECK_STATUS"
         echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
-        if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [$ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
+        if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
           source ./pipeline-repo/scripts/rollback-deploy.sh
         else
           echo "All Checks Passed. Roll Back Not required."
