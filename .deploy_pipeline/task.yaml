@@ -157,28 +157,6 @@ spec:
       description: A workspace
       mountPath: /output
   steps:
-    - name: deploy-script
-      image: ibmcom/pipeline-base-image:2.11
-      workingDir: /output
-      env:
-        - name: APPNAME
-          value: $(params.appname)
-        - name: HOST_USER_NAME
-          value: $(params.hostusername)
-      script: |
-        #!/bin/bash
-        source ./application-repo/scripts/deploy-app.sh
-    - name: backup-script
-      image: ibmcom/pipeline-base-image:2.11
-      workingDir: /output
-      env:
-        - name: APPNAME
-          value: $(params.appname)
-        - name: HOST_USER_NAME
-          value: $(params.hostusername)
-      script: |
-        #!/bin/bash
-        source ./application-repo/scripts/backup-app.sh
     - name: deploy
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
@@ -215,6 +193,7 @@ spec:
           value: $(params.objectname)
       script: |
         #!/bin/bash
+        WORKDIR=/home/${HOST_USER_NAME}/app
         source ./application-repo/scripts/setup-remote-deploy.sh
 ---
 apiVersion: tekton.dev/v1beta1
