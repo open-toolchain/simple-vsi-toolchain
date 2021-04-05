@@ -105,7 +105,7 @@ spec:
           subpath: pipeline-repo    
     - name: build-source
       runAfter:
-        - git-clone
+        - git-clone-pipeline-repo
       taskRef:
         name: toolchain-build
       params:
