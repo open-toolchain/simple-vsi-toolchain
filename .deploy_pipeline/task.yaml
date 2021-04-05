@@ -478,6 +478,49 @@ spec:
         
         RESTORE_SCRIPT
         echo "Finished creating the restore script to be executed on the Virtual Server Instance"
+    - name: cleanup-script
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: APPNAME
+          value: $(params.appname)
+        - name: HOST_USER_NAME
+          value: $(params.hostusername)
+      script: |
+        #!/bin/bash
+       
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        RESTOREFILE=${WORKDIR}/previous_build.info
+
+        echo "Begin creating the cleanup script to be executed on the Virtual Server Instance"
+        cat > cleanup.sh << CLEANUP_SCRIPT
+        #!/bin/bash
+
+        echo "WORKDIR ${WORKDIR}"
+        echo "RESTOREFILE ${RESTOREFILE}"
+
+        if [ -f ${RESTOREFILE} ]; 
+        then 
+          RESTOREDIR=\$(head -n 1 ${RESTOREFILE})
+          echo "RESTOREDIR is \${RESTOREDIR} "
+          PREVIOUSRESTOREDIR=\${RESTOREDIR}/previous_build.info
+          echo "PREVIOUSRESTOREDIR is \${PREVIOUSRESTOREDIR} "
+          if [ -f \${PREVIOUSRESTOREDIR} ]; 
+          then 
+            echo "Performing Cleanup of pre-previous directory....."
+            rm -rf \${PREVIOUSRESTOREDIR}
+            echo "Cleanup Completed...";  
+          else 
+            echo "pre-previous build does not exists...";
+            echo "Cleanup Completed...";  
+          fi
+        else 
+          echo "Previous build info file does not exits...";
+          echo "Cleanup Completed...";  
+        fi
+        
+        CLEANUP_SCRIPT
+        echo "Finished creating the cleanup script to be executed on the Virtual Server Instance"
     - name: roll-back-deployment
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
@@ -500,34 +543,36 @@ spec:
               optional: true
       script: |
         #!/bin/bash
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        if [[ -z "$HOST_USER_NAME" ]]; then
+          echo "Please provide User name to log on to Virtual Server Instance"
+          exit 1;
+        elif [[ ! -z "$HOST_PASSWORD" ]]; then
+          echo "Using SSH Password to log on to Virtual Server Instance"
+          sudo apt-get update && sudo apt-get install sshpass -y
+          SSH_CMD="sshpass -p $HOST_PASSWORD"
+          SSH_ARG="-o UserKnownHostsFile=/dev/null"
+        elif [[ ! -z "$HOST_SSH_KEYS" ]]; then
+          echo "Using SSH Key to log on to Virtual Server Instance"
+          echo $HOST_SSH_KEYS | base64 -d  > vsi.key
+          chmod 400 vsi.key
+          SSH_ARG="-i vsi.key"
+        else
+          echo "Please provide either SSH Password or SSH Key provided to log on to Virtual Server Instance."
+          exit 1;
+        fi
         if [ $(params.deployStatus) == "Failed" ] || [ $(params.healthCheckStatus) == "Failed"  ] | [ $(params.acceptanceCheckStatus) == "Failed"  ]
-              then
-                WORKDIR=/home/${HOST_USER_NAME}/app
-                if [[ -z "$HOST_USER_NAME" ]]; then
-                  echo "Please provide User name to log on to Virtual Server Instance"
-                  exit 1;
-                elif [[ ! -z "$HOST_PASSWORD" ]]; then
-                  echo "Using SSH Password to log on to Virtual Server Instance"
-                  sudo apt-get update && sudo apt-get install sshpass -y
-                  SSH_CMD="sshpass -p $HOST_PASSWORD"
-                  SSH_ARG="-o UserKnownHostsFile=/dev/null"
-                elif [[ ! -z "$HOST_SSH_KEYS" ]]; then
-                  echo "Using SSH Key to log on to Virtual Server Instance"
-                  echo $HOST_SSH_KEYS | base64 -d  > vsi.key
-                  chmod 400 vsi.key
-                  SSH_ARG="-i vsi.key"
-                else
-                  echo "Please provide either SSH Password or SSH Key provided to log on to Virtual Server Instance."
-                  exit 1;
-                fi
-                echo "Tasks has failed, Performing Rollback."
-                RESTOREFILE=${WORKDIR}/previous_build.info
-                $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE  env RESTOREFILE=$RESTOREFILE WORKDIR=$WORKDIR  'bash -s' < restore.sh
+          then
+          echo "Tasks has failed, Performing Rollback."
+          RESTOREFILE=${WORKDIR}/previous_build.info
+          $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE  env RESTOREFILE=$RESTOREFILE WORKDIR=$WORKDIR  'bash -s' < restore.sh
 
-                $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
-                $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < deploy.sh
+          $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
+          $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < deploy.sh
         else
            echo "All Checks Passed. Roll Back Not required."
+           RESTOREFILE=${WORKDIR}/previous_build.info
+           $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE  env RESTOREFILE=$RESTOREFILE WORKDIR=$WORKDIR  'bash -s' < cleanup.sh
         fi
 ---
 apiVersion: tekton.dev/v1beta1
