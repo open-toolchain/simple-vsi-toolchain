@@ -82,6 +82,8 @@ spec:
     - name: git-clone-pipeline-repo
       taskRef:
         name: git-clone-repo
+      runAfter:
+        - git-clone        
       params:
         - name: continuous-delivery-context-secret
           value: "secure-properties"
