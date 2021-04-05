@@ -4,7 +4,7 @@
 ######################################################################################
 
 # set the GO run enviroment
-source ./scripts/go-run-time.sh
+source ./pipeline-repo/scripts/golang/go-run-time.sh
 
 echo “Started compiling the source code.”
 go build ./...

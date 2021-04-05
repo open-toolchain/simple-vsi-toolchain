@@ -1,5 +1,3 @@
-# set the GO run enviroment
-source ./scripts/go-run-time.sh
 
 cd binaries	
 
