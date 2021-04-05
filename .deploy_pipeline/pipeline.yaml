@@ -78,7 +78,8 @@ spec:
         - name: output
           workspace: pipeline-ws
           subpath: inventory-repo
-    - name: git-clone-application-repo
+    - name: git-clone-pipeline-repo
+      runAfter: git-clone-inventory-repo
       taskRef:
         name: git-clone-repo
       params:
@@ -87,7 +88,7 @@ spec:
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
         - name: repository
-          value: $(params.repository)
+          value: $(params.pipelineRepo)
         - name: branch
           value: "master"
         - name: pipeline-debug
@@ -97,12 +98,13 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-          subpath: application-repo             
+          subpath: pipeline-repo             
     - name: download-artifacts
       taskRef:
         name: download-artifacts
       runAfter: 
-        - git-clone-inventory-repo 
+        - git-clone-inventory-repo
+        - git-clone-pipeline-repo  
       params:
         - name: api
           value: $(params.api)

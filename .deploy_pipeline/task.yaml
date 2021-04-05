@@ -195,7 +195,7 @@ spec:
         #!/bin/bash
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
-        source ./application-repo/scripts/setup-remote-deploy.sh
+        source ./pipeline-repo/scripts/setup-remote-deploy.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -222,7 +222,7 @@ spec:
           value: $(params.inventoryrepo)
       script: |
         #!/bin/bash
-        source ./application-repo/scripts/health-check.sh
+        source ./pipeline-repo/scripts/health-check.sh
 
 ---
 apiVersion: tekton.dev/v1beta1
@@ -250,7 +250,7 @@ spec:
           value: $(params.inventoryrepo)
       script: |
         #!/bin/bash
-        source ./application-repo/scripts/acceptance-tests.sh
+        source ./pipeline-repo/scripts/acceptance-tests.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -305,7 +305,7 @@ spec:
           value: $(params.acceptanceCheckStatus)         
       script: |
         #!/bin/bash
-        source ./application-repo/scripts/rollback-deploy.sh
+        source ./pipeline-repo/scripts/rollback-deploy.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
