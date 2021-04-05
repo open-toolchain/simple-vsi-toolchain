@@ -134,11 +134,11 @@ spec:
           workspace: pipeline-ws
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: directory-name
@@ -157,15 +157,15 @@ spec:
           workspace: pipeline-ws
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: source-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -182,15 +182,15 @@ spec:
           workspace: pipeline-ws
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: source-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: directory-name
           value: ""
         - name: scm-type
@@ -209,19 +209,19 @@ spec:
           workspace: pipeline-ws          
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: source-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: target-branch
           value: $(params.branch)
         - name: target-commit-id
-          value: $(tasks.git-clone.results.git-commit)      
+          value: $(tasks.git-clone-application-repo.results.git-commit)      
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -307,11 +307,11 @@ spec:
         - name: app-name
           value: $(params.app-name)
         - name: git-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: git-branch
-          value: $(tasks.git-clone.results.git-branch)
+          value: $(tasks.git-clone-application-repo.results.git-branch)
         - name: git-commit
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
     - name: publish-doi-code-tests
       runAfter: 
         - unit-tests
@@ -436,7 +436,7 @@ spec:
         name: git-commit-inventory-repo-task
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-inventory-repo.results.git-repository)
         - name: appname
           value: $(params.app-name)       
         - name: commitid
