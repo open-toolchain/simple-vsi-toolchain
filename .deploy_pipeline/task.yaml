@@ -499,7 +499,7 @@ spec:
         echo "WORKDIR ${WORKDIR}"
         echo "RESTOREFILE ${RESTOREFILE}"
 
-        if [ -f ${RESTOREFILE} ]; 
+        if [ -f "${RESTOREFILE}" ]; 
         then 
           RESTOREDIR=\$(head -n 1 ${RESTOREFILE})
           echo "RESTOREDIR is \${RESTOREDIR} "
