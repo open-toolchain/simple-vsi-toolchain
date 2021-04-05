@@ -92,3 +92,6 @@ properties:
     value: ${INSIGHTS}
     type: integration
     path: service_id
+  - name: runtime
+    type: Enumeration
+    value: ${RUNTIME} 
