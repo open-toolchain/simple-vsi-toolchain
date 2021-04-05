@@ -194,6 +194,7 @@ spec:
       script: |
         #!/bin/bash
         WORKDIR=/home/${HOST_USER_NAME}/app
+        BACKUPDIR=${WORKDIR}_backup
         source ./application-repo/scripts/setup-remote-deploy.sh
 ---
 apiVersion: tekton.dev/v1beta1

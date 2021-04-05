@@ -333,11 +333,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: evaluate-gate-task
-      when:
-        - input: "true"
-          operator: in
-          values: ["false"]    
+    - name: evaluate-gate-task 
       runAfter: 
         - publish-doi-code-tests
         - publish-doi-code-coverage-tests
