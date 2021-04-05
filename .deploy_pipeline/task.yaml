@@ -503,11 +503,13 @@ spec:
         then 
           RESTOREDIR=\$(head -n 1 ${RESTOREFILE})
           echo "RESTOREDIR is \${RESTOREDIR} "
-          PREVIOUSRESTOREDIR=\${RESTOREDIR}/previous_build.info
-          echo "PREVIOUSRESTOREDIR is \${PREVIOUSRESTOREDIR} "
-          if [ -f \${PREVIOUSRESTOREDIR} ]; 
+          PREVIOUSRESTOREDIRFILE=\${RESTOREDIR}/previous_build.info
+          echo "PREVIOUSRESTOREDIRFILE is \${PREVIOUSRESTOREDIRFILE} "
+          if [ -f "\${PREVIOUSRESTOREDIRFILE}" ]; 
           then 
-            echo "Performing Cleanup of pre-previous directory....."
+            PREVIOUSRESTOREDIR=\$(head -n 1 \${PREVIOUSRESTOREDIRFILE})
+            echo "PREVIOUSRESTOREDIR is \${PREVIOUSRESTOREDIR} "
+            echo "Performing Cleanup of pre-previous directory.....\${PREVIOUSRESTOREDIR}"
             rm -rf \${PREVIOUSRESTOREDIR}
             echo "Cleanup Completed...";  
           else 
