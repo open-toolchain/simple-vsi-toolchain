@@ -288,7 +288,9 @@ spec:
         - name: repository
           value: $(params.repository)
         - name: appname
-          value: $(params.app-name)               
+          value: $(params.app-name)
+        - name: runtime
+          value: $(params.runtime)                            
       workspaces:
         - name: output
           workspace: pipeline-ws
