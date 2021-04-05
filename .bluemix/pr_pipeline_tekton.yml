@@ -53,4 +53,11 @@ properties:
     path: service_id
   - name: toolchain-region
     value: ${TOOLCHAIN_REGION}
-    type: text     
+    type: text  
+  - name: pipeline-repo
+    value: ${PIPELINE_REPO}
+    type: integration
+    path: parameters.repo_url
+  - name: runtime
+    type: Enumeration
+    value: ${RUNTIME}    
