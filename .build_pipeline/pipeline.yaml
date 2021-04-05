@@ -55,6 +55,9 @@ spec:
       description: The API Key to interact with the Cloud Object Storage Instance
     - name: insights
       description: The variable storing DevOps Insight integration with the toolchain
+    - name: runtime
+      description: The variable storing language runtime
+      default: "java"     
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -113,7 +116,7 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Application Source Code Build Script"
-            source ./pipeline-repo/scripts/build.sh
+            source ./pipeline-repo/scripts/$(params.runtime)/build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -233,7 +236,7 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Unit Test Script"
-            source ./pipeline-repo/scripts/unit-tests.sh
+            source ./pipeline-repo/scripts/$(params.runtime)/unit-tests.sh
 
             # Publish the results of the unit tests as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
@@ -253,7 +256,7 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Code Coverage Script"
-            source ./pipeline-repo/scripts/code-coverage.sh
+            source ./pipeline-repo/scripts/$(params.runtime)/code-coverage.sh
 
             # Publish the results of the code coverage as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
@@ -272,7 +275,7 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
-            source ./pipeline-repo/scripts/package-build.sh
+            source ./pipeline-repo/scripts/$(params.runtime)/package-build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws          
