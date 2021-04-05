@@ -64,6 +64,7 @@ spec:
       default: ""
     - name: insights
       description: The variable storing DevOps Insight integration with the toolchain  
+    - name: runtime
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -137,7 +138,9 @@ spec:
           - name: target
             value: $(params.target)
           - name: insights
-            value: $(params.insights)                                                               
+            value: $(params.insights)    
+          - name: runtime
+            value: $(params.runtime)                                                           
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
