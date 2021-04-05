@@ -148,96 +148,17 @@ spec:
       description: The Region where Cloud Object Storage Instance is created
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored.
-    - name: inventoryrepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: objectname
       description: The name of the build artifact
+    - name: runtime
+      description: The application lanugage runtime       
   workspaces:
     - name: output
       description: A workspace
       mountPath: /output
   steps:
-    - name: deploy-script
-      image: ibmcom/pipeline-base-image:2.11
-      workingDir: /output
-      env:
-        - name: APPNAME
-          value: $(params.appname)
-        - name: HOST_USER_NAME
-          value: $(params.hostusername)
-      script: |
-        #!/bin/bash
-
-        echo "Begin creating the deploy script to be executed on the Virtual Server Instance"
-        # Steps required to deploy your application to the Virtual Server Instance goes here.
-        # This step creates a temporary file with name deploy.sh and runs the file on the host as part of deployment process.
-        # You may modify the contents of the script present between DEPLOY_SCRIPT tags to script the steps needed to carry out
-        # a deployment. These steps may require:
-        #   - Stopping the running application or web server
-        #   - Cleaning up / Backing up the previous
-        #   - Starting the application or web server with new binary
-        
-        cat > deploy.sh << DEPLOY_SCRIPT
-        #!/bin/bash
-        WORKDIR=/home/${HOST_USER_NAME}/app
-        cd ${WORKDIR}/
-        
-        DeployApplication() {
-
-
-          PID=`pgrep -f "java -Dserver.port=8080 -Dserver.address=0.0.0.0 -jar $APPNAME.jar " || true;`
-          if [ -n "$PID" ]; then
-            echo "Stopping the application"
-            echo "The process with PID $PID will be terminated."
-            kill $PID
-            if [ $? == 0 ]; then
-              echo "Successfully terminated process"
-            else
-              echo "Error terminating process"
-            fi
-          fi
-          echo "Starting the application"
-          if [ -s /home/${HOST_USER_NAME}/app/$APPNAME.jar ]; then
-            nohup java -Dserver.port=8080 -Dserver.address=0.0.0.0  -jar /home/${HOST_USER_NAME}/app/$APPNAME.jar > /dev/null 2>&1 &
-            echo "Successfully deployed the app to VSI Instance"
-          else
-            echo "Artifact is not available."
-            exit 1;
-          fi
-        }
-        DeployApplication
-        # Deployment script ends here.
-
-        DEPLOY_SCRIPT
-        echo "Finished creating the deploy script to be executed on the Virtual Server Instance"
-    - name: backup-script
-      image: ibmcom/pipeline-base-image:2.11
-      workingDir: /output
-      env:
-        - name: APPNAME
-          value: $(params.appname)
-        - name: HOST_USER_NAME
-          value: $(params.hostusername)
-      script: |
-        #!/bin/bash
-        echo "Begin creating the backup script to be executed on the Virtual Server Instance"
-        WORKDIR=/home/${HOST_USER_NAME}/app
-        BACKUPDIR=${WORKDIR}_backup
-        cat > backup.sh << BACKUP_SCRIPT
-         if [ -d "$WORKDIR" ]; then
-          echo "Application Directory [$WORKDIR] exists"
-          if [ -d "$BACKUPDIR" ]; then
-            echo "Application Backup Directory [$BACKUPDIR ]exists"
-            rm -rf $BACKUPDIR
-          fi
-          echo "Moving Application Directory [$WORKDIR] to Application Backup Directory [$BACKUPDIR]"
-          mv $WORKDIR $BACKUPDIR
-        fi
-        echo "Creating new Application Direcroty [$WORKDIR]"
-        mkdir -p $WORKDIR
-        
-        BACKUP_SCRIPT
-        echo "Finished creating the backup script to be executed on the Virtual Server Instance"
     - name: deploy
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
@@ -269,53 +190,16 @@ spec:
         - name: COSREGION
           value: $(params.cos-region)
         - name: INVENTORY_REPO
-          value: $(params.inventoryrepo)
+          value: $(params.inventory-repo)
         - name: OBJECTNAME
           value: $(params.objectname)
+        - name: RUNTIME
+          value: $(params.runtime)  
       script: |
         #!/bin/bash
-        set -e -o pipefail
-
-        # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
-        # The step: 
-        #   - Assumes that the upstream task has already downloaded the artifact to the /output location 
-        #   - Carries out all the operation within the home directory of the user i.e. /home/${HOST_USER_NAME}
-        #   - Copies the artifact from the /output to /home/${HOST_USER_NAME}/app which is defined as WORKDIR
-        #   - Runs the deploy.sh file as created in the previous step to carry out the step-by-step deployment which may include start/stop of application.
-
         WORKDIR=/home/${HOST_USER_NAME}/app
-        
-        if [[ -z "$HOST_USER_NAME" ]]; then
-          echo "Please provide User name to log on to Virtual Server Instance"
-          exit 1;
-        elif [[ ! -z "$HOST_PASSWORD" ]]; then
-          echo "Using SSH Password to log on to Virtual Server Instance"
-          sudo apt-get update && sudo apt-get install sshpass -y
-          SSH_CMD="sshpass -p $HOST_PASSWORD"
-          SSH_ARG="-o UserKnownHostsFile=/dev/null"
-        elif [[ ! -z "$HOST_SSH_KEYS" ]]; then
-          echo "Using SSH Key to log on to Virtual Server Instance"
-          echo $HOST_SSH_KEYS | base64 -d  > vsi.key
-          chmod 400 vsi.key
-          SSH_ARG="-i vsi.key"
-        else
-          echo "Please provide either SSH Password or SSH Key provided to log on to Virtual Server Instance."
-          exit 1;
-        fi
-
-        echo "Removing the existing artifacts from the host machine and taking backup.."
         BACKUPDIR=${WORKDIR}_backup
-        $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env WORKDIR=$WORKDIR  BACKUPDIR=$BACKUPDIR 'bash -s' < backup.sh
-
-        echo "Copying the artifacts to the host machine."
-        $SSH_CMD scp $SSH_ARG -o StrictHostKeyChecking=no ${OBJECTNAME} $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE:${WORKDIR}
-
-        echo "Extract the new artifacts in the host machine."
-        $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd /home/$HOST_USER_NAME/app/ && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
-
-        echo "Login to the VSI Instance and process the deployment."
-        $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
-        $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < deploy.sh
+        source ./pipeline-repo/scripts/${RUNTIME}/setup-remote-deploy.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -325,8 +209,10 @@ spec:
   params:
     - name: virtualserverinstance
       description: The IP Address of the Virtual Server Instance
-    - name: inventoryrepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: runtime
+      description: The application lanugage runtime       
   workspaces:
     - name: output
       description: A workspace
@@ -339,23 +225,12 @@ spec:
         - name: VIRTUAL_SERVER_INSTANCE
           value: $(params.virtualserverinstance)
         - name: INVENTORY_REPO
-          value: $(params.inventoryrepo)
+          value: $(params.inventory-repo)
+        - name: RUNTIME
+          value: $(params.runtime)            
       script: |
         #!/bin/bash
-        set -e
-        for i in {1..5}
-        do
-          echo "Doing Health check. Attempt Number: ${i}"
-          if [ "$(curl -s -w "%{http_code}\n"  http://${VIRTUAL_SERVER_INSTANCE}:8080/v1/ -o /dev/null)" == "200" ]; then
-            echo "App Health Check passed..."
-            echo "Application URL http://${VIRTUAL_SERVER_INSTANCE}:8080/v1/ "
-            exit 0
-          else
-            sleep 1
-          fi
-          done
-          echo "Application Health check failed...."
-          exit 1
+        source ./pipeline-repo/scripts/${RUNTIME}/health-check.sh
 
 ---
 apiVersion: tekton.dev/v1beta1
@@ -366,8 +241,14 @@ spec:
   params:
     - name: virtualserverinstance
       description: The IP Address of the Virtual Server Instance
-    - name: inventoryrepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: runtime
+      description: The application lanugage runtime       
+  workspaces:
+    - name: output
+      description: A workspace
+      mountPath: /output  
   steps:
     - name: check-application-health
       image: ibmcom/pipeline-base-image:2.11
@@ -376,10 +257,12 @@ spec:
         - name: VIRTUAL_SERVER_INSTANCE
           value: $(params.virtualserverinstance)
         - name: INVENTORY_REPO
-          value: $(params.inventoryrepo)
+          value: $(params.inventory-repo)
+        - name: RUNTIME
+          value: $(params.runtime)            
       script: |
         #!/bin/bash
-        exit 0
+        source ./pipeline-repo/scripts/${RUNTIME}/acceptance-tests.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -403,6 +286,8 @@ spec:
       description: The health check status whether Failed|Passed
     - name: acceptanceCheckStatus
       description: The acceptance check status whether Failed|Passed
+    - name: runtime
+      description: The application lanugage runtime        
   workspaces:
     - name: output
       description: A workspace
@@ -426,37 +311,23 @@ spec:
               name: secure-properties
               key: host-password
               optional: true
+        - name: DEPLOY_STATUS
+          value: $(params.deployStatus)
+        - name: HEALTH_CHECK_STATUS
+          value: $(params.healthCheckStatus)
+        - name: ACCEPTANCE_TEST_STATUS
+          value: $(params.acceptanceCheckStatus)
+        - name: RUNTIME
+          value: $(params.runtime) 
       script: |
         #!/bin/bash
-        if [ $(params.deployStatus) == "Failed" ] || [ $(params.healthCheckStatus) == "Failed"  ] | [ $(params.acceptanceCheckStatus) == "Failed"  ]
-              then
-                WORKDIR=/home/${HOST_USER_NAME}/app
-                BACKUPDIR=${WORKDIR}_backup
-                echo "WORKDIR is [$WORKDIR]"
-                echo "BACKUPDIR is [$BACKUPDIR]"
-                if [[ -z "$HOST_USER_NAME" ]]; then
-                  echo "Please provide User name to log on to Virtual Server Instance"
-                  exit 1;
-                elif [[ ! -z "$HOST_PASSWORD" ]]; then
-                  echo "Using SSH Password to log on to Virtual Server Instance"
-                  sudo apt-get update && sudo apt-get install sshpass -y
-                  SSH_CMD="sshpass -p $HOST_PASSWORD"
-                  SSH_ARG="-o UserKnownHostsFile=/dev/null"
-                elif [[ ! -z "$HOST_SSH_KEYS" ]]; then
-                  echo "Using SSH Key to log on to Virtual Server Instance"
-                  echo $HOST_SSH_KEYS | base64 -d  > vsi.key
-                  chmod 400 vsi.key
-                  SSH_ARG="-i vsi.key"
-                else
-                  echo "Please provide either SSH Password or SSH Key provided to log on to Virtual Server Instance."
-                  exit 1;
-                fi
-                echo "Tasks has failed, Performing Rollback."
-                $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "rm -rf $WORKDIR && cp -r $BACKUPDIR $WORKDIR "
-                $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
-                $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < deploy.sh
+        echo "DEPLOY_STATUS=$DEPLOY_STATUS"
+        echo "HEALTH_CHECK_STATUS=$HEALTH_CHECK_STATUS"
+        echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
+        if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
+          source ./pipeline-repo/scripts/${RUNTIME}/rollback-deploy.sh
         else
-           echo "All Checks Passed. Roll Back Not required."
+          echo "All Checks Passed. Roll Back Not required."
         fi
 ---
 apiVersion: tekton.dev/v1beta1
@@ -465,7 +336,7 @@ metadata:
   name: publish-doi-deployrecord
 spec:
   params:
-    - name: inventoryrepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: api
       description: The IBM Cloud API Endpoint
@@ -508,7 +379,7 @@ spec:
         - name: TARGET
           value: $(params.target)
         - name: INVENTORY_REPO
-          value: $(params.inventoryrepo)
+          value: $(params.inventory-repo)
         - name: JOB_URL
           valueFrom:
             fieldRef:

@@ -45,18 +45,23 @@ spec:
       default: ""
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored
-    - name: inventoryRepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: pipeline-repo
+      description: The variable storing git integration for the repository storing build pipeline code for the toolchain      
     - name: cos-region
       description: The Region where Cloud Object Storage Instance is created
     - name: cos-api-key
       description: The API Key to interact with the Cloud Object Storage Instance
     - name: insights
       description: The variable storing DevOps Insight integration with the toolchain
+    - name: runtime
+      description: The variable storing language runtime
+      default: "java"     
   workspaces:
     - name: pipeline-ws
   tasks:
-    - name: git-clone
+    - name: git-clone-application-repo
       taskRef:
         name: git-clone-repo
       params:
@@ -77,25 +82,41 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+    - name: git-clone-pipeline-repo
+      taskRef:
+        name: git-clone-repo
+      runAfter:
+        - git-clone-application-repo       
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: repository
+          value: $(params.pipeline-repo)
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(params.revision)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: git-credentials-json-file
+          value: credentials.json          
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+          subpath: pipeline-repo    
     - name: build-source
       runAfter:
-        - git-clone
+        - git-clone-pipeline-repo
       taskRef:
         name: toolchain-build
       params:
         - name: custom-script
           value: |
-            #!/bin/bash
-            
-            # Your build script should go here.
-            # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
-            # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
-            # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
-            # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.
-            
-            echo “Started compiling the source code.”
-            mvn -Dmaven.repo.local=./m2/repository clean compile
-            echo “Finished compiling the source code.”
+            #!/bin/bash            
+            echo "Running Application Source Code Build Script"
+            source ./pipeline-repo/scripts/$(params.runtime)/build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -113,11 +134,11 @@ spec:
           workspace: pipeline-ws
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: directory-name
@@ -136,15 +157,15 @@ spec:
           workspace: pipeline-ws
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: source-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -161,15 +182,15 @@ spec:
           workspace: pipeline-ws
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: source-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: directory-name
           value: ""
         - name: scm-type
@@ -188,19 +209,19 @@ spec:
           workspace: pipeline-ws          
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: source-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: target-branch
           value: $(params.branch)
         - name: target-commit-id
-          value: $(tasks.git-clone.results.git-commit)      
+          value: $(tasks.git-clone-application-repo.results.git-commit)      
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -213,12 +234,15 @@ spec:
       params:
         - name: tests-script
           value: |
-            echo "Running tests";
-            mvn -Dmaven.repo.local=./m2/repository clean test;
-            mkdir test-results
-            cp -r target/* test-results/
-            echo -n ./test-results/surefire-reports/*.xml > $(results.test-result-file-paths.path)
-            echo -n unittest > $(results.test-types.path)            
+            #!/bin/bash            
+            echo "Running Unit Test Script"
+            source ./pipeline-repo/scripts/$(params.runtime)/unit-tests.sh
+
+            # Publish the results of the unit tests as result of this task.
+            # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
+            echo $UNIT_TEST_RESULTS_LOC 
+            echo -n $UNIT_TEST_RESULTS_LOC > $(results.test-result-file-paths.path)
+            echo -n unittest > $(results.test-types.path)        
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -230,7 +254,14 @@ spec:
       params:
         - name: tests-script
           value: |
-            echo -n ./test-results/site/jacoco/*.xml > $(results.test-result-file-paths.path)
+            #!/bin/bash            
+            echo "Running Code Coverage Script"
+            source ./pipeline-repo/scripts/$(params.runtime)/code-coverage.sh
+
+            # Publish the results of the code coverage as result of this task.
+            # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
+            echo $CODE_COVERAGE_RESULTS_LOC
+            echo -n $CODE_COVERAGE_RESULTS_LOC > $(results.test-result-file-paths.path)
             echo -n code > $(results.test-types.path)
       workspaces:
         - name: artifacts
@@ -244,26 +275,7 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
-
-            # Your build script should go here.
-            # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
-            # Incase your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
-            # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
-            # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.
-            
-            echo “Started building the binary image.”
-            mvn install -Dmaven.test.skip=true -Dmaven.repo.local=./m2/repository
-            echo “Finished building the binary image.”
-
-            # All the artifacts that your application needs for successful deployment ( for example: binary files, images, configuration files, source files
-            # in case of interperter based projects etc) must be copied over to /artifacts/binaries directory as is done below. In the existig Springboot
-            # application, the built Java Jar is a self-contained binary with embedded web server and hence does not need anything other than just the Jar.
-            # All the items placed in the /artifacts/binaries folder will be picked up by subsequent step to be uploaded either to Artifactory/IBM Cloud Object Storage
-            # based on your selection during toolchain creation.
-
-            mkdir binaries
-            cp -r target/* binaries
-            echo “Copied the artifacts to the uploads folder.”
+            source ./pipeline-repo/scripts/$(params.runtime)/package-build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws          
@@ -276,7 +288,9 @@ spec:
         - name: repository
           value: $(params.repository)
         - name: appname
-          value: $(params.app-name)               
+          value: $(params.app-name)
+        - name: runtime
+          value: $(params.runtime)                            
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -295,11 +309,11 @@ spec:
         - name: app-name
           value: $(params.app-name)
         - name: git-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: git-branch
-          value: $(tasks.git-clone.results.git-branch)
+          value: $(tasks.git-clone-application-repo.results.git-branch)
         - name: git-commit
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
     - name: publish-doi-code-tests
       runAfter: 
         - unit-tests
@@ -350,7 +364,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: evaluate-gate-task
+    - name: evaluate-gate-task 
       runAfter: 
         - publish-doi-code-tests
         - publish-doi-code-coverage-tests
@@ -405,7 +419,7 @@ spec:
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
         - name: repository
-          value: $(params.inventoryRepo)
+          value: $(params.inventory-repo)
         - name: branch
           value: "master"
         - name: pipeline-debug
@@ -424,7 +438,7 @@ spec:
         name: git-commit-inventory-repo-task
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-inventory-repo.results.git-repository)
         - name: appname
           value: $(params.app-name)       
         - name: commitid

@@ -49,8 +49,10 @@ spec:
       description: The username required to login to the Virtual Server Instance 
     - name: host-password
       description: The password required to login to the Virtual Server Instance
-    - name: inventoryRepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: pipeline-repo
+      description: The variable storing git integration for the repository storing build pipeline code for the toolchain    
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored
     - name: cos-region
@@ -125,8 +127,10 @@ spec:
             value: $(params.cos-region)
           - name: cos-api-key
             value: $(params.cos-api-key)
-          - name: inventoryRepo
-            value: $(params.inventoryRepo)       
+          - name: inventory-repo
+            value: $(params.inventory-repo)
+          - name: pipeline-repo
+            value: $(params.pipeline-repo)                   
           - name: insights
             value: $(params.insights)                                                         
         workspaces:
