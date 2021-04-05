@@ -29,7 +29,7 @@ fi
 
 echo "Removing the existing artifacts from the host machine and taking backup.."
 BACKUPDIR=${WORKDIR}_backup
-$SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env WORKDIR=$WORKDIR  BACKUPDIR=$BACKUPDIR 'bash -s' < ./pipeline-repo/scripts/$RUNTIME/backup.sh
+$SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env WORKDIR=$WORKDIR  BACKUPDIR=$BACKUPDIR 'bash -s' < ./pipeline-repo/scripts/java/backup.sh
 
 echo "Copying the artifacts to the host machine."
 $SSH_CMD scp $SSH_ARG -o StrictHostKeyChecking=no ${OBJECTNAME} $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE:${WORKDIR}
@@ -39,4 +39,4 @@ $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERV
 
 echo "Login to the VSI Instance and process the deployment."
 $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
-$HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < ./pipeline-repo/scripts/$RUNTIME/deploy.sh
+$HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < ./pipeline-repo/scripts/java/deploy.sh
