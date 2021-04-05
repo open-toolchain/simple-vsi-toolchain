@@ -199,7 +199,7 @@ spec:
         #!/bin/bash
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
-        source ./pipeline-repo/scripts/{RUNTIME}/setup-remote-deploy.sh
+        source ./pipeline-repo/scripts/${RUNTIME}/setup-remote-deploy.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
