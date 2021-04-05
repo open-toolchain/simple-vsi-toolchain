@@ -58,7 +58,7 @@ spec:
   workspaces:
     - name: pipeline-ws
   tasks:
-    - name: git-clone
+    - name: git-clone-application-repo
       taskRef:
         name: git-clone-repo
       params:
@@ -113,7 +113,6 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Application Source Code Build Script"
-            ls -lart ./pipeline-repo/
             source ./pipeline-repo/scripts/build.sh
       workspaces:
         - name: output
