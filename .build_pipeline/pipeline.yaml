@@ -112,6 +112,8 @@ spec:
       taskRef:
         name: toolchain-build
       params:
+        - name: runtime
+          value: $(params.runtime) 
         - name: custom-script
           value: |
             #!/bin/bash            
@@ -232,6 +234,8 @@ spec:
       runAfter: 
         - build-source
       params:
+        - name: runtime
+          value: $(params.runtime) 
         - name: tests-script
           value: |
             #!/bin/bash            
@@ -252,6 +256,8 @@ spec:
       taskRef:
         name: tester-run-tests
       params:
+        - name: runtime
+          value: $(params.runtime) 
         - name: tests-script
           value: |
             #!/bin/bash            
@@ -272,6 +278,8 @@ spec:
       taskRef:
         name: toolchain-build
       params:
+        - name: runtime
+          value: $(params.runtime) 
         - name: custom-script
           value: |
             #!/bin/bash
