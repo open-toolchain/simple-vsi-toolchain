@@ -84,9 +84,9 @@ spec:
           workspace: pipeline-ws
     - name: git-clone-pipeline-repo
       taskRef:
-        name: git-clone-application-repo
+        name: git-clone-repo
       runAfter:
-        - git-clone        
+        - git-clone-application-repo       
       params:
         - name: continuous-delivery-context-secret
           value: "secure-properties"
