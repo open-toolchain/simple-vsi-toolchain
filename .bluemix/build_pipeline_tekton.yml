@@ -64,7 +64,7 @@ properties:
   - name: cos-region
     value: ${COS_REGION}
     type: text
-  - name: inventoryRepo
+  - name: inventory-repo
     value: ${INVENTORY_REPO}
     type: integration
     path: parameters.repo_url
@@ -72,7 +72,7 @@ properties:
     value: ${APP_REPO}
     type: integration
     path: parameters.repo_url
-  - name: pipelineRepo
+  - name: pipeline-repo
     value: ${PIPELINE_REPO}
     type: integration
     path: parameters.repo_url      

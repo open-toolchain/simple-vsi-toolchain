@@ -148,7 +148,7 @@ spec:
       description: The Region where Cloud Object Storage Instance is created
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored.
-    - name: inventoryrepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: objectname
       description: The name of the build artifact
@@ -188,7 +188,7 @@ spec:
         - name: COSREGION
           value: $(params.cos-region)
         - name: INVENTORY_REPO
-          value: $(params.inventoryrepo)
+          value: $(params.inventory-repo)
         - name: OBJECTNAME
           value: $(params.objectname)
       script: |
@@ -205,7 +205,7 @@ spec:
   params:
     - name: virtualserverinstance
       description: The IP Address of the Virtual Server Instance
-    - name: inventoryrepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
   workspaces:
     - name: output
@@ -219,7 +219,7 @@ spec:
         - name: VIRTUAL_SERVER_INSTANCE
           value: $(params.virtualserverinstance)
         - name: INVENTORY_REPO
-          value: $(params.inventoryrepo)
+          value: $(params.inventory-repo)
       script: |
         #!/bin/bash
         source ./pipeline-repo/scripts/health-check.sh
@@ -233,7 +233,7 @@ spec:
   params:
     - name: virtualserverinstance
       description: The IP Address of the Virtual Server Instance
-    - name: inventoryrepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
   workspaces:
     - name: output
@@ -247,7 +247,7 @@ spec:
         - name: VIRTUAL_SERVER_INSTANCE
           value: $(params.virtualserverinstance)
         - name: INVENTORY_REPO
-          value: $(params.inventoryrepo)
+          value: $(params.inventory-repo)
       script: |
         #!/bin/bash
         source ./pipeline-repo/scripts/acceptance-tests.sh
@@ -320,7 +320,7 @@ metadata:
   name: publish-doi-deployrecord
 spec:
   params:
-    - name: inventoryrepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: api
       description: The IBM Cloud API Endpoint
@@ -363,7 +363,7 @@ spec:
         - name: TARGET
           value: $(params.target)
         - name: INVENTORY_REPO
-          value: $(params.inventoryrepo)
+          value: $(params.inventory-repo)
         - name: JOB_URL
           valueFrom:
             fieldRef:

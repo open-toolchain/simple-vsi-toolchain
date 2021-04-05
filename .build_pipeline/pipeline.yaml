@@ -45,9 +45,9 @@ spec:
       default: ""
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored
-    - name: inventoryRepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
-    - name: pipelineRepo
+    - name: pipeline-repo
       description: The variable storing git integration for the repository storing build pipeline code for the toolchain      
     - name: cos-region
       description: The Region where Cloud Object Storage Instance is created
@@ -90,7 +90,7 @@ spec:
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
         - name: repository
-          value: $(params.pipelineRepo)
+          value: $(params.pipeline-repo)
         - name: branch
           value: $(params.branch)
         - name: revision
@@ -415,7 +415,7 @@ spec:
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
         - name: repository
-          value: $(params.inventoryRepo)
+          value: $(params.inventory-repo)
         - name: branch
           value: "master"
         - name: pipeline-debug

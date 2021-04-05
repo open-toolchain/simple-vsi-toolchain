@@ -42,9 +42,9 @@ spec:
     - name: host-password
       description: The password required to login to the Virtual Server Instance
     - name: project-id
-    - name: inventoryRepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
-    - name: pipelineRepo
+    - name: pipeline-repo
       description: The variable storing git integration for the repository storing build pipeline code for the toolchain         
     - name: cos-region
       description: The Region where Cloud Object Storage Instance is created
@@ -69,7 +69,7 @@ spec:
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
         - name: repository
-          value: $(params.inventoryRepo)
+          value: $(params.inventory-repo)
         - name: branch
           value: "master"
         - name: pipeline-debug
@@ -90,7 +90,7 @@ spec:
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
         - name: repository
-          value: $(params.pipelineRepo)
+          value: $(params.pipeline-repo)
         - name: branch
           value: "master"
         - name: pipeline-debug
@@ -150,8 +150,8 @@ spec:
           value: $(params.cos-bucket-name)
         - name: cos-region
           value: $(params.cos-region)
-        - name: inventoryrepo
-          value: $(params.inventoryRepo)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
         - name: objectname
           value: $(tasks.download-artifacts.results.objectname)
       workspaces:
@@ -164,8 +164,8 @@ spec:
       params:
         - name: virtualserverinstance
           value: $(params.virtual-server-instance)
-        - name: inventoryrepo
-          value: $(params.inventoryRepo)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -176,8 +176,8 @@ spec:
       params:
         - name: virtualserverinstance
           value: $(params.virtual-server-instance)
-        - name: inventoryrepo
-          value: $(params.inventoryRepo)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
       workspaces:
         - name: output
           workspace: pipeline-ws          
@@ -196,8 +196,8 @@ spec:
           value: $(params.apikey)
         - name: appname
           value: $(params.app-name)
-        - name: inventoryrepo
-          value: $(params.inventoryRepo)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
         - name: target
           value: $(params.target)
         - name: build_number
