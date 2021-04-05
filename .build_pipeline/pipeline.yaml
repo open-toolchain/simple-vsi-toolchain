@@ -92,7 +92,7 @@ spec:
         - name: repository
           value: $(params.pipelineRepo)
         - name: branch
-          value: "custom-build-deploy"
+          value: $(params.branch)
         - name: revision
           value: $(params.revision)
         - name: pipeline-debug
