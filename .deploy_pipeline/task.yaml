@@ -152,6 +152,8 @@ spec:
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: objectname
       description: The name of the build artifact
+    - name: runtime
+      description: The application lanugage runtime       
   workspaces:
     - name: output
       description: A workspace
@@ -191,11 +193,13 @@ spec:
           value: $(params.inventory-repo)
         - name: OBJECTNAME
           value: $(params.objectname)
+        - name: RUNTIME
+          value: $(params.runtime)  
       script: |
         #!/bin/bash
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
-        source ./pipeline-repo/scripts/setup-remote-deploy.sh
+        source ./pipeline-repo/scripts/{RUNTIME}/setup-remote-deploy.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -207,6 +211,8 @@ spec:
       description: The IP Address of the Virtual Server Instance
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: runtime
+      description: The application lanugage runtime       
   workspaces:
     - name: output
       description: A workspace
@@ -220,9 +226,11 @@ spec:
           value: $(params.virtualserverinstance)
         - name: INVENTORY_REPO
           value: $(params.inventory-repo)
+        - name: RUNTIME
+          value: $(params.runtime)            
       script: |
         #!/bin/bash
-        source ./pipeline-repo/scripts/health-check.sh
+        source ./pipeline-repo/scripts/${RUNTIME}/health-check.sh
 
 ---
 apiVersion: tekton.dev/v1beta1
@@ -235,6 +243,8 @@ spec:
       description: The IP Address of the Virtual Server Instance
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: runtime
+      description: The application lanugage runtime       
   workspaces:
     - name: output
       description: A workspace
@@ -248,9 +258,11 @@ spec:
           value: $(params.virtualserverinstance)
         - name: INVENTORY_REPO
           value: $(params.inventory-repo)
+        - name: RUNTIME
+          value: $(params.runtime)            
       script: |
         #!/bin/bash
-        source ./pipeline-repo/scripts/acceptance-tests.sh
+        source ./pipeline-repo/scripts/${RUNTIME}/acceptance-tests.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -274,6 +286,8 @@ spec:
       description: The health check status whether Failed|Passed
     - name: acceptanceCheckStatus
       description: The acceptance check status whether Failed|Passed
+    - name: runtime
+      description: The application lanugage runtime        
   workspaces:
     - name: output
       description: A workspace
@@ -302,14 +316,16 @@ spec:
         - name: HEALTH_CHECK_STATUS
           value: $(params.healthCheckStatus)
         - name: ACCEPTANCE_TEST_STATUS
-          value: $(params.acceptanceCheckStatus)         
+          value: $(params.acceptanceCheckStatus)
+        - name: RUNTIME
+          value: $(params.runtime) 
       script: |
         #!/bin/bash
         echo "DEPLOY_STATUS=$DEPLOY_STATUS"
         echo "HEALTH_CHECK_STATUS=$HEALTH_CHECK_STATUS"
         echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
         if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
-          source ./pipeline-repo/scripts/rollback-deploy.sh
+          source ./pipeline-repo/scripts/${RUNTIME}/rollback-deploy.sh
         else
           echo "All Checks Passed. Roll Back Not required."
         fi
