@@ -50,7 +50,7 @@ spec:
       taskRef:
         name: git-clone-repo
       runAfter:
-        - git-clone-application-repo       
+        - git-clone-repo       
       params:
         - name: continuous-delivery-context-secret
           value: "secure-properties"
