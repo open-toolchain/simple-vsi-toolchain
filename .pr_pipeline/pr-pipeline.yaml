@@ -23,7 +23,9 @@ spec:
       default: ""
     - name: toolchain-region 
     - name: runtime
-      description: The variable storing language runtime      
+      description: The variable storing language runtime 
+    - name: pipeline-repo
+      description: The variable storing git integration for the repository storing build pipeline code for the toolchain      
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -50,7 +52,7 @@ spec:
       taskRef:
         name: git-clone-repo
       runAfter:
-        - git-clone-repo       
+        - git-clone     
       params:
         - name: continuous-delivery-context-secret
           value: "secure-properties"
