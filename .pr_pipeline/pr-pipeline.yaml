@@ -25,7 +25,9 @@ spec:
     - name: runtime
       description: The variable storing language runtime 
     - name: pipeline-repo
-      description: The variable storing git integration for the repository storing build pipeline code for the toolchain      
+      description: The variable storing git integration for the repository storing build pipeline code for the toolchain 
+    - name: pipeline-repo-branch
+      description: The branch of the pipeline-repo   
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -61,9 +63,9 @@ spec:
         - name: repository
           value: $(params.pipeline-repo)
         - name: branch
-          value: "master"
+          value: $(params.pipeline-repo-branch) 
         - name: revision
-          value: $(params.revision)
+          value: $(params.pipeline-repo-branch) 
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: git-credentials-json-file
