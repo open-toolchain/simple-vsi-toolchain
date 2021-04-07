@@ -58,6 +58,9 @@ properties:
     value: ${PIPELINE_REPO}
     type: integration
     path: parameters.repo_url
+  - name: pipeline-repo-branch
+    type: text
+    value: "master"
   - name: runtime
     type: text
     value: ${RUNTIME}    
