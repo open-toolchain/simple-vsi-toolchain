@@ -196,7 +196,6 @@ spec:
         - name: RUNTIME
           value: $(params.runtime)  
       script: |
-        set -e -o pipefail
         #!/bin/bash
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
         # The step: 
