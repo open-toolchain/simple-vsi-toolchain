@@ -210,7 +210,7 @@ spec:
 
         DEPLOY_SCRIPT
         echo "Finished creating the deploy script to be executed on the Virtual Server Instance"
-    - name: backup-script
+    - name: symlink-script
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
       env:
@@ -218,25 +218,45 @@ spec:
           value: $(params.appname)
         - name: HOST_USER_NAME
           value: $(params.hostusername)
+        - name: FILE
+          value: inventory.json 
       script: |
         #!/bin/bash
-        echo "Begin creating the backup script to be executed on the Virtual Server Instance"
-        WORKDIR=/home/${HOST_USER_NAME}/app
-        BACKUPDIR=${WORKDIR}_backup
-        cat > backup.sh << BACKUP_SCRIPT
-         if [ -d "$WORKDIR" ]; then
-          echo "Application Directory [$WORKDIR] exists"
-          if [ -d "$BACKUPDIR" ]; then
-            echo "Application Backup Directory [$BACKUPDIR ]exists"
-            rm -rf $BACKUPDIR
-          fi
-          echo "Moving Application Directory [$WORKDIR] to Application Backup Directory [$BACKUPDIR]"
-          mv $WORKDIR $BACKUPDIR
+        cd /output/inventory-repo;          
+        if [[ -f "$FILE" ]]; then
+          PIPELINERUNID=$(cat $FILE |jq -r '.pipeline_run_id')
         fi
-        echo "Creating new Application Direcroty [$WORKDIR]"
-        mkdir -p $WORKDIR
+
+        cd /output
         
-        BACKUP_SCRIPT
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
+        RESTOREFILE=${WORKDIR}/previous_build.info
+        echo "Begin creating the symlink script to be executed on the Virtual Server Instance"
+
+        cat > symlink.sh << SYMLINK_SCRIPT
+        #!/bin/bash
+        
+        echo "WORKDIR is ${WORKDIR}"
+        echo "BUILDDIR is ${BUILDDIR}"
+        
+        echo "Check if the app directory and a symlink exists"
+        if [ -d ${WORKDIR} ]; then
+          
+          echo "Application Directory [${WORKDIR}] exists."
+          echo "Capturing the existing symlink of the build directory."
+          OLDLINK=\$(readlink -f ${WORKDIR})
+          echo "removing the existing symlink of the build directory."
+          rm ${WORKDIR} || echo "No Existing Symlink Exists."
+          echo "Creating the new symlink of the build directory."
+          ln -s ${BUILDDIR} ${WORKDIR}
+          echo \${OLDLINK} >> ${RESTOREFILE}
+        else
+          echo "Creating the new symlink of the build directory."
+          ln -s ${BUILDDIR} ${WORKDIR}
+        fi
+        
+        SYMLINK_SCRIPT
         echo "Finished creating the backup script to be executed on the Virtual Server Instance"
     - name: deploy
       image: ibmcom/pipeline-base-image:2.11
@@ -272,8 +292,17 @@ spec:
           value: $(params.inventoryrepo)
         - name: OBJECTNAME
           value: $(params.objectname)
+        - name: FILE
+          value: inventory.json  
       script: |
         #!/bin/bash
+        cd /output/inventory-repo;          
+        if [[ -f "$FILE" ]]; then
+          PIPELINERUNID=$(cat $FILE |jq -r '.pipeline_run_id')
+        fi
+
+        cd /output
+        echo "PIPELINERUNID is ${PIPELINERUNID}"
         set -e -o pipefail
 
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -303,15 +332,20 @@ spec:
           exit 1;
         fi
 
-        echo "Removing the existing artifacts from the host machine and taking backup.."
-        BACKUPDIR=${WORKDIR}_backup
-        $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env WORKDIR=$WORKDIR  BACKUPDIR=$BACKUPDIR 'bash -s' < backup.sh
-
+        BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
+        echo "Creating Build Directory [$BUILDDIR]"
+        $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "mkdir -p ${BUILDDIR}" 
+        
         echo "Copying the artifacts to the host machine."
-        $SSH_CMD scp $SSH_ARG -o StrictHostKeyChecking=no ${OBJECTNAME} $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE:${WORKDIR}
+        $SSH_CMD scp $SSH_ARG -o StrictHostKeyChecking=no ${OBJECTNAME} $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE:${BUILDDIR}
 
         echo "Extract the new artifacts in the host machine."
-        $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd /home/$HOST_USER_NAME/app/ && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
+        $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd ${BUILDDIR} && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
+        
+        cat symlink.sh 
+        echo "Creating the symlink to the build directory.."
+        $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
+        $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE 'bash -s' < symlink.sh 
 
         echo "Login to the VSI Instance and process the deployment."
         $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
@@ -408,6 +442,87 @@ spec:
       description: A workspace
       mountPath: /output
   steps:
+    - name: restore-script
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: APPNAME
+          value: $(params.appname)
+        - name: HOST_USER_NAME
+          value: $(params.hostusername)
+      script: |
+        #!/bin/bash
+       
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        RESTOREFILE=${WORKDIR}/previous_build.info
+
+        echo "Begin creating the restore script to be executed on the Virtual Server Instance"
+        cat > restore.sh << RESTORE_SCRIPT
+        #!/bin/bash
+
+        echo "WORKDIR ${WORKDIR}"
+        echo "RESTOREFILE ${RESTOREFILE}"
+
+        if [ -f ${RESTOREFILE} ]; 
+        then 
+          RESTOREDIR=\$(head -n 1 ${RESTOREFILE})
+          echo "RESTOREDIR is ${RESTOREDIR} "
+          echo "Removing the symlink...";
+          rm ${WORKDIR} ; 
+          echo "Restoring the symlink to previous build...";
+          ln -s \${RESTOREDIR} ${WORKDIR} 
+        else 
+          echo "Previous build info file does not exits"; 
+          exit 1 
+        fi
+        
+        RESTORE_SCRIPT
+        echo "Finished creating the restore script to be executed on the Virtual Server Instance"
+    - name: cleanup-script
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: APPNAME
+          value: $(params.appname)
+        - name: HOST_USER_NAME
+          value: $(params.hostusername)
+      script: |
+        #!/bin/bash
+       
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        RESTOREFILE=${WORKDIR}/previous_build.info
+
+        echo "Begin creating the cleanup script to be executed on the Virtual Server Instance"
+        cat > cleanup.sh << CLEANUP_SCRIPT
+        #!/bin/bash
+
+        echo "WORKDIR ${WORKDIR}"
+        echo "RESTOREFILE ${RESTOREFILE}"
+
+        if [ -f "${RESTOREFILE}" ]; 
+        then 
+          RESTOREDIR=\$(head -n 1 ${RESTOREFILE})
+          echo "RESTOREDIR is \${RESTOREDIR} "
+          PREVIOUSRESTOREDIRFILE=\${RESTOREDIR}/previous_build.info
+          echo "PREVIOUSRESTOREDIRFILE is \${PREVIOUSRESTOREDIRFILE} "
+          if [ -f "\${PREVIOUSRESTOREDIRFILE}" ]; 
+          then 
+            PREVIOUSRESTOREDIR=\$(head -n 1 \${PREVIOUSRESTOREDIRFILE})
+            echo "PREVIOUSRESTOREDIR is \${PREVIOUSRESTOREDIR} "
+            echo "Performing Cleanup of pre-previous directory.....\${PREVIOUSRESTOREDIR}"
+            rm -rf \${PREVIOUSRESTOREDIR}
+            echo "Cleanup Completed...";  
+          else 
+            echo "pre-previous build does not exists...";
+            echo "Cleanup Completed...";  
+          fi
+        else 
+          echo "Previous build info file does not exits...";
+          echo "Cleanup Completed...";  
+        fi
+        
+        CLEANUP_SCRIPT
+        echo "Finished creating the cleanup script to be executed on the Virtual Server Instance"
     - name: roll-back-deployment
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
@@ -420,6 +535,8 @@ spec:
           value: $(params.hostsshkeys)
         - name: HOST_USER_NAME
           value: $(params.hostusername)
+        - name: FILE
+          value: inventory.json 
         - name: HOST_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -428,35 +545,36 @@ spec:
               optional: true
       script: |
         #!/bin/bash
+        WORKDIR=/home/${HOST_USER_NAME}/app
+        if [[ -z "$HOST_USER_NAME" ]]; then
+          echo "Please provide User name to log on to Virtual Server Instance"
+          exit 1;
+        elif [[ ! -z "$HOST_PASSWORD" ]]; then
+          echo "Using SSH Password to log on to Virtual Server Instance"
+          sudo apt-get update && sudo apt-get install sshpass -y
+          SSH_CMD="sshpass -p $HOST_PASSWORD"
+          SSH_ARG="-o UserKnownHostsFile=/dev/null"
+        elif [[ ! -z "$HOST_SSH_KEYS" ]]; then
+          echo "Using SSH Key to log on to Virtual Server Instance"
+          echo $HOST_SSH_KEYS | base64 -d  > vsi.key
+          chmod 400 vsi.key
+          SSH_ARG="-i vsi.key"
+        else
+          echo "Please provide either SSH Password or SSH Key provided to log on to Virtual Server Instance."
+          exit 1;
+        fi
         if [ $(params.deployStatus) == "Failed" ] || [ $(params.healthCheckStatus) == "Failed"  ] | [ $(params.acceptanceCheckStatus) == "Failed"  ]
-              then
-                WORKDIR=/home/${HOST_USER_NAME}/app
-                BACKUPDIR=${WORKDIR}_backup
-                echo "WORKDIR is [$WORKDIR]"
-                echo "BACKUPDIR is [$BACKUPDIR]"
-                if [[ -z "$HOST_USER_NAME" ]]; then
-                  echo "Please provide User name to log on to Virtual Server Instance"
-                  exit 1;
-                elif [[ ! -z "$HOST_PASSWORD" ]]; then
-                  echo "Using SSH Password to log on to Virtual Server Instance"
-                  sudo apt-get update && sudo apt-get install sshpass -y
-                  SSH_CMD="sshpass -p $HOST_PASSWORD"
-                  SSH_ARG="-o UserKnownHostsFile=/dev/null"
-                elif [[ ! -z "$HOST_SSH_KEYS" ]]; then
-                  echo "Using SSH Key to log on to Virtual Server Instance"
-                  echo $HOST_SSH_KEYS | base64 -d  > vsi.key
-                  chmod 400 vsi.key
-                  SSH_ARG="-i vsi.key"
-                else
-                  echo "Please provide either SSH Password or SSH Key provided to log on to Virtual Server Instance."
-                  exit 1;
-                fi
-                echo "Tasks has failed, Performing Rollback."
-                $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "rm -rf $WORKDIR && cp -r $BACKUPDIR $WORKDIR "
-                $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
-                $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < deploy.sh
+          then
+          echo "Tasks has failed, Performing Rollback."
+          RESTOREFILE=${WORKDIR}/previous_build.info
+          $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE  env RESTOREFILE=$RESTOREFILE WORKDIR=$WORKDIR  'bash -s' < restore.sh
+
+          $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
+          $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < deploy.sh
         else
            echo "All Checks Passed. Roll Back Not required."
+           RESTOREFILE=${WORKDIR}/previous_build.info
+           $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE  env RESTOREFILE=$RESTOREFILE WORKDIR=$WORKDIR  'bash -s' < cleanup.sh
         fi
 ---
 apiVersion: tekton.dev/v1beta1
