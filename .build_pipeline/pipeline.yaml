@@ -94,7 +94,7 @@ spec:
         - name: repository
           value: $(params.pipeline-repo)
         - name: branch
-          value: $(params.branch)
+          value: "master"
         - name: revision
           value: $(params.revision)
         - name: pipeline-debug
