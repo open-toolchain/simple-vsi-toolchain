@@ -56,15 +56,11 @@ spec:
     - name: insights
       description: The variable storing DevOps Insight integration with the toolchain
     - name: runtime
-<<<<<<< HEAD
-      description: The variable storing language runtime    
-=======
       description: The variable storing language runtime 
     - name: pipeline-repo-branch
       description: The branch of the pipeline-repo
     - name: inventory-repo-branch
       description: The branch of the inventory-repo   
->>>>>>> 25b6e8a672140d7a98ecf36bbe53674f37a6bb26
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -102,15 +98,9 @@ spec:
         - name: repository
           value: $(params.pipeline-repo)
         - name: branch
-<<<<<<< HEAD
-          value: "development"
-        - name: revision
-          value: $(params.revision)
-=======
           value: $(params.pipeline-repo-branch) 
         - name: revision
           value: $(params.pipeline-repo-branch) 
->>>>>>> 25b6e8a672140d7a98ecf36bbe53674f37a6bb26
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: git-credentials-json-file
