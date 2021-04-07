@@ -33,6 +33,9 @@ spec:
           value: $(params.runtime) 
       script: |          
           #!/bin/bash
+           # This step creates an archive/zip of your artifacts (source code, binaries, images, configuration files etc.) placed in the
+           # /output/binaries folder to prepare for the upload in the subsequent step. While it creates the archive/zip, it also calculates
+           # the checksum of the archived/zipped contents which will be part of the build metadata to be validated during the download.
           set -e -o pipefail;
           source ./pipeline-repo/scripts/${RUNTIME}/build-artifact-info.sh
           
