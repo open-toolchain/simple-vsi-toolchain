@@ -81,5 +81,5 @@ properties:
     type: integration
     path: service_id 
   - name: runtime
-    type: Enumeration
+    type: text
     value: ${RUNTIME}    
