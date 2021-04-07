@@ -97,5 +97,6 @@ properties:
   - name: runtime
     type: single_select
     value: 
-      "java" : true,
+      "${RUNTIME}": true,
+      "java" : false,
       "golang" : false
