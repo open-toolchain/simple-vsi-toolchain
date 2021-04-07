@@ -84,9 +84,9 @@ services:
       repo_name: 'inventory-{{timestamp}}'
       type: $env.type || 'clone'
       repo_url: >
-        $env.inventory_repo ? $env.inventory_repo : $env.inventory-repo ? '{{inventory-repo}}' : 'https://github.com/open-toolchain/inventory'
+        $env.inventory_repo ? $env.inventory_repo : $env.inventory_repo ? ‘{{inventory-repo}}’ : ‘https://github.com/open-toolchain/inventory’
       source_repo_url: >
-        $env.inventory_repo ? $env.inventory_repo : $env.inventory-repo ? '{{inventory-repo}}' : 'https://github.com/open-toolchain/inventory'
+        $env.inventory_repo ? $env.inventory_repo : $env.inventory_repo ? ‘{{inventory-repo}}’ : ‘https://github.com/open-toolchain/inventory’
       has_issues: false
       enable_traceability: false
       legal: true
