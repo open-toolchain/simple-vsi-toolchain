@@ -88,6 +88,12 @@ properties:
     value: ${INSIGHTS}
     type: integration
     path: service_id
+  - name: pipeline-repo-branch
+    type: text
+    value: "master"
+  - name: inventory-repo-branch
+    type: text
+    value: "master"
   - name: runtime
     type: text
     value: ${RUNTIME} 
