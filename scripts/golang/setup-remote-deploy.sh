@@ -36,7 +36,7 @@ $SSH_CMD scp $SSH_ARG -o StrictHostKeyChecking=no ${OBJECTNAME} $HOST_USER_NAME@
 
 
 echo "Extract the new artifacts in the host machine."
-$SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd /home/$HOST_USER_NAME/app/ && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
+$SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd ${BUILDDIR} && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
 
 echo "Creating the symlink to the build directory.."
 $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env PIPELINERUNID=$PIPELINERUNID  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < ./pipeline-repo/scripts/golang/backup.sh
