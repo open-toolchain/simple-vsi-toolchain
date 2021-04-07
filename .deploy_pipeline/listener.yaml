@@ -65,11 +65,6 @@ spec:
     - name: insights
       description: The variable storing DevOps Insight integration with the toolchain  
     - name: runtime
-      description: The variable storing language runtime 
-    - name: pipeline-repo-branch
-      description: The branch of the pipeline-repo
-    - name: inventory-repo-branch
-      description: The branch of the inventory-repo
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -145,11 +140,7 @@ spec:
           - name: insights
             value: $(params.insights)    
           - name: runtime
-            value: $(params.runtime)
-          - name: pipeline-repo-branch
-            value: $(params.pipeline-repo-branch) 
-          - name: inventory-repo-branch
-            value: $(params.inventory-repo-branch)                                                            
+            value: $(params.runtime)                                                           
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
