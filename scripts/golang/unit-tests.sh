@@ -1,6 +1,8 @@
 ######################################################################################
 # File: unit-tests.sh                                                                #
-# Description: This files runs the unit test and stro the result location            #
+# Description: This files runs the unit test and store the unit tests result file    #
+#              location. Also run the Code Coverage test and convert the test result #
+#              in the cobetura format as expected by "Devops Insight"                #
 ######################################################################################
 
 # set the GO run enviroment
