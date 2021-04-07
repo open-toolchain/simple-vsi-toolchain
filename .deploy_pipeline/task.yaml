@@ -196,7 +196,14 @@ spec:
         - name: RUNTIME
           value: $(params.runtime)  
       script: |
+        set -e -o pipefail
         #!/bin/bash
+        # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
+        # The step: 
+        #   - Assumes that the upstream task has already downloaded the artifact to the /output location 
+        #   - Carries out all the operation within the home directory of the user i.e. /home/${HOST_USER_NAME}
+        #   - Copies the artifact from the /output to /home/${HOST_USER_NAME}/app which is defined as WORKDIR
+        #   - Runs the deploy.sh file as created in the previous step to carry out the step-by-step deployment which may include start/stop of application.
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         source ./pipeline-repo/scripts/${RUNTIME}/setup-remote-deploy.sh
