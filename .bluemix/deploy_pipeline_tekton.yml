@@ -95,5 +95,5 @@ properties:
     type: text
     value: "master"
   - name: runtime
-    type: text
-    value: ${RUNTIME} 
+    type: single_select
+    value: {"java","golang"}
