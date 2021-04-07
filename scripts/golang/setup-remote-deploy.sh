@@ -7,6 +7,8 @@ set -e -o pipefail
 #   - Copies the artifact from the /output to /home/${HOST_USER_NAME}/app which is defined as WORKDIR
 #   - Runs the deploy.sh file as created in the previous step to carry out the step-by-step deployment which may include start/stop of application.
 
+WORKDIR=/home/${HOST_USER_NAME}/app
+
 if [[ -z "$HOST_USER_NAME" ]]; then
     echo "Please provide User name to log on to Virtual Server Instance"
     exit 1;
@@ -25,14 +27,20 @@ else
     exit 1;
 fi
 
-echo "Removing the existing artifacts from the host machine and taking backup.."
-$SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env WORKDIR=$WORKDIR  BACKUPDIR=$BACKUPDIR 'bash -s' < ./pipeline-repo/scripts/golang/backup.sh
+ BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
+ echo "Creating Build Directory [$BUILDDIR]"
+ $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "mkdir -p ${BUILDDIR}"
 
 echo "Copying the artifacts to the host machine."
-$SSH_CMD scp $SSH_ARG -o StrictHostKeyChecking=no ${OBJECTNAME} $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE:${WORKDIR}
+$SSH_CMD scp $SSH_ARG -o StrictHostKeyChecking=no ${OBJECTNAME} $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE:${BUILDDIR}
+
 
 echo "Extract the new artifacts in the host machine."
 $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd /home/$HOST_USER_NAME/app/ && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
+
+echo "Creating the symlink to the build directory.."
+$SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env PIPELINERUNID=$PIPELINERUNID  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < ./pipeline-repo/scripts/golang/backup.sh
+
 
 echo "Login to the VSI Instance and process the deployment."
 $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \

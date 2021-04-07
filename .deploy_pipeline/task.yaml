@@ -194,7 +194,9 @@ spec:
         - name: OBJECTNAME
           value: $(params.objectname)
         - name: RUNTIME
-          value: $(params.runtime)  
+          value: $(params.runtime)
+        - name: FILE
+          value: inventory.json
       script: |
         #!/bin/bash
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -203,6 +205,12 @@ spec:
         #   - Carries out all the operation within the home directory of the user i.e. /home/${HOST_USER_NAME}
         #   - Copies the artifact from the /output to /home/${HOST_USER_NAME}/app which is defined as WORKDIR
         #   - Runs the deploy.sh file as created in the previous step to carry out the step-by-step deployment which may include start/stop of application.
+        cd /output/inventory-repo;          
+        if [[ -f "$FILE" ]]; then
+          PIPELINERUNID=$(cat $FILE |jq -r '.pipeline_run_id')
+        fi
+
+        cd /output
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         source ./pipeline-repo/scripts/${RUNTIME}/setup-remote-deploy.sh
@@ -333,6 +341,7 @@ spec:
         if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
           source ./pipeline-repo/scripts/${RUNTIME}/rollback-deploy.sh
         else
+          $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE  env RESTOREFILE=$RESTOREFILE HOST_USER_NAME=$HOST_USER_NAME  'bash -s' < ./pipeline-repo/scripts/${RUNTIME}/cleanup.sh
           echo "All Checks Passed. Roll Back Not required."
         fi
 ---

@@ -20,8 +20,11 @@ else
     exit 1;
 fi
 echo "Tasks has failed, Performing Rollback."
-$SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "rm -rf $WORKDIR && cp -r $BACKUPDIR $WORKDIR "
+$SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE  env RESTOREFILE=$RESTOREFILE HOST_USER_NAME=$HOST_USER_NAME  'bash -s' < ./pipeline-repo/scripts/java/restore.sh
+
 $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
 $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < ./pipeline-repo/scripts/java/deploy.sh
 
 
+
+       
