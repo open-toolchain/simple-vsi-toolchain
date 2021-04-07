@@ -96,4 +96,6 @@ properties:
     value: "master"
   - name: runtime
     type: single_select
-    value: {"java","golang"}
+    value: 
+      "java" : true,
+      "golang" : false
