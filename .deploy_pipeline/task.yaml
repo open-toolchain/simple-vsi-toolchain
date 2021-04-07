@@ -341,7 +341,7 @@ spec:
         if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
           source ./pipeline-repo/scripts/${RUNTIME}/rollback-deploy.sh
         else
-          $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE  env RESTOREFILE=$RESTOREFILE HOST_USER_NAME=$HOST_USER_NAME  'bash -s' < ./pipeline-repo/scripts/${RUNTIME}/cleanup.sh
+          source ./pipeline-repo/scripts/${RUNTIME}/perform-cleanup.sh
           echo "All Checks Passed. Roll Back Not required."
         fi
 ---
