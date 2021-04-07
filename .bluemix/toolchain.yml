@@ -110,6 +110,7 @@ services:
           INSIGHTS: devops-insights
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           APP_NAME: "{{form.pipeline.parameters.app-name}}"
+          RUNTIME: java
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           PIPELINE_REPO_BRANCH: >
             $env.branch ? $env.branch : "master"
@@ -156,6 +157,7 @@ services:
           PIPELINE_REPO: pipeline-repo
           INVENTORY_REPO: inventory-repo
           INSIGHTS: devops-insights
+          RUNTIME: java
           PIPELINE_REPO_BRANCH: >
             $env.branch ? $env.branch : "master"
           TEKTON_CATALOG_REPO: tekton-catalog-repo          
@@ -190,6 +192,7 @@ services:
           APP_NAME: "{{form.pipeline.parameters.app-name}}"
           API_KEY: "{{form.pipeline.parameters.api-key}}"
           ARTIFACTORY: artifactory
+          RUNTIME: java
           INSIGHTS: devops-insights
           RESOURCE_GROUP: "{{form.pipeline.parameters.resource-group}}"
           VIRTUAL_SERVER_INSTANCE: "{{form.pipeline.parameters.virtual-server-instance}}"

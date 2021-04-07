@@ -49,8 +49,10 @@ spec:
       description: The username required to login to the Virtual Server Instance
     - name: host-password
       description: The password required to login to the Virtual Server Instance
-    - name: inventoryRepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: pipeline-repo
+      description: The variable storing git integration for the repository storing build pipeline code for the toolchain        
     - name: cos-region
       description: The Region where Cloud Object Storage Instance is created
     - name: cos-api-key
@@ -62,6 +64,7 @@ spec:
       default: ""
     - name: insights
       description: The variable storing DevOps Insight integration with the toolchain  
+    - name: runtime
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -128,12 +131,16 @@ spec:
             value: $(params.cos-region)
           - name: cos-api-key
             value: $(params.cos-api-key)
-          - name: inventoryRepo
-            value: $(params.inventoryRepo)
+          - name: inventory-repo
+            value: $(params.inventory-repo)
+          - name: pipeline-repo
+            value: $(params.pipeline-repo)            
           - name: target
             value: $(params.target)
           - name: insights
-            value: $(params.insights)                                                               
+            value: $(params.insights)    
+          - name: runtime
+            value: $(params.runtime)                                                           
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
