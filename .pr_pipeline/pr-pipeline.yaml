@@ -21,11 +21,15 @@ spec:
     - name: scm-type
     - name: project-id
       default: ""
-    - name: toolchain-region      
+    - name: toolchain-region 
+    - name: runtime
+      description: The variable storing language runtime 
+    - name: pipeline-repo
+      description: The variable storing git integration for the repository storing build pipeline code for the toolchain      
   workspaces:
     - name: pipeline-ws
   tasks:
-    - name: git-clone
+    - name: git-clone-application-repo
       taskRef:
         name: git-clone-repo
       params:
@@ -44,15 +48,40 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+    - name: git-clone-pipeline-repo
+      taskRef:
+        name: git-clone-repo
+      runAfter:
+        - git-clone-application-repo    
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: repository
+          value: $(params.pipeline-repo)
+        - name: branch
+          value: "master"
+        - name: revision
+          value: $(params.revision)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: git-credentials-json-file
+          value: credentials.json          
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+          subpath: pipeline-repo    
     - name: unit-tests
-      runAfter: [git-clone]
+      runAfter: [git-clone-pipeline-repo]
       taskRef:
         name: tester-run-tests
-      params:
+      params: 
         - name: tests-script
           value: |
-            echo "Running tests";
-            mvn clean test
+            #!/bin/bash            
+            echo "Running Unit Test Script"
+            source ./pipeline-repo/scripts/$(params.runtime)/unit-tests.sh
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -62,7 +91,7 @@ spec:
           operator: in
           values: [ "ibm:yp:us-south" , "ibm:yp:us-east" ]    
       runAfter:
-        - git-clone
+        - git-clone-application-repo
       taskRef:
         name: cra-discovery
       workspaces:
@@ -74,7 +103,7 @@ spec:
         - name: revision
           value: $(params.branch)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: directory-name
@@ -83,7 +112,7 @@ spec:
           value: $(params.commit-timestamp)
     - name: code-vulnerability-status-pending
       runAfter:
-        - git-clone
+        - git-clone-application-repo
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -114,13 +143,13 @@ spec:
         - name: repository
           value: $(params.repository)
         - name: source-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -146,7 +175,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: code-cis-scan-status-pending
       runAfter:
-        - git-clone
+        - git-clone-application-repo
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -177,13 +206,13 @@ spec:
         - name: repository
           value: $(params.repository)
         - name: source-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: directory-name
           value: ""
         - name: scm-type
@@ -211,7 +240,7 @@ spec:
           value: $(params.repository)
     - name: code-bom-check-status-pending
       runAfter:
-        - git-clone
+        - git-clone-application-repo
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -246,17 +275,17 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.git-clone-application-repo.results.git-commit)
         - name: target-branch
           value: $(params.branch)
         - name: target-commit-id
-          value: $(tasks.git-clone.results.git-commit)      
+          value: $(tasks.git-clone-application-repo.results.git-commit)      
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
           value: $(params.project-id)
         - name: source-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.git-clone-application-repo.results.git-repository)
     - name: code-bom-check-status-finished
       runAfter:
         - cra-bom

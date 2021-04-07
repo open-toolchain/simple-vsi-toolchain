@@ -30,6 +30,9 @@ spec:
     - name: repository
     - name: insights
     - name: toolchain-region 
+    - name: pipeline-repo
+      description: The variable storing git integration for the repository storing build pipeline code for the toolchain 
+    - name: runtime
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -79,4 +82,8 @@ spec:
           - name: insights
             value: $(params.insights) 
           - name: toolchain-region
-            value: $(params.toolchain-region)            
+            value: $(params.toolchain-region) 
+          - name: pipeline-repo
+            value: $(params.pipeline-repo)
+          - name: runtime
+            value: $(params.runtime)            
