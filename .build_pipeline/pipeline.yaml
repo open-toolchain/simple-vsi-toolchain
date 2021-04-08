@@ -125,11 +125,11 @@ spec:
             # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
             # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.            
             echo "Running Application Source Code Build Script"
+            cd application-repo/
             source ../pipeline-repo/scripts/$(params.runtime)/build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws
-          subpath: application-repo
     - name: cra-discovery-scan
       runAfter:
         - build-source
@@ -246,6 +246,7 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Unit Test Script"
+            cd application-repo/
             source ../pipeline-repo/scripts/$(params.runtime)/unit-tests.sh
 
             # Publish the results of the unit tests as result of this task.
@@ -256,7 +257,6 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-          subpath: application-repo
     - name: code-coverage
       runAfter: 
         - unit-tests
@@ -267,6 +267,7 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Code Coverage Script"
+            cd application-repo/
             source ../pipeline-repo/scripts/$(params.runtime)/code-coverage.sh
 
             # Publish the results of the code coverage as result of this task.
@@ -277,7 +278,6 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-          subpath: application-repo
     - name: package-build-artifacts
       runAfter:
         - code-coverage
@@ -287,11 +287,11 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
+            cd application-repo/
             source ../pipeline-repo/scripts/$(params.runtime)/package-build.sh
       workspaces:
         - name: output
-          workspace: pipeline-ws
-          subpath: application-repo          
+          workspace: pipeline-ws         
     - name: build-artifacts-info
       runAfter: 
         - package-build-artifacts
@@ -307,7 +307,6 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-          subpath: application-repo
     - name: publish-doi-buildrecord
       runAfter: 
         - build-artifacts-info
