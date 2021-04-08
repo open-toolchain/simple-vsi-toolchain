@@ -1,5 +1,3 @@
-set -e -o pipefail
-
 # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
 # The step: 
 #   - Assumes that the upstream task has already downloaded the artifact to the /output location 
@@ -27,10 +25,10 @@ else
     exit 1;
 fi
 
- BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
- DEPLOY_SCRIPT_PATH="./pipeline-repo/scripts/golang/deploy.sh"
- echo "Creating Build Directory [$BUILDDIR]"
- $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "mkdir -p ${BUILDDIR}"
+BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
+DEPLOY_SCRIPT_PATH="./pipeline-repo/scripts/golang/deploy.sh"
+echo "Creating Build Directory [$BUILDDIR]"
+$SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "mkdir -p ${BUILDDIR}"
 
 echo "Copying the artifacts to the host machine."
 $SSH_CMD scp $SSH_ARG -o StrictHostKeyChecking=no ${OBJECTNAME} $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE:${BUILDDIR}

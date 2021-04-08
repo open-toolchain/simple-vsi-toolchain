@@ -84,7 +84,7 @@ spec:
           value: credentials.json          
       workspaces:
         - name: output
-          workspace: pipeline-ws
+          workspace: pipeline-ws 
     - name: git-clone-pipeline-repo
       taskRef:
         name: git-clone-repo
@@ -124,6 +124,7 @@ spec:
             # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
             # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.            
             echo "Running Application Source Code Build Script"
+            cd application-repo/
             source ./pipeline-repo/scripts/$(params.runtime)/build.sh
       workspaces:
         - name: output
@@ -286,7 +287,7 @@ spec:
             source ./pipeline-repo/scripts/$(params.runtime)/package-build.sh
       workspaces:
         - name: output
-          workspace: pipeline-ws          
+          workspace: pipeline-ws         
     - name: build-artifacts-info
       runAfter: 
         - package-build-artifacts
