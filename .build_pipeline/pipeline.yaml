@@ -142,6 +142,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+          subpath: application-repo 
       params:
         - name: repository
           value: $(tasks.git-clone-application-repo.results.git-repository)
@@ -163,6 +164,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+          subpath: application-repo 
         - name: secrets
           workspace: pipeline-ws
       params:
@@ -190,6 +192,7 @@ spec:
           workspace: pipeline-ws
         - name: artifacts
           workspace: pipeline-ws
+          subpath: application-repo 
       params:
         - name: repository
           value: $(tasks.git-clone-application-repo.results.git-repository)
@@ -216,7 +219,8 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
         - name: secrets
-          workspace: pipeline-ws          
+          workspace: pipeline-ws
+          subpath: application-repo           
       params:
         - name: repository
           value: $(tasks.git-clone-application-repo.results.git-repository)
