@@ -271,7 +271,9 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Code Coverage Script"
+            ls -lrta
             cd application-repo/
+            ls -lrta
             source ../pipeline-repo/scripts/$(params.runtime)/code-coverage.sh
 
             # Publish the results of the code coverage as result of this task.
@@ -311,6 +313,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+          
     - name: publish-doi-buildrecord
       runAfter: 
         - build-artifacts-info
