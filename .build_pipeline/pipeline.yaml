@@ -85,6 +85,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+          subpath: application-repo 
     - name: git-clone-pipeline-repo
       taskRef:
         name: git-clone-repo
@@ -128,6 +129,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+          subpath: application-repo
     - name: cra-discovery-scan
       runAfter:
         - build-source
@@ -254,6 +256,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+          subpath: application-repo
     - name: code-coverage
       runAfter: 
         - unit-tests
@@ -274,6 +277,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+          subpath: application-repo
     - name: package-build-artifacts
       runAfter:
         - code-coverage
@@ -286,7 +290,8 @@ spec:
             source ./pipeline-repo/scripts/$(params.runtime)/package-build.sh
       workspaces:
         - name: output
-          workspace: pipeline-ws          
+          workspace: pipeline-ws
+          subpath: application-repo          
     - name: build-artifacts-info
       runAfter: 
         - package-build-artifacts
@@ -302,6 +307,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+          subpath: application-repo
     - name: publish-doi-buildrecord
       runAfter: 
         - build-artifacts-info
@@ -415,6 +421,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+          subpath: application-repo
     - name: git-clone-inventory-repo
       runAfter: 
         - package-build-artifacts
