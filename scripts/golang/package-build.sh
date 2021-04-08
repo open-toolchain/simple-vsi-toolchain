@@ -17,7 +17,7 @@
 # based on your selection during toolchain creation.
 
 # set the GO run rnviroment
-source ./pipeline-repo/scripts/golang/go-run-time.sh
+source ../pipeline-repo/scripts/golang/go-run-time.sh
 rm -rf binaries
 mkdir ../binaries
 export GO111MODULE=on
