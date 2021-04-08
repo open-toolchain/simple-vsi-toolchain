@@ -141,6 +141,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+          subpath: application-repo 
       params:
         - name: repository
           value: $(tasks.git-clone-application-repo.results.git-repository)
@@ -162,6 +163,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+          subpath: application-repo 
         - name: secrets
           workspace: pipeline-ws
       params:
@@ -189,6 +191,7 @@ spec:
           workspace: pipeline-ws
         - name: artifacts
           workspace: pipeline-ws
+          subpath: application-repo 
       params:
         - name: repository
           value: $(tasks.git-clone-application-repo.results.git-repository)
@@ -215,7 +218,8 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
         - name: secrets
-          workspace: pipeline-ws          
+          workspace: pipeline-ws
+          subpath: application-repo           
       params:
         - name: repository
           value: $(tasks.git-clone-application-repo.results.git-repository)
@@ -245,7 +249,8 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Unit Test Script"
-            source ./pipeline-repo/scripts/$(params.runtime)/unit-tests.sh
+            cd application-repo/
+            source ../pipeline-repo/scripts/$(params.runtime)/unit-tests.sh
 
             # Publish the results of the unit tests as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
@@ -265,7 +270,10 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Code Coverage Script"
-            source ./pipeline-repo/scripts/$(params.runtime)/code-coverage.sh
+            ls -lrta
+            cd application-repo/
+            ls -lrta
+            source ../pipeline-repo/scripts/$(params.runtime)/code-coverage.sh
 
             # Publish the results of the code coverage as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
@@ -284,7 +292,8 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
-            source ./pipeline-repo/scripts/$(params.runtime)/package-build.sh
+            cd application-repo/
+            source ../pipeline-repo/scripts/$(params.runtime)/package-build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws         
@@ -303,6 +312,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+          
     - name: publish-doi-buildrecord
       runAfter: 
         - build-artifacts-info
@@ -416,6 +426,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+          subpath: application-repo
     - name: git-clone-inventory-repo
       runAfter: 
         - package-build-artifacts
