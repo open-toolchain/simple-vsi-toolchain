@@ -1,12 +1,16 @@
-# This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
-# The step: 
-#   - Assumes that the upstream task has already downloaded the artifact to the /output location 
-#   - Carries out all the operation within the home directory of the user i.e. /home/${HOST_USER_NAME}
-#   - Copies the artifact from the /output to /home/${HOST_USER_NAME}/app which is defined as WORKDIR
-#   - Runs the deploy.sh file as created in the previous step to carry out the step-by-step deployment which may include start/stop of application.
+####################################################################################################################
+# This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation. #
+# The step:                                                                                                        #
+#   - Assumes that the upstream task has already downloaded the artifact to the /output location                   #
+#   - Carries out all the operation within the home directory of the user i.e. /home/${HOST_USER_NAME}             #
+#   - Copies the artifact from the /output to /home/${HOST_USER_NAME}/app which is defined as WORKDIR              # 
+#   - Runs the deploy.sh file as created in the previous step to carry out the step-by-step deployment             #
+#     which may include start/stop of application.                                                                 #
+####################################################################################################################
 
 WORKDIR=/home/${HOST_USER_NAME}/app
 
+# Creating commands based on the SSH key or the password.
 if [[ -z "$HOST_USER_NAME" ]]; then
     echo "Please provide User name to log on to Virtual Server Instance"
     exit 1;

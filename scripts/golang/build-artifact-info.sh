@@ -1,4 +1,11 @@
 
+#########################################################################################################
+# File: build-artifact-info.sh                                                                          #
+# Description: This File is used to move binary to the appname, which will be used while deploying app. #
+#              OBJECTNAME: Name of the binary stored in the Artifactory/COS                             #
+#              CHECKSUM: Md5 checksum as a signature of the binary                                      #
+#########################################################################################################
+
 cd binaries	
 
 mv go-gin-app ${APPNAME}

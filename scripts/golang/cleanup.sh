@@ -1,3 +1,9 @@
+##########################################################################################
+# File: cleanup.sh                                                                       #
+# Description: Steps required to cleanup the older build from VSI                        #                                                           #
+#              WORKDIR: Directory points to the current build.                           #
+##########################################################################################
+
 WORKDIR=/home/${HOST_USER_NAME}/app
 RESTOREFILE=${WORKDIR}/previous_build.info
 

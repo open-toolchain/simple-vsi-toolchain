@@ -1,7 +1,12 @@
+##########################################################################################
+# File: cleanup.sh                                                                       #
+# Description: Run the cleanup script to clean previous build                            #
+#              WORKDIR: Directory points to the current build.                           #
+##########################################################################################
+
 WORKDIR=/home/${HOST_USER_NAME}/app
-BACKUPDIR=${WORKDIR}_backup
+
 echo "WORKDIR is [$WORKDIR]"
-echo "BACKUPDIR is [$BACKUPDIR]"
 if [[ -z "$HOST_USER_NAME" ]]; then
     echo "Please provide User name to log on to Virtual Server Instance"
     exit 1;

@@ -1,7 +1,11 @@
-######################################################################################
-# File: backup.sh                                                                    #
-# Description: This files creates a backup of the already running app                #
-######################################################################################
+##################################################################################################################
+# File: backup.sh                                                                                                #
+# Description: This files creates a backup of the already running app                                            #
+#              BUILDDIR: Directory containing the artifacts related to currently deployed/running application    #
+#              WORKDIR: Directory points to the current build.                                                   #
+#              The script check if there any other app which is runing, if yes then store the previous running   #
+#              app details in a file (RESTOREFILE)                                                               #            
+##################################################################################################################
 WORKDIR=/home/${HOST_USER_NAME}/app
 BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
 RESTOREFILE=${WORKDIR}/previous_build.info
