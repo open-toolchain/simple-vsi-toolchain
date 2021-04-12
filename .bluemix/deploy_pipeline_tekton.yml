@@ -96,4 +96,4 @@ properties:
     value: "master"
   - name: scripts-subpath
     type: text
-    value: 'java'  
+    value: 'scripts/java'  

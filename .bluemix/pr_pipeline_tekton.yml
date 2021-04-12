@@ -63,4 +63,4 @@ properties:
     value: ${PIPELINE_REPO_BRANCH}
   - name: scripts-subpath
     type: text
-    value: 'java'    
+    value: 'scripts/java'    
