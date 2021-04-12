@@ -1,10 +1,12 @@
-#!/bin/bash
-# Steps required to deploy your application to the Virtual Server Instance goes here.
-# These steps may require:
-#   - Stopping the running application or web server
-#   - Cleaning up / Backing up the previous
-#   - Starting the application or web server with new binary
-        
+##########################################################################################
+# Steps required to deploy your application to the Virtual Server Instance goes here.    #
+# These steps may require:                                                               #
+#   - Stopping the running application or web server                                     #
+#   - Cleaning up / Backing up the previous                                              #
+#   - Starting the application or web server with new binary                             #   
+##########################################################################################
+
+#!/bin/bash        
 echo "Begin creating the deploy script to be executed on the Virtual Server Instance"
 cd ${WORKDIR}/
 DeployApplication() {

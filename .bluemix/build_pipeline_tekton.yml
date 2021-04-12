@@ -82,10 +82,13 @@ properties:
     path: service_id 
   - name: pipeline-repo-branch
     type: text
-    value: "master"
+    value: ${PIPELINE_REPO_BRANCH}
   - name: inventory-repo-branch
     type: text
     value: "master"
   - name: runtime
-    type: text
-    value: ${RUNTIME}    
+    type: single_select
+    value: 
+      "${RUNTIME}": true,
+      "java" : false,
+      "golang" : false   

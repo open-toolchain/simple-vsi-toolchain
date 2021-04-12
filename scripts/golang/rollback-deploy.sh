@@ -1,7 +1,11 @@
+########################################################################################################
+# File: rollback-deploy.sh                                                                             #
+# Description: script restore the previos build when current deployment fails                          #
+#              WORKDIR: Directory points to the current build.                                         #
+########################################################################################################
+
 WORKDIR=/home/${HOST_USER_NAME}/app
-BACKUPDIR=${WORKDIR}_backup
 echo "WORKDIR is [$WORKDIR]"
-echo "BACKUPDIR is [$BACKUPDIR]"
 if [[ -z "$HOST_USER_NAME" ]]; then
     echo "Please provide User name to log on to Virtual Server Instance"
     exit 1;
@@ -23,5 +27,4 @@ echo "Tasks has failed, Performing Rollback."
 $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE  env RESTOREFILE=$RESTOREFILE HOST_USER_NAME=$HOST_USER_NAME  'bash -s' < ./pipeline-repo/scripts/golang/restore.sh
 
 $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
-$HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < ./pipeline-repo/scripts/golang/deploy.sh
-
+$HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR  HOST_USER_NAME=$HOST_USER_NAME "bash /$WORKDIR/deploy.sh"

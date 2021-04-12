@@ -84,7 +84,7 @@ spec:
           value: credentials.json          
       workspaces:
         - name: output
-          workspace: pipeline-ws
+          workspace: pipeline-ws 
     - name: git-clone-pipeline-repo
       taskRef:
         name: git-clone-repo
@@ -214,7 +214,7 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
         - name: secrets
-          workspace: pipeline-ws          
+          workspace: pipeline-ws  
       params:
         - name: repository
           value: $(tasks.git-clone-application-repo.results.git-repository)
@@ -286,7 +286,7 @@ spec:
             source ./pipeline-repo/scripts/$(params.runtime)/package-build.sh
       workspaces:
         - name: output
-          workspace: pipeline-ws          
+          workspace: pipeline-ws         
     - name: build-artifacts-info
       runAfter: 
         - package-build-artifacts
@@ -301,7 +301,7 @@ spec:
           value: $(params.runtime)                            
       workspaces:
         - name: output
-          workspace: pipeline-ws
+          workspace: pipeline-ws      
     - name: publish-doi-buildrecord
       runAfter: 
         - build-artifacts-info

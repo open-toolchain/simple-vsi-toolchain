@@ -1,3 +1,9 @@
+########################################################################################################
+# File: restore.sh                                                                                     #
+# Description: Steps required to restore the previos build and deploy it if current deployment fails   #
+#              WORKDIR: Directory points to the current build.                                         #
+########################################################################################################
+
 WORKDIR=/home/${HOST_USER_NAME}/app
 RESTOREFILE=${WORKDIR}/previous_build.info
 
