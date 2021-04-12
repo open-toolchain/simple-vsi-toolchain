@@ -30,9 +30,10 @@ spec:
     - name: repository
     - name: insights
     - name: toolchain-region 
-    - name: pipeline-repo
-      description: The variable storing git integration for the repository storing build pipeline code for the toolchain 
-    - name: runtime
+    - name: scripts-repo
+      description: The variable storing git integration for the repository storing build and deploying source code
+    - name: scripts-subpath
+      description: The subpath to the script folder from the base of the git repository storing scripts folder. By default the folder path is scripts
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -83,9 +84,9 @@ spec:
             value: $(params.insights) 
           - name: toolchain-region
             value: $(params.toolchain-region) 
-          - name: pipeline-repo
-            value: $(params.pipeline-repo)
-          - name: runtime
-            value: $(params.runtime)
-          - name: pipeline-repo-branch
-            value: $(params.pipeline-repo-branch)             
+          - name: scripts-repo
+            value: $(params.scripts-repo)
+          - name: scripts-subpath
+            value: $(params.scripts-subpath)
+          - name: scripts-repo-branch
+            value: $(params.scripts-repo-branch)             
