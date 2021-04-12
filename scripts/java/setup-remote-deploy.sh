@@ -28,7 +28,7 @@ else
 fi
 
 BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
-DEPLOY_SCRIPT_PATH="./scripts-repo/s${subpath}/deploy.sh"
+DEPLOY_SCRIPT_PATH="./scripts-repo/${subpath}/deploy.sh"
 echo "Creating Build Directory [$BUILDDIR]"
 $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "mkdir -p ${BUILDDIR}" 
 

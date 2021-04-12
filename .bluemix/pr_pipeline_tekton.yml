@@ -55,12 +55,12 @@ properties:
     value: ${TOOLCHAIN_REGION}
     type: text  
   - name: scripts-repo
-    value: ${PIPELINE_REPO}
+    value: ${APP_REPO}
     type: integration
     path: parameters.repo_url
   - name: scripts-repo-branch
     type: text
-    value: ${PIPELINE_REPO_BRANCH}
+    value: 'master'
   - name: scripts-subpath
     type: text
-    value: 'scripts/java'    
+    value: 'scripts'    

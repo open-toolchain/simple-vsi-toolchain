@@ -25,7 +25,7 @@ spec:
     - name: scripts-subpath
       description: The subpath to the script repo from root
     - name: scripts-repo
-      description: The variable storing git integration for the repository storing build pipeline code for the toolchain 
+      description: The variable storing git integration for the repository storing build and deploying source code
     - name: scripts-repo-branch
       description: The branch of the scripts-repo   
   workspaces:
@@ -83,7 +83,8 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Unit Test Script"
-            source ./scripts-repo/$(params.scripts-subpath)/unit-tests.sh
+            subpath="$(params.scripts-subpath)"
+            source ./scripts-repo/${subpath}/unit-tests.sh
       workspaces:
         - name: artifacts
           workspace: pipeline-ws

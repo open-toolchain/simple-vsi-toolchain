@@ -73,7 +73,7 @@ properties:
     type: integration
     path: parameters.repo_url
   - name: scripts-repo
-    value: ${PIPELINE_REPO}
+    value: ${APP_REPO}
     type: integration
     path: parameters.repo_url      
   - name: insights
@@ -82,10 +82,10 @@ properties:
     path: service_id 
   - name: scripts-repo-branch
     type: text
-    value: ${PIPELINE_REPO_BRANCH}
+    value: 'master'
   - name: inventory-repo-branch
     type: text
     value: "master"
   - name: scripts-subpath
     type: text
-    value: 'scripts/java'  
+    value: 'scripts'  
