@@ -22,12 +22,12 @@ spec:
     - name: project-id
       default: ""
     - name: toolchain-region 
-    - name: runtime
-      description: The variable storing language runtime 
-    - name: pipeline-repo
+    - name: scripts-subpath
+      description: The subpath to the script repo from root
+    - name: scripts-repo
       description: The variable storing git integration for the repository storing build pipeline code for the toolchain 
-    - name: pipeline-repo-branch
-      description: The branch of the pipeline-repo   
+    - name: scripts-repo-branch
+      description: The branch of the scripts-repo   
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -50,7 +50,7 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: git-clone-pipeline-repo
+    - name: git-clone-scripts-repo
       taskRef:
         name: git-clone-repo
       runAfter:
@@ -61,11 +61,11 @@ spec:
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
         - name: repository
-          value: $(params.pipeline-repo)
+          value: $(params.scripts-repo)
         - name: branch
-          value: $(params.pipeline-repo-branch) 
+          value: $(params.scripts-repo-branch) 
         - name: revision
-          value: $(params.pipeline-repo-branch) 
+          value: $(params.scripts-repo-branch) 
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: git-credentials-json-file
@@ -73,9 +73,9 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-          subpath: pipeline-repo    
+          subpath: scripts-repo    
     - name: unit-tests
-      runAfter: [git-clone-pipeline-repo]
+      runAfter: [git-clone-scripts-repo]
       taskRef:
         name: tester-run-tests
       params: 
@@ -83,7 +83,7 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Unit Test Script"
-            source ./pipeline-repo/scripts/$(params.runtime)/unit-tests.sh
+            source ./scripts-repo/$(params.scripts-subpath)/unit-tests.sh
       workspaces:
         - name: artifacts
           workspace: pipeline-ws

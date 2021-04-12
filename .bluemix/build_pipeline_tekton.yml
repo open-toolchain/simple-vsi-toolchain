@@ -72,7 +72,7 @@ properties:
     value: ${APP_REPO}
     type: integration
     path: parameters.repo_url
-  - name: pipeline-repo
+  - name: scripts-repo
     value: ${PIPELINE_REPO}
     type: integration
     path: parameters.repo_url      
@@ -80,15 +80,12 @@ properties:
     value: ${INSIGHTS}
     type: integration
     path: service_id 
-  - name: pipeline-repo-branch
+  - name: scripts-repo-branch
     type: text
     value: ${PIPELINE_REPO_BRANCH}
   - name: inventory-repo-branch
     type: text
     value: "master"
-  - name: runtime
-    type: single_select
-    value: 
-      "${RUNTIME}": true,
-      "java" : false,
-      "golang" : false   
+  - name: scripts-subpath
+    type: text
+    value: 'java'  

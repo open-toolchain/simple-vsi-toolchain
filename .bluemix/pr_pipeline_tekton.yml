@@ -54,16 +54,13 @@ properties:
   - name: toolchain-region
     value: ${TOOLCHAIN_REGION}
     type: text  
-  - name: pipeline-repo
+  - name: scripts-repo
     value: ${PIPELINE_REPO}
     type: integration
     path: parameters.repo_url
-  - name: pipeline-repo-branch
+  - name: scripts-repo-branch
     type: text
     value: ${PIPELINE_REPO_BRANCH}
-  - name: runtime
-    type: single_select
-    value: 
-      "${RUNTIME}": true,
-      "java" : false,
-      "golang" : false   
+  - name: scripts-subpath
+    type: text
+    value: 'java'    

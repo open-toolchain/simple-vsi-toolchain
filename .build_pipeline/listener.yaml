@@ -51,8 +51,8 @@ spec:
       description: The password required to login to the Virtual Server Instance
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
-    - name: pipeline-repo
-      description: The variable storing git integration for the repository storing build pipeline code for the toolchain    
+    - name: scripts-repo
+      description: The variable storing git integration for the repository storing build code for the toolchain    
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored
     - name: cos-region
@@ -61,10 +61,10 @@ spec:
       description: The variable storing DevOps Insight integration with the toolchain
     - name: cos-api-key
       description: The API Key to interact with the Cloud Object Storage Instance
-    - name: runtime
-      description: The variable storing language runtime 
-    - name: pipeline-repo-branch
-      description: The branch of the pipeline-repo
+    - name: scripts-subpath
+      description: The subpath to the script repo from root
+    - name: scripts-repo-branch
+      description: The branch of the scripts-repo
     - name: inventory-repo-branch
       description: The branch of the inventory-repo
   resourcetemplates:
@@ -135,14 +135,14 @@ spec:
             value: $(params.cos-api-key)
           - name: inventory-repo
             value: $(params.inventory-repo)
-          - name: pipeline-repo
-            value: $(params.pipeline-repo)                   
+          - name: scripts-repo
+            value: $(params.scripts-repo)                   
           - name: insights
             value: $(params.insights) 
-          - name: runtime
-            value: $(params.runtime)
-          - name: pipeline-repo-branch
-            value: $(params.pipeline-repo-branch) 
+          - name: scripts-subpath
+            value: $(params.scripts-subpath)
+          - name: scripts-repo-branch
+            value: $(params.scripts-repo-branch) 
           - name: inventory-repo-branch
             value: $(params.inventory-repo-branch)                                                        
         workspaces:

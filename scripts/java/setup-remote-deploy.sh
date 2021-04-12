@@ -28,7 +28,7 @@ else
 fi
 
 BUILDDIR=/home/${HOST_USER_NAME}/${PIPELINERUNID}
-DEPLOY_SCRIPT_PATH="./pipeline-repo/scripts/golang/deploy.sh"
+DEPLOY_SCRIPT_PATH="./scripts-repo/s${scripts-subpath}/deploy.sh"
 echo "Creating Build Directory [$BUILDDIR]"
 $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "mkdir -p ${BUILDDIR}" 
 
@@ -40,7 +40,7 @@ echo "Extract the new artifacts in the host machine."
 $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd ${BUILDDIR} && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
 
 echo "Creating the symlink to the build directory.."
-$SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env PIPELINERUNID=$PIPELINERUNID  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < ./pipeline-repo/scripts/java/backup.sh
+$SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env PIPELINERUNID=$PIPELINERUNID  HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < ./scripts-repo/${scripts-subpath}/backup.sh
 
 
 echo "Login to the VSI Instance and process the deployment."
