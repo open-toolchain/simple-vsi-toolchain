@@ -33,6 +33,7 @@ spec:
     - name: scripts-repo
       description: The variable storing git integration for the repository storing build and deploying source code
     - name: scripts-subpath
+      description: The subpath to the script folder from the base of the git repository storing scripts folder. By default the folder path is scripts
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
