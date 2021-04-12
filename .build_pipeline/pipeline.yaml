@@ -125,7 +125,6 @@ spec:
             # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.            
             echo "Running Application Source Code Build Script"
             subpath="$(params.scripts-subpath)"
-            echo $subpath
             source ./scripts-repo/${subpath}/build.sh
       workspaces:
         - name: output
@@ -246,8 +245,8 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Unit Test Script"
-            scripts-subpath="$(params.scripts-subpath)"
-            source ./scripts-repo/${scripts-subpath}/unit-tests.sh
+            subpath="$(params.scripts-subpath)"
+            source ./scripts-repo/${subpath}/unit-tests.sh
 
             # Publish the results of the unit tests as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
@@ -267,8 +266,8 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Code Coverage Script"
-            scripts-subpath="$(params.scripts-subpath)"
-            source ./scripts-repo/${scripts-subpath}/code-coverage.sh
+            subpath="$(params.scripts-subpath)"
+            source ./scripts-repo/${subpath}/code-coverage.sh
 
             # Publish the results of the code coverage as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
@@ -287,8 +286,8 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
-            scripts-subpath="$(params.scripts-subpath)"
-            source ./scripts-repo/${scripts-subpath}/package-build.sh
+            subpath="$(params.scripts-subpath)"
+            source ./scripts-repo/${subpath}/package-build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws         

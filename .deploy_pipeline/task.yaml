@@ -213,7 +213,8 @@ spec:
         cd /output
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
-        source ./scripts-repo/${scripts-subpath}/setup-remote-deploy.sh
+        subpath="$(params.scripts-subpath)"
+        source ./scripts-repo/${subpath}/setup-remote-deploy.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -226,7 +227,7 @@ spec:
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-subpath
-      description: The application lanugage scripts-subpath       
+      description: The subpath to the scripts 
   workspaces:
     - name: output
       description: A workspace
@@ -244,7 +245,8 @@ spec:
           value: $(params.scripts-subpath)            
       script: |
         #!/bin/bash
-        source ./scripts-repo/${scripts-subpath}/health-check.sh
+        subpath="$(params.scripts-subpath)"
+        source ./scripts-repo/${subpath}/health-check.sh
 
 ---
 apiVersion: tekton.dev/v1beta1
@@ -276,7 +278,8 @@ spec:
           value: $(params.scripts-subpath)            
       script: |
         #!/bin/bash
-        source ./scripts-repo/${scripts-subpath}/acceptance-tests.sh
+        subpath="$(params.scripts-subpath)"
+        source ./scripts-repo/${subpath}/acceptance-tests.sh
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -338,10 +341,11 @@ spec:
         echo "DEPLOY_STATUS=$DEPLOY_STATUS"
         echo "HEALTH_CHECK_STATUS=$HEALTH_CHECK_STATUS"
         echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
+        subpath="$(params.scripts-subpath)"
         if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
-          source ./scripts-repo/${scripts-subpath}/rollback-deploy.sh
+          source ./scripts-repo/${subpath}/rollback-deploy.sh
         else
-          source ./scripts-repo/${scripts-subpath}/perform-cleanup.sh
+          source ./scripts-repo/${subpath}/perform-cleanup.sh
           echo "All Checks Passed. Roll Back Not required."
         fi
 ---

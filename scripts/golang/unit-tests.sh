@@ -6,7 +6,7 @@
 ######################################################################################
 
 # set the GO run enviroment
-source ./scripts-repo/${scripts-subpath}/go-run-time.sh
+source ./scripts-repo/${subpath}/go-run-time.sh
 # Get the GO plugin for junit test results
 go get -u github.com/jstemmer/go-junit-report
 
