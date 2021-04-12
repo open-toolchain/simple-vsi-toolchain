@@ -124,7 +124,8 @@ spec:
             # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
             # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.            
             echo "Running Application Source Code Build Script"
-            source ./scripts-repo/$(params.scripts-subpath)/build.sh
+            scripts-subpath=$(params.scripts-subpath)
+            source ./scripts-repo/${scripts-subpath}/build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -244,7 +245,8 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Unit Test Script"
-            source ./scripts-repo/$(params.scripts-subpath)/unit-tests.sh
+            scripts-subpath=$(params.scripts-subpath)
+            source ./scripts-repo/${scripts-subpath}/unit-tests.sh
 
             # Publish the results of the unit tests as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
@@ -264,7 +266,8 @@ spec:
           value: |
             #!/bin/bash            
             echo "Running Code Coverage Script"
-            source ./scripts-repo/$(params.scripts-subpath)/code-coverage.sh
+            scripts-subpath=$(params.scripts-subpath)
+            source ./scripts-repo/${scripts-subpath}/code-coverage.sh
 
             # Publish the results of the code coverage as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
@@ -283,7 +286,8 @@ spec:
         - name: custom-script
           value: |
             #!/bin/bash
-            source ./scripts-repo/$(params.scripts-subpath)/package-build.sh
+            scripts-subpath=$(params.scripts-subpath)
+            source ./scripts-repo/${scripts-subpath}/package-build.sh
       workspaces:
         - name: output
           workspace: pipeline-ws         
