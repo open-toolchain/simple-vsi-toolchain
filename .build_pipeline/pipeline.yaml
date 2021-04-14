@@ -268,7 +268,6 @@ spec:
             echo "Running Code Coverage Script"
             subpath="$(params.scripts-subpath)"
             source ./scripts-repo/${subpath}/code-coverage.sh
-
             # Publish the results of the code coverage as result of this task.
             # This result helps the downstream task (for eg. DevOps Insight) to ingest the result.
             echo $CODE_COVERAGE_RESULTS_LOC

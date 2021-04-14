@@ -247,7 +247,6 @@ spec:
         #!/bin/bash
         subpath="$(params.scripts-subpath)"
         source ./scripts-repo/${subpath}/health-check.sh
-
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
