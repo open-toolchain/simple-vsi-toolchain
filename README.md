@@ -200,11 +200,11 @@ git push origin master --force
 
 #### GitOps Flow  
 
-Simple VSI Toolchain follows the GitOps Workflow model. The model stores build metadata from each successful build in a separate repository (Inventory Repository). The default configuration of Continuous Deployment Pipeline triggers a pipeline run whenever a successful build metadata is pushed to the master branch. 
+This Toolchain follows the GitOps Workflow model. The model stores build metadata from each successful build in a separate repository (Inventory Repository). The default configuration of Continuous Deployment Pipeline triggers a pipeline run whenever a successful build metadata is pushed to the master branch. 
 
 As a best practice, user's can create a branch in the Inventory repository for each deployment environment. The latest commit to the branch contains metadata of the artifact version deployed in the corresponding environment. The steps below guide a user on how to follow this workflow
 
-1. Create a VSI Toolchain. 
+1. Create the toolchain instance by following the steps mentioned above. 
 
 2. Once the toolchain is configured successfully, click on the Inventory Repository.
 ![Inventory Repository](https://github.com/open-toolchain/simple-vsi-toolchain/blob/master/.bluemix/docs-images/GitOps-1.png)
@@ -232,7 +232,7 @@ As a best practice, user's can create a branch in the Inventory repository for e
 
 #### Customise the build and deploy script
 
-The simple VSI toolchain leverages Tekton to perform the pipeline tasks for the build and deploy pipelines. Users can configure the build and deploy steps by making changes to the pipeline code which is maintained in the pipeline repository.
+This toolchain leverages Tekton to perform the pipeline tasks for the build and deploy pipelines. Users can configure the build and deploy steps by making changes to the pipeline code which is maintained in the pipeline repository.
 
 ##### Modify the Continous Integration Pipeline task
 

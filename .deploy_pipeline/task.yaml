@@ -199,7 +199,7 @@ spec:
           echo "Starting the application"
           if [ -s /home/${HOST_USER_NAME}/app/$APPNAME.jar ]; then
             nohup java -Dserver.port=8080 -Dserver.address=0.0.0.0  -jar /home/${HOST_USER_NAME}/app/$APPNAME.jar > /dev/null 2>&1 &
-            echo "Successfully deployed the app to VSI Instance"
+            echo "Successfully deployed the app to your Virtual Machine"
           else
             echo "Artifact is not available."
             exit 1;
@@ -313,7 +313,7 @@ spec:
         echo "Extract the new artifacts in the host machine."
         $SSH_CMD ssh $SSH_ARG  -o StrictHostKeyChecking=no $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE "cd /home/$HOST_USER_NAME/app/ && tar -xf ${OBJECTNAME} && rm ${OBJECTNAME} "
 
-        echo "Login to the VSI Instance and process the deployment."
+        echo "Login to the Virtual Machine and process the deployment."
         $SSH_CMD ssh $SSH_ARG -o StrictHostKeyChecking=no \
         $HOST_USER_NAME@$VIRTUAL_SERVER_INSTANCE env USERID=$USERID TOKEN=$TOKEN REPO=$REPO APPNAME=$APPNAME COSENDPOINT=$COSENDPOINT COSBUCKETNAME=$COSBUCKETNAME OBJECTNAME=$OBJECTNAME WORKDIR=$WORKDIR HOST_USER_NAME=$HOST_USER_NAME 'bash -s' < deploy.sh
 ---
