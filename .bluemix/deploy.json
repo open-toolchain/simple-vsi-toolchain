@@ -160,8 +160,12 @@
             "type": "selectfieldset",
             "key": "type",
             "titleMap": {
-                "credentials": "User Credentials",
-                "ssh_private_key": "User SSH Key"
+                "credentials": {
+                    "$ref": "#/messages/deploy.userCredentials"
+                },
+                "ssh_private_key": {
+                    "$ref": "#/messages/deploy.userSSH"
+                }
             },
             "items": [
                 {
