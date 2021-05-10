@@ -392,17 +392,17 @@ hsGa/IPQFnXwtRumQY/uG+s7KXhB6s8ez28lLDrb6mAYZj/Io599CXSSh+VdjLzitb5h6BUM2odY
 /kY+6usH00y/Cw2HmOwipNTObyym7kYXNRxOzTFQEjiXYLCwsopZ/upsNo06nH9xoRQII41wCqLD
 0ph1Mayxncw2c1BtLqMmmJ66uLsvZttrLpo+vbrSti59v9T/AP/Z" transform="matrix(0.3008 0 0 0.3008 397.4968 318.9968)">
 </image>
-<text transform="matrix(1 0 0 1 381.4081 388.9994)" font-family="'IBMPlexSans'" font-size="14px">Key Protect</text>
-<text transform="matrix(1 0 0 1 383.7016 498.0007)" font-family="'IBMPlexSans'" font-size="14px">Artifactory</text>
-<text transform="matrix(1 0 0 1 403.7214 633.9992)" font-family="'IBMPlexSans'" font-size="14px">COS</text>
-<text transform="matrix(1 0 0 1 495.1066 254.9995)" font-family="'IBMPlexSans'" font-size="14px">CD Pipeline</text>
-<text transform="matrix(1 0 0 1 633.78 254.9995)" font-family="'IBMPlexSans'" font-size="14px">VSI</text>
-<text transform="matrix(1 0 0 1 368.7431 254.9993)" font-family="'IBMPlexSans'" font-size="14px">Inventory Repo</text>
-<text transform="matrix(1 0 0 1 268.6734 254.9996)" font-family="'IBMPlexSans'" font-size="14px">CI Pipeline</text>
-<text transform="matrix(1 0 0 1 158.3837 255.52)" font-family="'IBMPlexSans'" font-size="14px">App Repo</text>
-<text transform="matrix(1 0 0 1 32.4822 255)" font-family="'IBMPlexSans'" font-size="14px">Issue Tracker</text>
-<text transform="matrix(1 0 0 1 365.5227 116.0002)" font-family="'IBMPlexSans'" font-size="14px">DevOps Insights</text>
-<text transform="matrix(1 0 0 1 288.686 115.9998)" font-family="'IBMPlexSans'" font-size="14px">CRA</text>
+<text id="headerSVG.keyProtect" transform="matrix(1 0 0 1 381.4081 388.9994)" font-family="'IBMPlexSans'" font-size="14px">Key Protect</text>
+<text id="headerSVG.artifactory" transform="matrix(1 0 0 1 383.7016 498.0007)" font-family="'IBMPlexSans'" font-size="14px">Artifactory</text>
+<text id="headerSVG.cos" transform="matrix(1 0 0 1 403.7214 633.9992)" font-family="'IBMPlexSans'" font-size="14px">COS</text>
+<text id="headerSVG.cdPipeline" transform="matrix(1 0 0 1 495.1066 254.9995)" font-family="'IBMPlexSans'" font-size="14px">CD Pipeline</text>
+<text id="headerSVG.vsi" transform="matrix(1 0 0 1 633.78 254.9995)" font-family="'IBMPlexSans'" font-size="14px">VSI</text>
+<text id="headerSVG.inventoryRepo" transform="matrix(1 0 0 1 368.7431 254.9993)" font-family="'IBMPlexSans'" font-size="14px">Inventory Repo</text>
+<text id="headerSVG.ciPipeline" transform="matrix(1 0 0 1 268.6734 254.9996)" font-family="'IBMPlexSans'" font-size="14px">CI Pipeline</text>
+<text id="headerSVG.appRepo" transform="matrix(1 0 0 1 158.3837 255.52)" font-family="'IBMPlexSans'" font-size="14px">App Repo</text>
+<text id="headerSVG.issueTracker" transform="matrix(1 0 0 1 32.4822 255)" font-family="'IBMPlexSans'" font-size="14px">Issue Tracker</text>
+<text id="headerSVG.devopsInsights" transform="matrix(1 0 0 1 365.5227 116.0002)" font-family="'IBMPlexSans'" font-size="14px">DevOps Insights</text>
+<text id="headerSVG.cra" transform="matrix(1 0 0 1 288.686 115.9998)" font-family="'IBMPlexSans'" font-size="14px">CRA</text>
 <g>
 	<g>
 		<defs>
