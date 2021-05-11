@@ -73,7 +73,8 @@ services:
     parameters:
       repo_url: "https://github.com/open-toolchain/tekton-catalog"
       source_repo_url: "https://github.com/open-toolchain/tekton-catalog"
-      type: "link"
+      type: "clone"
+      legal: true
       has_issues: false
       enable_traceability: false
       kind: ['pipeline']
