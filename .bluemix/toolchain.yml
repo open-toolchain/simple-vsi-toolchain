@@ -66,7 +66,6 @@ services:
       type: $env.type || 'clone'
       has_issues: false
       enable_traceability: false
-      legal: true
       kind: ['pipeline']
   tekton-catalog-repo:
     service_id: githubconsolidated
@@ -74,7 +73,6 @@ services:
       repo_url: "https://github.com/open-toolchain/tekton-catalog"
       source_repo_url: "https://github.com/open-toolchain/tekton-catalog"
       type: "clone"
-      legal: true
       has_issues: false
       enable_traceability: false
       kind: ['pipeline']
