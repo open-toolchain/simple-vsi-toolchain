@@ -89,15 +89,21 @@
             "pattern": "\\S"
         },
         "host-user-name": {
-            "title": "Username for Virtual Server Instance",
+            "title": {
+                "$ref": "#/messages/deploy.usernameVirtualServer"
+            },
             "type": "string"
         },
         "host-ssh-keys": {
-            "title": "SSH Key file for Virtual Server Instance",
+            "title": {
+                "$ref": "#/messages/deploy.sshVirtualServer"
+            },
             "type": "password"
         },
         "host-user-password": {
-            "title": "Password for Virtual Server Instance",
+            "title": {
+                "$ref": "#/messages/deploy.passwordVirtualServer"
+            },
             "type": "password"
         }
     },
@@ -154,13 +160,19 @@
             "type": "selectfieldset",
             "key": "type",
             "titleMap": {
-                "credentials": "User Credentials",
-                "ssh_private_key": "User SSH Key"
+                "credentials": {
+                    "$ref": "#/messages/deploy.userCredentials"
+                },
+                "ssh_private_key": {
+                    "$ref": "#/messages/deploy.userSSH"
+                }
             },
             "items": [
                 {
                     "type": "section",
-                    "description": "Provide SSH Username and Password for toolchain to perform SSH Login to Virtual Server Instance and deploy your application.",
+                    "description": {
+                        "$ref": "#/messages/deploy.userCredentialsDescription"
+                    },
                     "items": [
                         "host-user-name",
                         "host-user-password"
@@ -168,7 +180,9 @@
                     ]
                 }, {
                     "type": "section",
-                    "description": "Provide SSH Username and Key for toolchain to perform SSH Login to Virtual Server Instance and deploy your application.",
+                    "description": {
+                        "$ref": "#/messages/deploy.userSSHDescription"
+                    },
                     "items": [
                         "host-user-name",
                         "host-ssh-keys"
