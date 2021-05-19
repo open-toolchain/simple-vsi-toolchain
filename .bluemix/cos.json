@@ -21,7 +21,9 @@
         "description": {
           "$ref": "#/messages/cos.apiKeyDescription"
         },
-        "title": "cos.apiKeyTitle",
+        "title": {
+          "$ref": "#/messages/cos.apiKeyTitle"
+        },
         "type": "password",
         "validator": {
           "v-type": "service-id-api-key"
