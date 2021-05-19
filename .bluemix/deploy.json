@@ -40,7 +40,9 @@
             "description": {
                 "$ref": "#/messages/deploy.vsiAuthType"
             },
-            "title": "#/messages/deploy.authType",
+            "title": {
+                "$ref": "#/messages/deploy.authType"
+            },
             "type": "string",
             "enum": [
                 "credentials",
@@ -51,14 +53,18 @@
             "description": {
                 "$ref": "#/messages/deploy.vsiUserName"
             },
-            "title": "#/messages/deploy.userName",
+            "title": {
+                "$ref": "#/messages/deploy.userName"
+            },
             "type": "string"
         },
         "host-ssh-keys": {
             "description": {
                 "$ref": "#/messages/deploy.vsiSshKey"
             },
-            "title": "#/messages/deploy.hostSshKeys",
+            "title": {
+                "$ref": "#/messages/deploy.hostSshKeys"
+            },
             "type": "password"
         },
         "host-user-password": {
