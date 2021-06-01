@@ -39,7 +39,8 @@
    inkscape:window-x="262"
    inkscape:window-y="549"
    inkscape:window-maximized="0"
-   inkscape:current-layer="Layer_1" />
+   inkscape:current-layer="Layer_1"
+   inkscape:document-rotation="0" />
 <circle
    fill="#ffffff"
    stroke="#dde1e6"
@@ -271,7 +272,7 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="407"
+   cx="415"
    cy="205"
    r="32"
    id="circle616" />
@@ -691,15 +692,16 @@
 	</g>
 </g>
 <g
-   id="g808">
+   id="g808"
+   transform="translate(4)">
 	<g
    id="g783">
 		<polygon
    id="SVGID_15_"
    fill-rule="evenodd"
    clip-rule="evenodd"
-   fill="#0F62FE"
-   points="476,195 474.6,196.4 482.1,204 461,204     461,206 482.1,206 474.6,213.6 476,215 486,205   " />
+   fill="#0f62fe"
+   points="482.1,204 461,204 461,206 482.1,206 474.6,213.6 476,215 486,205 476,195 474.6,196.4 " />
 	</g>
 	<g
    id="g806">
@@ -707,14 +709,18 @@
    id="defs786">
 			<polygon
    id="SVGID_23_"
-   points="476,195 474.6,196.4 482.1,204 461,204 461,206 482.1,206 474.6,213.6 476,215 486,205    " />
+   points="482.1,204 461,204 461,206 482.1,206 474.6,213.6 476,215 486,205 476,195 474.6,196.4 " />
 		</defs>
 		<clipPath
    id="SVGID_24_">
 			<use
    xlink:href="#SVGID_23_"
    overflow="visible"
-   id="use788" />
+   id="use788"
+   x="0"
+   y="0"
+   width="100%"
+   height="100%" />
 		</clipPath>
 		<g
    clip-path="url(#SVGID_24_)"
@@ -725,7 +731,7 @@
    id="SVGID_17_"
    x="458"
    y="189"
-   fill="#0F62FE"
+   fill="#0f62fe"
    width="32"
    height="32" />
 			</g>
@@ -745,13 +751,17 @@
 					<use
    xlink:href="#SVGID_25_"
    overflow="visible"
-   id="use797" />
+   id="use797"
+   x="0"
+   y="0"
+   width="100%"
+   height="100%" />
 				</clipPath>
 				<rect
    x="456"
    y="190"
    clip-path="url(#SVGID_26_)"
-   fill="#0F62FE"
+   fill="#0f62fe"
    width="35"
    height="30"
    id="rect800" />
@@ -1075,7 +1085,7 @@
    id="headerSVG.cdPipeline"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="517.10657"
+   x="527.10657"
    y="254.9995">CD Pipeline</text>
 <text
    id="headerSVG.vsi"
@@ -1085,20 +1095,21 @@
    y="254.9995">VSI</text>
 <text
    id="headerSVG.inventoryRepo"
-   transform="matrix(1 0 0 1 368.7431 254.9993)"
-   font-family="'IBMPlexSans'"
-   font-size="14px">Inventory Repo</text>
+   font-family="IBMPlexSans"
+   font-size="14px"
+   x="352.7431"
+   y="254.9993">Inventory Repo</text>
 <text
    id="headerSVG.ciPipeline"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="252.6734"
+   x="244.6734"
    y="254.9996">CI Pipeline</text>
 <text
    id="headerSVG.appRepo"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="148.3837"
+   x="136.3837"
    y="255.52">App Repo</text>
 <text
    id="headerSVG.issueTracker"
@@ -1200,7 +1211,7 @@
 </g>
 <g
    id="g973"
-   transform="translate(-10)">
+   transform="translate(-2)">
 	<g
    id="g971">
 		<defs
