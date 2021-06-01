@@ -1085,7 +1085,7 @@
    id="headerSVG.cdPipeline"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="527.10657"
+   x="533.10657"
    y="254.9995">CD Pipeline</text>
 <text
    id="headerSVG.vsi"
@@ -1097,25 +1097,25 @@
    id="headerSVG.inventoryRepo"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="352.7431"
+   x="358.7431"
    y="254.9993">Inventory Repo</text>
 <text
    id="headerSVG.ciPipeline"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="250.6734"
+   x="256.6734"
    y="254.9996">CI Pipeline</text>
 <text
    id="headerSVG.appRepo"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="126.3837"
+   x="132.3837"
    y="255.52">App Repo</text>
 <text
    id="headerSVG.issueTracker"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="10.482201"
+   x="0.48220062"
    y="255">Issue Tracker</text>
 <text
    id="headerSVG.devopsInsights"
