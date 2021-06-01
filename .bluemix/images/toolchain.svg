@@ -264,7 +264,7 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="175"
+   cx="171"
    cy="205"
    r="32"
    id="circle614" />
@@ -280,7 +280,7 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="59"
+   cx="53"
    cy="205"
    r="32"
    id="circle618" />
@@ -459,7 +459,7 @@
    id="circle696" />
 <g
    id="g724"
-   transform="translate(-12)">
+   transform="translate(-18)">
 	<g
    id="g699">
 		<polygon
@@ -467,7 +467,7 @@
    fill-rule="evenodd"
    clip-rule="evenodd"
    fill="#0f62fe"
-   points="132.6,213.6 134,215 144,205 134,195 132.6,196.4 140.1,204 119,204 119,206 140.1,206 " />
+   points="134,195 132.6,196.4 140.1,204 119,204 119,206 140.1,206 132.6,213.6 134,215 144,205 " />
 	</g>
 	<g
    id="g722">
@@ -475,7 +475,7 @@
    id="defs702">
 			<polygon
    id="SVGID_1_"
-   points="132.6,213.6 134,215 144,205 134,195 132.6,196.4 140.1,204 119,204 119,206 140.1,206 " />
+   points="134,195 132.6,196.4 140.1,204 119,204 119,206 140.1,206 132.6,213.6 134,215 144,205 " />
 		</defs>
 		<clipPath
    id="SVGID_2_">
@@ -1103,19 +1103,19 @@
    id="headerSVG.ciPipeline"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="244.6734"
+   x="246.6734"
    y="254.9996">CI Pipeline</text>
 <text
    id="headerSVG.appRepo"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="136.3837"
+   x="130.3837"
    y="255.52">App Repo</text>
 <text
    id="headerSVG.issueTracker"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="14.482201"
+   x="10.482201"
    y="255">Issue Tracker</text>
 <text
    id="headerSVG.devopsInsights"
@@ -1130,7 +1130,7 @@
    y="115.9998">CRA</text>
 <g
    id="g943"
-   transform="translate(-16)">
+   transform="translate(-22)">
 	<g
    id="g941">
 		<defs
@@ -1292,7 +1292,7 @@
 </g>
 <g
    id="g1003"
-   transform="translate(-14)">
+   transform="translate(-18)">
 	<g
    id="g1001">
 		<defs
