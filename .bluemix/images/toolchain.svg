@@ -1046,7 +1046,7 @@
 <text
    font-family="IBMPlexSans"
    font-size="14px"
-   id="text898"
+   id="headerSVG.prPipeline"
    x="135.2585"
    y="116">PR Pipeline</text>
 <circle
@@ -1103,13 +1103,13 @@
    id="headerSVG.ciPipeline"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="246.6734"
+   x="250.6734"
    y="254.9996">CI Pipeline</text>
 <text
    id="headerSVG.appRepo"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="130.3837"
+   x="126.3837"
    y="255.52">App Repo</text>
 <text
    id="headerSVG.issueTracker"
