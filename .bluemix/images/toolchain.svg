@@ -12,14 +12,16 @@
    id="Layer_1"
    x="0px"
    y="0px"
-   viewBox="0 0 710 666.51"
+   viewBox="0 0 750 666.51"
    enable-background="new 0 0 710 666.51"
    xml:space="preserve"
    sodipodi:docname="toolchain.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15, custom)"><metadata
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15, custom)"
+   width="750"
+   height="666.51001"><metadata
    id="metadata1024"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
    id="defs1022" /><sodipodi:namedview
    pagecolor="#ffffff"
    bordercolor="#666666"
@@ -34,7 +36,7 @@
    id="namedview1020"
    showgrid="false"
    inkscape:zoom="1.5123554"
-   inkscape:cx="355"
+   inkscape:cx="246.89049"
    inkscape:cy="333.255"
    inkscape:window-x="262"
    inkscape:window-y="549"
@@ -45,13 +47,12 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="292.84"
+   cx="302.84"
    cy="205.03"
    r="32"
    id="circle518" />
 <g
-   id="g548"
-   transform="translate(-10)">
+   id="g548">
 	<g
    id="g546">
 		<g
@@ -118,13 +119,13 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="177"
+   cx="187"
    cy="66"
    r="32"
    id="circle550" />
 <g
    id="g580"
-   transform="translate(-12)">
+   transform="translate(-2)">
 	<g
    id="g578">
 		<g
@@ -191,13 +192,13 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="551.16998"
+   cx="561.16998"
    cy="205"
    r="32"
    id="circle582" />
 <g
    id="g612"
-   transform="translate(22)">
+   transform="translate(32)">
 	<g
    id="g610">
 		<g
@@ -264,7 +265,7 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="171"
+   cx="181"
    cy="205"
    r="32"
    id="circle614" />
@@ -272,7 +273,7 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="415"
+   cx="425"
    cy="205"
    r="32"
    id="circle616" />
@@ -288,27 +289,28 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="664.84003"
+   cx="674.84003"
    cy="205"
    r="32"
    id="circle620" />
 <circle
-   fill="#FFFFFF"
-   stroke="#DDE1E6"
+   fill="#ffffff"
+   stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="417"
+   cx="427"
    cy="448"
    r="32"
    id="circle622" />
 <g
-   id="g630">
+   id="g630"
+   transform="translate(10)">
 	<g
    id="g628">
 		<path
-   d="M430,442v-2h-1h-1v-1v-1h-1h-20h-1v1v1h-1h-1v2h-2v16h30v-16H430z M407,439h20v1h-20V439z M430,456h-26v-12h26V456z"
+   d="m 430,442 v -2 h -1 -1 v -1 -1 h -1 -20 -1 v 1 1 h -1 -1 v 2 h -2 v 16 h 30 v -16 z m -23,-3 h 20 v 1 h -20 z m 23,17 h -26 v -12 h 26 z"
    id="path624" />
 		<polygon
-   points="420,451 421,451 421,450 421,449 420,449 420,450 414,450 414,449 413,449 413,450 413,451 414,451   "
+   points="413,450 413,451 414,451 420,451 421,451 421,450 421,449 420,449 420,450 414,450 414,449 413,449 "
    id="polygon626" />
 	</g>
 </g>
@@ -316,13 +318,13 @@
    fill="#ffffff"
    stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="296"
+   cx="306"
    cy="66"
    r="32"
    id="circle632" />
 <g
    id="g662"
-   transform="translate(-6)">
+   transform="translate(4)">
 	<path
    fill="#2e3737"
    d="m 305.86,77.08 -7.59,0.5 c -0.7,0.04 -1.25,-0.45 -1.35,-1.13 v 0 c -0.04,-0.68 0.46,-1.22 1.17,-1.3 l 7.59,-0.5 c 0.7,-0.04 1.25,0.45 1.35,1.12 v 0 c 0.04,0.68 -0.48,1.27 -1.17,1.31 z"
@@ -382,84 +384,85 @@
    id="path660" />
 </g>
 <circle
-   fill="#FFFFFF"
-   stroke="#DDE1E6"
+   fill="#ffffff"
+   stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="417"
+   cx="427"
    cy="66"
    r="32"
    id="circle664" />
 <g
-   id="g694">
+   id="g694"
+   transform="translate(10)">
 	<path
-   fill="#2E3737"
-   d="M420.86,77.08l-7.59,0.5c-0.7,0.04-1.25-0.45-1.35-1.13l0,0c-0.04-0.68,0.46-1.22,1.17-1.3l7.59-0.5   c0.7-0.04,1.25,0.45,1.35,1.12l0,0C422.07,76.45,421.55,77.04,420.86,77.08z"
+   fill="#2e3737"
+   d="m 420.86,77.08 -7.59,0.5 c -0.7,0.04 -1.25,-0.45 -1.35,-1.13 v 0 c -0.04,-0.68 0.46,-1.22 1.17,-1.3 l 7.59,-0.5 c 0.7,-0.04 1.25,0.45 1.35,1.12 v 0 c 0.04,0.68 -0.48,1.27 -1.17,1.31 z"
    id="path666" />
 	<path
-   fill="#2E3737"
-   d="M420.86,80.64l-7.59,0.5c-0.7,0.04-1.25-0.45-1.35-1.13l0,0c-0.04-0.68,0.46-1.22,1.17-1.3l7.63-0.45   c0.7-0.04,1.25,0.45,1.35,1.13l0,0C422.07,80.01,421.55,80.59,420.86,80.64z"
+   fill="#2e3737"
+   d="m 420.86,80.64 -7.59,0.5 c -0.7,0.04 -1.25,-0.45 -1.35,-1.13 v 0 c -0.04,-0.68 0.46,-1.22 1.17,-1.3 l 7.63,-0.45 c 0.7,-0.04 1.25,0.45 1.35,1.13 v 0 c 0,0.62 -0.52,1.2 -1.21,1.25 z"
    id="path668" />
 	<g
    id="g672">
 		<path
    fill="#586565"
-   d="M413.09,82.35c-0.04,0-0.1,0-0.14,0C413.19,84.43,414.9,86,417,86c2.23,0,4.05-1.84,4.05-4.15    c0-0.04,0-0.04,0-0.09L413.09,82.35z"
+   d="m 413.09,82.35 c -0.04,0 -0.1,0 -0.14,0 0.24,2.08 1.95,3.65 4.05,3.65 2.23,0 4.05,-1.84 4.05,-4.15 0,-0.04 0,-0.04 0,-0.09 z"
    id="path670" />
 	</g>
 	<g
    id="g678">
 		<path
-   fill="#FCE77F"
-   d="M429,57.62c0-6.4-5.4-11.62-12-11.62s-12,5.23-12,11.62c0,2.97,1.17,5.68,3.02,7.7    c1.86,2.3,2.79,3.02,2.79,6.84v0.27c0,0.54,0.46,0.99,1.03,0.99h10.23c0.56,0,1.03-0.45,1.03-0.99v-0.23    c0-4.01,1.03-4.59,3.12-7.21h0.04C427.97,63.03,429,60.42,429,57.62z"
+   fill="#fce77f"
+   d="M 429,57.62 C 429,51.22 423.6,46 417,46 c -6.6,0 -12,5.23 -12,11.62 0,2.97 1.17,5.68 3.02,7.7 1.86,2.3 2.79,3.02 2.79,6.84 v 0.27 c 0,0.54 0.46,0.99 1.03,0.99 h 10.23 c 0.56,0 1.03,-0.45 1.03,-0.99 V 72.2 c 0,-4.01 1.03,-4.59 3.12,-7.21 h 0.04 c 1.71,-1.96 2.74,-4.57 2.74,-7.37 z"
    id="path674" />
 		<path
-   fill="#FCE77F"
-   d="M426.3,65.01l0.14-0.23C426.4,64.88,426.35,64.97,426.3,65.01L426.3,65.01z"
+   fill="#fce77f"
+   d="m 426.3,65.01 0.14,-0.23 c -0.04,0.1 -0.09,0.19 -0.14,0.23 z"
    id="path676" />
 	</g>
 	<path
-   fill="#FCD432"
-   d="M429,57.62c0-6.4-5.4-11.62-12-11.62v27.44h5.12c0.56,0,1.03-0.45,1.03-0.99v-0.23   c0-4.01,1.03-4.59,3.12-7.21l0,0C427.97,63.03,429,60.42,429,57.62z"
+   fill="#fcd432"
+   d="M 429,57.62 C 429,51.22 423.6,46 417,46 v 27.44 h 5.12 c 0.56,0 1.03,-0.45 1.03,-0.99 v -0.23 c 0,-4.01 1.03,-4.59 3.12,-7.21 v 0 c 1.7,-1.98 2.73,-4.59 2.73,-7.39 z"
    id="path680" />
 	<path
    fill="#030506"
-   d="M422.02,79.56v-0.41c-0.04-0.54-0.56-0.99-1.11-0.95L417,78.48v2.44l4.09-0.27   C421.65,80.59,422.07,80.1,422.02,79.56z"
+   d="m 422.02,79.56 v -0.41 c -0.04,-0.54 -0.56,-0.99 -1.11,-0.95 L 417,78.48 v 2.44 l 4.09,-0.27 c 0.56,-0.06 0.98,-0.55 0.93,-1.09 z"
    id="path682" />
 	<path
    fill="#030506"
-   d="M422.02,76l-0.04-0.36c-0.04-0.54-0.56-0.99-1.11-0.95l-3.91,0.27v2.39l4.09-0.27   C421.65,77.04,422.07,76.54,422.02,76z"
+   d="m 422.02,76 -0.04,-0.36 c -0.04,-0.54 -0.56,-0.99 -1.11,-0.95 l -3.91,0.27 v 2.39 l 4.09,-0.27 c 0.6,-0.04 1.02,-0.54 0.97,-1.08 z"
    id="path684" />
 	<path
-   fill="#3D4747"
-   d="M421.05,81.81L417,82.08V86C419.23,86,421.05,84.16,421.05,81.81C421.05,81.85,421.05,81.85,421.05,81.81z"
+   fill="#3d4747"
+   d="M 421.05,81.81 417,82.08 V 86 c 2.23,0 4.05,-1.84 4.05,-4.19 0,0.04 0,0.04 0,0 z"
    id="path686" />
 	<ellipse
-   fill="#975AD1"
+   fill="#975ad1"
    cx="417"
-   cy="57.8"
-   rx="7.45"
+   cy="57.799999"
+   rx="7.4499998"
    ry="7.21"
    id="ellipse688" />
 	<path
-   fill="#FC42A0"
-   d="M417,50.55v14.46c4.14,0,7.45-3.24,7.45-7.21S421.14,50.55,417,50.55z"
+   fill="#fc42a0"
+   d="m 417,50.55 v 14.46 c 4.14,0 7.45,-3.24 7.45,-7.21 0,-3.97 -3.31,-7.25 -7.45,-7.25 z"
    id="path690" />
 	<path
-   fill="#64BC46"
-   d="M422.72,62.44c1.49-1.71,2-3.88,1.63-5.9L417,57.8l-4.79,5.5C415.37,65.86,420.06,65.5,422.72,62.44z"
+   fill="#64bc46"
+   d="m 422.72,62.44 c 1.49,-1.71 2,-3.88 1.63,-5.9 l -7.35,1.26 -4.79,5.5 c 3.16,2.56 7.85,2.2 10.51,-0.86 z"
    id="path692" />
 </g>
 <circle
-   fill="#FFFFFF"
-   stroke="#DDE1E6"
+   fill="#ffffff"
+   stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="417"
+   cx="427"
    cy="584"
    r="32"
    id="circle696" />
 <g
    id="g724"
-   transform="translate(-18)">
+   transform="translate(-12)">
 	<g
    id="g699">
 		<polygon
@@ -467,7 +470,7 @@
    fill-rule="evenodd"
    clip-rule="evenodd"
    fill="#0f62fe"
-   points="134,195 132.6,196.4 140.1,204 119,204 119,206 140.1,206 132.6,213.6 134,215 144,205 " />
+   points="140.1,204 119,204 119,206 140.1,206 132.6,213.6 134,215 144,205 134,195 132.6,196.4 " />
 	</g>
 	<g
    id="g722">
@@ -475,7 +478,7 @@
    id="defs702">
 			<polygon
    id="SVGID_1_"
-   points="134,195 132.6,196.4 140.1,204 119,204 119,206 140.1,206 132.6,213.6 134,215 144,205 " />
+   points="140.1,204 119,204 119,206 140.1,206 132.6,213.6 134,215 144,205 134,195 132.6,196.4 " />
 		</defs>
 		<clipPath
    id="SVGID_2_">
@@ -536,8 +539,7 @@
 	</g>
 </g>
 <g
-   id="g752"
-   transform="translate(-10)">
+   id="g752">
 	<g
    id="g727">
 		<polygon
@@ -614,8 +616,7 @@
 	</g>
 </g>
 <g
-   id="g780"
-   transform="translate(-10)">
+   id="g780">
 	<g
    id="g755">
 		<polygon
@@ -693,7 +694,7 @@
 </g>
 <g
    id="g808"
-   transform="translate(4)">
+   transform="translate(14)">
 	<g
    id="g783">
 		<polygon
@@ -771,7 +772,7 @@
 </g>
 <g
    id="g836"
-   transform="translate(24)">
+   transform="translate(34)">
 	<g
    id="g811">
 		<polygon
@@ -849,7 +850,7 @@
 </g>
 <g
    id="g844"
-   transform="translate(-14)">
+   transform="translate(-4)">
 	<rect
    x="188"
    y="132"
@@ -872,7 +873,7 @@
 </g>
 <g
    id="g850"
-   transform="translate(-8)">
+   transform="translate(2)">
 	<rect
    x="302"
    y="132"
@@ -889,146 +890,151 @@
 </g>
 <polyline
    fill="none"
-   stroke="#4589FF"
+   stroke="#4589ff"
    stroke-miterlimit="10"
    points="557.5,283 551.5,277 545.5,283 "
-   id="polyline852" />
+   id="polyline852"
+   transform="translate(10)" />
 <rect
-   x="283"
-   y="277.52"
-   fill="#4589FF"
+   x="293"
+   y="277.51999"
+   fill="#4589ff"
    width="1"
    height="249"
    id="rect854" />
 <rect
-   x="551"
-   y="277.52"
-   fill="#4589FF"
+   x="561"
+   y="277.51999"
+   fill="#4589ff"
    width="1"
    height="249"
    id="rect856" />
 <rect
-   x="532"
+   x="542"
    y="66"
-   fill="#4589FF"
+   fill="#4589ff"
    width="1"
    height="90"
    id="rect858" />
 <rect
-   x="352"
+   x="362"
    y="66"
-   fill="#4589FF"
+   fill="#4589ff"
    width="1"
    height="114"
    id="rect860" />
 <rect
-   x="462"
+   x="472"
    y="66"
-   fill="#4589FF"
+   fill="#4589ff"
    width="70"
    height="1"
    id="rect862" />
 <polyline
    fill="none"
-   stroke="#4589FF"
+   stroke="#4589ff"
    stroke-miterlimit="10"
    points="468,72.5 462,66.5 468,60.5 "
-   id="polyline864" />
+   id="polyline864"
+   transform="translate(10)" />
 <rect
-   x="352"
+   x="362"
    y="66"
-   fill="#4589FF"
+   fill="#4589ff"
    width="20"
    height="1"
    id="rect866" />
 <rect
-   x="332"
+   x="342"
    y="179"
-   fill="#4589FF"
+   fill="#4589ff"
    width="20"
    height="1"
    id="rect868" />
 <polyline
    fill="none"
-   stroke="#4589FF"
+   stroke="#4589ff"
    stroke-miterlimit="10"
    points="366,72.5 372,66.5 366,60.5 "
-   id="polyline870" />
+   id="polyline870"
+   transform="translate(10)" />
 <polyline
    fill="none"
-   stroke="#4589FF"
+   stroke="#4589ff"
    stroke-miterlimit="10"
    points="324.5,284 318.5,278 312.5,284 "
-   id="polyline872" />
+   id="polyline872"
+   transform="translate(10)" />
 <rect
-   x="319"
+   x="329"
    y="338"
-   fill="#4589FF"
+   fill="#4589ff"
    width="54"
    height="1"
    id="rect874" />
 <polyline
    fill="none"
-   stroke="#4589FF"
+   stroke="#4589ff"
    stroke-miterlimit="10"
    points="509.5,284 515.5,278 521.5,284 "
-   id="polyline876" />
+   id="polyline876"
+   transform="translate(10)" />
 <rect
-   x="515"
+   x="525"
    y="278"
-   fill="#4589FF"
+   fill="#4589ff"
    width="1"
    height="61"
    id="rect878" />
 <rect
-   x="462.01"
+   x="472.01001"
    y="338"
-   fill="#4589FF"
+   fill="#4589ff"
    width="54"
    height="1"
    id="rect880" />
 <rect
-   x="284"
+   x="294"
    y="526"
-   fill="#4589FF"
+   fill="#4589ff"
    width="126.3"
    height="1"
    id="rect882" />
 <rect
-   x="411.85"
-   y="520.84"
-   transform="matrix(0.7071 -0.7071 0.7071 0.7071 -250.0053 449.4239)"
+   x="-75.653999"
+   y="668.9162"
+   transform="rotate(-45)"
    fill="none"
-   stroke="#4589FF"
-   stroke-width="1"
+   stroke="#4589ff"
+   stroke-width="0.99999"
    stroke-miterlimit="9.9999"
-   width="11.31"
-   height="11.31"
+   width="11.309892"
+   height="11.309892"
    id="rect884" />
 <rect
-   x="425.3"
+   x="435.29999"
    y="526"
-   fill="#4589FF"
+   fill="#4589ff"
    width="126.7"
    height="1"
    id="rect886" />
 <rect
-   x="417"
+   x="427"
    y="505"
-   fill="#4589FF"
+   fill="#4589ff"
    width="1"
    height="14"
    id="rect888" />
 <rect
-   x="417"
+   x="427"
    y="534"
-   fill="#4589FF"
+   fill="#4589ff"
    width="1"
    height="14"
    id="rect890" />
 <g
    id="g896"
-   transform="translate(-8)">
+   transform="translate(2)">
 	<rect
    x="233.5"
    y="65.5"
@@ -1047,69 +1053,73 @@
    font-family="IBMPlexSans"
    font-size="14px"
    id="headerSVG.prPipeline"
-   x="135.2585"
+   x="145.2585"
    y="116">PR Pipeline</text>
 <circle
-   fill="#FFFFFF"
-   stroke="#DDE1E6"
+   fill="#ffffff"
+   stroke="#dde1e6"
    stroke-miterlimit="10"
-   cx="417.5"
+   cx="427.5"
    cy="339"
    r="32"
    id="circle900" />
 <image
    overflow="visible"
    enable-background="new    "
-   width="133"
-   height="133"
+   width="40.006401"
+   height="40.006401"
    xlink:href="data:image/jpeg;base64,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"
-   transform="matrix(0.3008 0 0 0.3008 397.4968 318.9968)"
-   id="image902">
+   id="image902"
+   x="407.4968"
+   y="318.9968">
 </image>
 <text
    id="headerSVG.keyProtect"
-   transform="matrix(1 0 0 1 381.4081 388.9994)"
-   font-family="'IBMPlexSans'"
-   font-size="14px">Key Protect</text>
+   font-family="IBMPlexSans"
+   font-size="14px"
+   x="391.40811"
+   y="388.99939">Key Protect</text>
 <text
    id="headerSVG.artifactory"
-   transform="matrix(1 0 0 1 383.7016 498.0007)"
-   font-family="'IBMPlexSans'"
-   font-size="14px">Artifactory</text>
+   font-family="IBMPlexSans"
+   font-size="14px"
+   x="393.7016"
+   y="498.0007">Artifactory</text>
 <text
    id="headerSVG.cos"
-   transform="matrix(1 0 0 1 403.7214 633.9992)"
-   font-family="'IBMPlexSans'"
-   font-size="14px">COS</text>
+   font-family="IBMPlexSans"
+   font-size="14px"
+   x="413.72141"
+   y="633.99921">COS</text>
 <text
    id="headerSVG.cdPipeline"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="533.10657"
+   x="543.10657"
    y="254.9995">CD Pipeline</text>
 <text
    id="headerSVG.vsi"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="653.78003"
+   x="663.78003"
    y="254.9995">VSI</text>
 <text
    id="headerSVG.inventoryRepo"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="358.7431"
+   x="368.7431"
    y="254.9993">Inventory Repo</text>
 <text
    id="headerSVG.ciPipeline"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="256.6734"
+   x="266.6734"
    y="254.9996">CI Pipeline</text>
 <text
    id="headerSVG.appRepo"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="132.3837"
+   x="142.3837"
    y="255.52">App Repo</text>
 <text
    id="headerSVG.issueTracker"
@@ -1119,14 +1129,15 @@
    y="255">Issue Tracker</text>
 <text
    id="headerSVG.devopsInsights"
-   transform="matrix(1 0 0 1 365.5227 116.0002)"
-   font-family="'IBMPlexSans'"
-   font-size="14px">DevOps Insights</text>
+   font-family="IBMPlexSans"
+   font-size="14px"
+   x="375.52271"
+   y="116.0002">DevOps Insights</text>
 <text
    id="headerSVG.cra"
    font-family="IBMPlexSans"
    font-size="14px"
-   x="282.686"
+   x="292.686"
    y="115.9998">CRA</text>
 <g
    id="g943"
@@ -1211,7 +1222,7 @@
 </g>
 <g
    id="g973"
-   transform="translate(-2)">
+   transform="translate(8)">
 	<g
    id="g971">
 		<defs
@@ -1292,7 +1303,7 @@
 </g>
 <g
    id="g1003"
-   transform="translate(-18)">
+   transform="translate(-8)">
 	<g
    id="g1001">
 		<defs
@@ -1372,14 +1383,15 @@
 	</g>
 </g>
 <g
-   id="g1011">
+   id="g1011"
+   transform="translate(10)">
 	<title
    id="title1005">Artboard</title>
 	<g
    id="Artboard_1_">
 		<g
    id="app-icon-light-_1_"
-   transform="translate(0.500000, 0.000000)">
+   transform="translate(0.5)">
 			
 				<image
    overflow="visible"
@@ -1387,7 +1399,7 @@
    width="256"
    height="256"
    xlink:href="data:image/png;base64,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"
-   transform="matrix(0.1562 0 0 0.1562 396.4571 564)"
+   transform="matrix(0.1562,0,0,0.1562,396.4571,564)"
    id="image1007">
 			</image>
 		</g>
@@ -1395,16 +1407,16 @@
 </g>
 <g
    id="g1015"
-   transform="translate(22)">
+   transform="translate(32)">
 	<path
    fill="#69a1d6"
    d="m 644.88,213.41 c 0,0.58 -0.41,1.04 -0.91,1.04 -0.5,0 -0.91,-0.47 -0.91,-1.04 0,-0.57 0.41,-1.04 0.91,-1.04 0.5,0 0.91,0.47 0.91,1.04 z m 1.5,-9.59 c 0.27,-0.08 0.43,-0.37 0.35,-0.65 -0.07,-0.27 -0.36,-0.43 -0.63,-0.36 0,0 -0.01,0 -0.01,0 -0.21,0.06 -0.44,0.08 -0.65,0.04 -0.28,-0.04 -0.54,0.15 -0.59,0.43 0,0 0,0 0,0.01 -0.05,0.28 0.15,0.55 0.43,0.6 0.37,0.06 0.74,0.03 1.1,-0.07 z m -1.6,-0.6 c 0.08,-0.28 -0.07,-0.56 -0.35,-0.65 l -0.85,-0.26 c -0.28,-0.06 -0.56,0.11 -0.62,0.4 -0.06,0.26 0.08,0.51 0.33,0.6 l 0.85,0.26 c 0.28,0.08 0.56,-0.08 0.64,-0.35 0,0 0,0 0,0 z m 2.67,0.24 0.84,-0.28 c 0.27,-0.09 0.42,-0.39 0.33,-0.66 -0.09,-0.27 -0.38,-0.42 -0.65,-0.33 0,0 0,0 0,0 l -0.84,0.28 c -0.27,0.1 -0.41,0.4 -0.32,0.67 0.07,0.2 0.26,0.34 0.48,0.35 0.06,-0.01 0.11,-0.02 0.16,-0.03 z m -4.58,-0.82 c 0.08,-0.28 -0.07,-0.56 -0.35,-0.65 l -0.85,-0.25 c -0.27,-0.08 -0.56,0.07 -0.64,0.35 0,0 0,0 0,0.01 -0.08,0.28 0.08,0.56 0.35,0.65 l 0.85,0.26 c 0.27,0.07 0.55,-0.09 0.64,-0.37 -0.01,0.01 -0.01,0.01 0,0 z m 6.48,0.18 0.84,-0.29 c 0.27,-0.09 0.42,-0.39 0.33,-0.66 -0.09,-0.27 -0.38,-0.42 -0.65,-0.33 0,0 0,0 0,0 l -0.84,0.29 c -0.27,0.1 -0.41,0.4 -0.32,0.67 0.07,0.2 0.26,0.34 0.48,0.35 0.05,-0.01 0.11,-0.02 0.16,-0.03 z m -8.4,-0.75 c 0.08,-0.28 -0.07,-0.56 -0.35,-0.65 l -0.85,-0.25 c -0.27,-0.08 -0.56,0.08 -0.64,0.35 0,0 0,0 0,0 -0.08,0.27 0.07,0.56 0.35,0.65 l 0.85,0.25 c 0.27,0.08 0.56,-0.07 0.64,-0.35 0,0 0,0 0,0 z m 10.3,0.11 0.84,-0.28 c 0.27,-0.09 0.42,-0.39 0.33,-0.66 -0.09,-0.27 -0.38,-0.42 -0.65,-0.33 l -0.84,0.28 c -0.27,0.1 -0.41,0.4 -0.32,0.67 0.07,0.2 0.26,0.34 0.48,0.35 0.05,-0.01 0.11,-0.02 0.16,-0.03 z m -12.22,-0.68 c 0.08,-0.28 -0.07,-0.57 -0.35,-0.65 l -0.85,-0.25 c -0.28,-0.06 -0.56,0.11 -0.62,0.4 -0.06,0.26 0.08,0.51 0.33,0.6 l 0.85,0.26 c 0.27,0.07 0.56,-0.09 0.64,-0.36 0,0 0,0 0,0 z m 17.91,-1.24 0.84,-0.28 c 0.27,-0.09 0.42,-0.39 0.33,-0.66 -0.09,-0.27 -0.38,-0.42 -0.65,-0.33 0,0 0,0 0,0 l -0.84,0.28 c -0.27,0.1 -0.41,0.4 -0.32,0.67 0.07,0.2 0.26,0.34 0.48,0.35 0.05,0 0.11,-0.01 0.16,-0.03 z m -23.66,-0.48 c 0.08,-0.28 -0.07,-0.57 -0.35,-0.65 l -0.85,-0.25 c -0.27,-0.08 -0.56,0.08 -0.64,0.35 -0.08,0.27 0.07,0.56 0.35,0.65 l 0.85,0.25 c 0.27,0.08 0.56,-0.07 0.64,-0.35 0,0 0,0 0,0 z m 25.56,-0.16 0.84,-0.28 c 0.27,-0.09 0.42,-0.39 0.32,-0.67 -0.02,-0.05 -0.05,-0.11 -0.08,-0.15 0.09,0.04 0.18,0.06 0.28,0.05 0.29,-0.03 0.49,-0.28 0.47,-0.57 -0.05,-0.51 -0.4,-0.93 -0.94,-1.08 -0.28,-0.07 -0.53,0.1 -0.6,0.38 -0.07,0.28 0.12,0.57 0.39,0.65 0.07,0.02 0.11,0.07 0.12,0.15 0.01,0.1 0.05,0.19 0.11,0.27 -0.12,-0.06 -0.26,-0.07 -0.39,-0.03 l -0.84,0.28 c -0.27,0.1 -0.41,0.4 -0.32,0.67 0.07,0.2 0.26,0.34 0.48,0.35 0.05,0.01 0.1,0 0.16,-0.02 z m -27.48,-0.41 c 0.08,-0.28 -0.07,-0.56 -0.35,-0.65 l -0.78,-0.23 c -0.05,-0.08 -0.08,-0.17 -0.09,-0.26 0,-0.02 0,-0.04 0.01,-0.05 0.1,-0.27 -0.03,-0.57 -0.3,-0.67 -0.27,-0.1 -0.57,0.03 -0.67,0.3 v 0 c -0.05,0.14 -0.08,0.28 -0.08,0.43 0,0.32 0.12,0.66 0.32,0.93 0.05,0.07 0.1,0.13 0.17,0.17 0.07,0.07 0.16,0.12 0.26,0.14 l 0.85,0.25 c 0.29,0.07 0.58,-0.09 0.66,-0.36 0,0 0,0 0,0 z m -0.63,-1.4 0.86,-0.23 c 0.27,-0.1 0.42,-0.39 0.32,-0.67 -0.09,-0.24 -0.34,-0.39 -0.59,-0.34 l -0.86,0.23 c -0.27,0.1 -0.42,0.39 -0.32,0.67 0.09,0.24 0.34,0.39 0.59,0.34 z m 28.29,-0.53 c 0.07,-0.28 -0.09,-0.56 -0.37,-0.64 l -0.86,-0.23 c -0.27,-0.07 -0.56,0.09 -0.63,0.36 0,0 0,0.01 0,0.01 -0.07,0.28 0.09,0.56 0.37,0.64 l 0.86,0.23 c 0.28,0.07 0.56,-0.09 0.63,-0.37 z m -26.36,0.01 0.86,-0.23 c 0.28,-0.08 0.44,-0.36 0.36,-0.64 -0.07,-0.28 -0.36,-0.44 -0.63,-0.37 0,0 0,0 0,0 l -0.86,0.23 c -0.28,0.08 -0.44,0.37 -0.36,0.65 0.06,0.22 0.26,0.38 0.49,0.38 0.05,-0.01 0.1,-0.01 0.14,-0.02 z m 24.43,-0.53 c 0.07,-0.28 -0.09,-0.56 -0.37,-0.64 l -0.86,-0.23 c -0.28,-0.06 -0.56,0.12 -0.62,0.4 -0.06,0.26 0.1,0.53 0.36,0.61 l 0.86,0.23 c 0.27,0.08 0.55,-0.09 0.63,-0.37 0,0 0,0 0,0 z m -22.5,0 0.86,-0.23 c 0.27,-0.1 0.42,-0.39 0.32,-0.67 -0.09,-0.24 -0.34,-0.39 -0.59,-0.34 l -0.86,0.23 c -0.27,0.1 -0.42,0.39 -0.32,0.67 0.09,0.24 0.34,0.39 0.59,0.34 z m 20.56,-0.51 c 0.07,-0.28 -0.09,-0.56 -0.37,-0.64 l -0.86,-0.23 c -0.28,-0.06 -0.56,0.12 -0.62,0.4 -0.06,0.26 0.1,0.53 0.36,0.61 l 0.86,0.23 c 0.28,0.07 0.56,-0.1 0.63,-0.37 0,0 0,0 0,0 z m -18.63,-0.01 0.86,-0.23 c 0.27,-0.1 0.42,-0.39 0.32,-0.67 -0.09,-0.24 -0.34,-0.39 -0.59,-0.34 l -0.86,0.23 c -0.27,0.1 -0.42,0.39 -0.32,0.67 0.09,0.24 0.34,0.38 0.59,0.34 z m 16.7,-0.51 c 0.07,-0.28 -0.09,-0.56 -0.37,-0.64 l -0.86,-0.23 c -0.28,-0.06 -0.56,0.12 -0.62,0.4 -0.06,0.26 0.1,0.53 0.36,0.61 l 0.86,0.23 c 0.28,0.07 0.56,-0.09 0.63,-0.37 0,0 0,0 0,0 z m -14.77,-0.02 0.86,-0.23 c 0.28,-0.08 0.44,-0.36 0.36,-0.64 -0.07,-0.28 -0.36,-0.44 -0.63,-0.37 0,0 0,0 0,0 l -0.86,0.23 c -0.28,0.08 -0.44,0.37 -0.36,0.65 0.06,0.22 0.26,0.38 0.49,0.38 0.05,0 0.1,-0.01 0.14,-0.02 z m 12.84,-0.5 c 0.07,-0.28 -0.09,-0.56 -0.37,-0.64 l -0.86,-0.23 c -0.28,-0.06 -0.56,0.12 -0.62,0.4 -0.06,0.26 0.1,0.53 0.36,0.61 l 0.86,0.23 c 0.27,0.08 0.56,-0.09 0.63,-0.37 0,0 0,0 0,0 z m -10.91,-0.03 0.86,-0.23 c 0.27,-0.1 0.42,-0.39 0.32,-0.67 -0.09,-0.24 -0.34,-0.39 -0.59,-0.34 l -0.86,0.23 c -0.27,0.1 -0.42,0.39 -0.32,0.67 0.09,0.25 0.34,0.39 0.59,0.34 z m 8.98,-0.48 c 0.07,-0.28 -0.09,-0.56 -0.37,-0.64 l -0.86,-0.23 c -0.28,-0.06 -0.56,0.12 -0.62,0.4 -0.06,0.26 0.1,0.53 0.36,0.61 l 0.86,0.23 c 0.27,0.07 0.55,-0.09 0.63,-0.37 -0.01,0 -0.01,0 0,0 z m -7.04,-0.04 0.86,-0.23 c 0.27,-0.1 0.42,-0.39 0.32,-0.67 -0.09,-0.24 -0.34,-0.39 -0.59,-0.34 l -0.86,0.23 c -0.27,0.1 -0.42,0.39 -0.32,0.67 0.08,0.24 0.33,0.39 0.59,0.34 z m 5.1,-0.48 c 0.07,-0.28 -0.09,-0.56 -0.37,-0.64 l -0.86,-0.23 c -0.28,-0.06 -0.56,0.12 -0.62,0.4 -0.06,0.26 0.1,0.53 0.36,0.61 l 0.86,0.23 c 0.28,0.07 0.56,-0.09 0.63,-0.37 0,0 0,0 0,0 z m -3.17,-0.05 0.18,-0.05 c 0.16,-0.04 0.32,-0.05 0.48,-0.03 0.28,0.04 0.54,-0.15 0.59,-0.44 0.04,-0.29 -0.15,-0.55 -0.43,-0.59 -0.3,-0.05 -0.61,-0.03 -0.91,0.05 l -0.18,0.05 c -0.28,0.08 -0.44,0.37 -0.36,0.65 0.06,0.22 0.26,0.37 0.49,0.38 0.05,0 0.09,-0.01 0.14,-0.02 z m 16.59,12.7 v 3.89 c 0,0.8 -0.5,1.5 -1.24,1.74 l -13.56,4.45 c -0.34,0.11 -0.7,0.12 -1.05,0.01 l -14.87,-4.47 c -0.76,-0.23 -1.29,-0.96 -1.28,-1.77 l 0.04,-3.74 c 0,-0.64 0.43,-1.19 1.04,-1.37 l 3.52,-0.92 -3.57,-1.07 c -0.52,-0.16 -0.87,-0.64 -0.86,-1.18 0,-0.54 0.36,-1.02 0.89,-1.16 l 3.56,-0.97 c -0.18,-0.22 -0.15,-0.54 0.07,-0.72 0.13,-0.11 0.31,-0.15 0.47,-0.1 l 0.85,0.26 c 0.08,0.03 0.15,0.07 0.21,0.13 l 9.1,-2.48 c 0.37,-0.1 0.76,-0.1 1.14,0 l 9.48,2.53 0.78,-0.26 c 0.27,-0.09 0.56,0.06 0.65,0.33 0,0 0,0 0,0 0.03,0.1 0.03,0.21 -0.01,0.32 l 3.57,0.95 c 0.52,0.14 0.87,0.6 0.89,1.14 0.02,0.54 -0.31,1.02 -0.82,1.2 l -3.17,1.07 3.1,0.82 c 0.64,0.15 1.07,0.72 1.07,1.37 z m -15.59,0.27 c 0.29,0.09 0.6,0.08 0.89,-0.01 l 13.38,-4.51 c 0.1,-0.03 0.11,-0.11 0.11,-0.18 0,-0.06 -0.02,-0.14 -0.12,-0.16 l -5.19,-1.38 c -0.03,0.19 -0.16,0.34 -0.34,0.4 l -0.84,0.28 c -0.27,0.09 -0.56,-0.06 -0.65,-0.33 -0.09,-0.27 0.06,-0.57 0.33,-0.66 l 0.17,-0.06 -7.96,-2.12 c -0.2,-0.05 -0.41,-0.05 -0.6,0 l -7.46,2.03 c 0.14,0.13 0.21,0.33 0.15,0.53 -0.08,0.27 -0.36,0.43 -0.64,0.35 0,0 0,0 0,0 l -0.85,-0.25 c -0.1,-0.03 -0.19,-0.1 -0.26,-0.19 l -5.2,1.42 c -0.1,0.03 -0.12,0.11 -0.12,0.17 0,0.06 0.02,0.14 0.12,0.17 z m -14.29,-0.72 14.44,4.46 c 0.06,0.02 0.14,0.02 0.21,-0.01 l 13.4,-4.51 -4.12,-1.08 -8.42,2.84 c -0.49,0.17 -1.02,0.17 -1.51,0.02 l -9.6,-2.86 z m 28.85,0.77 -13.88,4.68 c -0.27,0.09 -0.55,0.09 -0.82,0.01 l -15.2,-4.69 -0.03,3.55 c -0.01,0.35 0.21,0.66 0.54,0.76 l 14.87,4.47 c 0.14,0.04 0.29,0.04 0.43,-0.01 l 13.56,-4.45 c 0.32,-0.11 0.53,-0.41 0.53,-0.75 z"
    id="path1013" />
 </g>
 <rect
-   x="318"
+   x="328"
    y="278"
-   fill="#4589FF"
+   fill="#4589ff"
    width="1"
    height="61"
    id="rect1017" />
