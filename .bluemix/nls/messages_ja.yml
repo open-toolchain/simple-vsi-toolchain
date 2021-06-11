@@ -1,8 +1,8 @@
 ---
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "仮想マシン用のアプリケーションの開発"
-template.description: "このツールチェーンを使用して、アプリケーションを開発し、IBM Cloud で管理されている仮想サーバー (仮想マシン) に安全にデプロイすることができます。デフォルトでは、サンプルの Maven ベースの Java「Hello World」アプリがツールチェーンで使用されますが、代わりに独自の Maven ベースの Java アプリを用意して、それにリンクすることもできます。このツールチェーンは、継続的な統合、継続的デリバリー、[Code Risk Analyzer](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-cd-configure-cra-repos) によるプルリクエスト、ソース管理、Issue のトラッキング、およびオンライン編集のためのパイプラインで事前構成されています。\n\nこのツールチェーンは、Continuous Delivery サービスに含まれるツールを使用します。 そのサービスのインスタンスが、選択したリソース・グループや組織にまだない場合は、**「作成」**をクリックすると、無料の[ライト](/catalog/services/continuous-delivery/) プランが選択されてインスタンスが自動的に追加されます。\n\n開始するには、**「作成」**をクリックしてください。\n\n段階的な説明については、[チュートリアル](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi) を参照してください。"
-template.gettingStarted: " **ツールチェーンの準備ができました**\n\n**クイック・スタート:** Git リポジトリーに対する変更をコミットして、新しいビルド・パイプラインを起動してください。このパイプラインは脆弱性についてスキャンされ、仮想サーバーにデプロイされます。段階的な説明については、このツールチェーンの[チュートリアル](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi) を参照してください。\n\n **注:** COS インスタンスをアーティファクト・ストレージとして使用している場合、Artifactory は使用されません。「Artifactory」タイルを無視して、未構成のままにしておくことが安全です。"
+template.description: "このツールチェーンを使用して、アプリケーションを開発し、IBM Cloud で管理されている仮想サーバー (仮想マシン) に安全にデプロイすることができます。デフォルトでは、サンプルの Maven ベースの Java「Hello World」アプリがツールチェーンで使用されますが、代わりに独自の Maven ベースの Java アプリを用意して、それにリンクすることもできます。このツールチェーンは、継続的な統合、継続的デリバリー、[Code Risk Analyzer](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-cd-configure-cra-repos) によるプルリクエスト、ソース管理、Issue のトラッキング、およびオンライン編集のためのパイプラインで事前構成されています。\n\nこのツールチェーンは、Continuous Delivery サービスに含まれるツールを使用します。 そのサービスのインスタンスが、選択したリソース・グループや組織にまだない場合は、**「作成」**をクリックすると、無料の[ライト](/catalog/services/continuous-delivery/)・プランが選択されてインスタンスが自動的に追加されます。\n\n開始するには、**「作成」**をクリックしてください。\n\n段階的な説明については、[チュートリアル](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi)を参照してください。"
+template.gettingStarted: " **ツールチェーンの準備ができました**\n\n**クイック・スタート:** Git リポジトリーに対する変更をコミットして、新しいビルド・パイプラインを起動してください。このパイプラインは脆弱性についてスキャンされ、仮想サーバーにデプロイされます。段階的な説明については、このツールチェーンの[チュートリアル](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi)を参照してください。\n\n **注:** COS インスタンスをアーティファクト・ストレージとして使用している場合、Artifactory は使用されません。「Artifactory」タイルを無視して、未構成のままにしておくことが安全です。"
 deploy.title: "サンプル Java ベース・アプリケーションのデプロイ・ステージ"
 deploy.description: "単純な Maven ベースの Java hello-world アプリケーションをビルドしてデプロイするためのツールチェーン"
 deploy.longDescription: "Delivery Pipeline は、スタンドアロン・アプリケーションの継続的なビルド、テスト、およびデプロイを自動化します。"
@@ -16,8 +16,8 @@ deploy.rgDescription: "実動デプロイメントのための IBM Cloud リソ�
 deploy.apikey: "IBM Cloud API キー"
 deploy.vsiRegionTitle: "仮想サーバー・インスタンス・リージョン"
 deploy.vsi: "仮想サーバー・インスタンス"
-deploy.vsiLabel: "リストから仮想サーバー・インスタンスを選択します。ブランクの・テキスト・ボックスが表示される場合、[仮想サーバー・インスタンス](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console) を作成し、ページを再表示してください。"
-deploy.vsiRegionLabel: "仮想サーバーがプロビジョンされる IBM Cloud リージョンを選択します。ブランクの・テキスト・ボックスが表示される場合、[仮想サーバー・インスタンス](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console) を作成し、ページを再表示してください。"
+deploy.vsiLabel: "リストから仮想サーバー・インスタンスを選択します。ブランクの・テキスト・ボックスが表示される場合、[仮想サーバー・インスタンス](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console)を作成し、ページを再表示してください。"
+deploy.vsiRegionLabel: "仮想サーバーがプロビジョンされる IBM Cloud リージョンを選択します。ブランクの・テキスト・ボックスが表示される場合、[仮想サーバー・インスタンス](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console)を作成し、ページを再表示してください。"
 deploy.vsiUserName: "VSI インスタンスにログインするときのユーザー名を入力します。"
 deploy.vsiSshKey: "VSI インスタンスにログインするときの秘密鍵を入力します。"
 deploy.vsiUserPassword: "VSI インスタンスにログインするときのパスワードを入力します。"
