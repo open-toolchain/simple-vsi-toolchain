@@ -162,6 +162,8 @@ services:
             }
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
+          APP_REPO_BRANCH: >
+            $env.template.info.hosted_region !== "" ? 'main': 'master'
         execute: false
   artifactory:
     service_id: artifactory 
@@ -209,6 +211,8 @@ services:
               'grit-or-gitlab-commit';
             }
           DEFINITIONS_BRANCH: >
+            $env.template.info.hosted_region !== "" ? 'main': 'master'
+          APP_REPO_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
         execute: manual-run
   deploy:
