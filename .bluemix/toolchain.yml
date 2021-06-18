@@ -72,13 +72,13 @@ services:
         if ( $env.template.info.hosted_region !== "" ) {
           "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/simple-vsi-toolchain"
         } else {
-          "https://github.com/open-toolchain/java-spring-app"
+          "https://github.com/open-toolchain/simple-vsi-toolchain"
         }
       source_repo_url: >
         if ( $env.template.info.hosted_region !== "" ) {
           "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/simple-vsi-toolchain"
         } else {
-          "https://github.com/open-toolchain/java-spring-app"
+          "https://github.com/open-toolchain/simple-vsi-toolchain"
         }
       type: 'clone'
       has_issues: false
