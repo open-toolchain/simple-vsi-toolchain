@@ -265,6 +265,8 @@ services:
             }
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
+          APP_REPO_BRANCH: >
+            $env.template.info.hosted_region !== "" ? 'master': 'master'
         execute: false
   webide:
     service_id: orion 
