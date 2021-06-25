@@ -146,7 +146,7 @@ services:
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           PIPELINE_REPO_BRANCH: >
             $env.branch ? $env.branch : 
-            $env.template.info.hosted_region !== "" ? 'main': 'master'
+            $env.template.info.hosted_region !== "" ? 'master': 'master'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           GIT_COMMIT_EVENT_LISTENER_NAME: >
             if ( $env.source_provider === 'githubconsolidated' ) {
@@ -163,7 +163,7 @@ services:
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
-            $env.template.info.hosted_region !== "" ? 'main': 'master'
+            $env.template.info.hosted_region !== "" ? 'master': 'master'
         execute: false
   artifactory:
     service_id: artifactory 
@@ -196,7 +196,7 @@ services:
           INSIGHTS: devops-insights
           PIPELINE_REPO_BRANCH: >
             $env.branch ? $env.branch : 
-            $env.template.info.hosted_region !== "" ? 'main': 'master'
+            $env.template.info.hosted_region !== "" ? 'master': 'master'
           TEKTON_CATALOG_REPO: tekton-catalog-repo          
           GIT_COMMIT_EVENT_LISTENER_NAME: >
             if ( $env.source_provider === 'githubconsolidated' ) {
@@ -213,7 +213,7 @@ services:
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
-            $env.template.info.hosted_region !== "" ? 'main': 'master'
+            $env.template.info.hosted_region !== "" ? 'master': 'master'
         execute: manual-run
   deploy:
     service_id: pipeline
@@ -249,7 +249,7 @@ services:
           INVENTORY_REPO: inventory-repo
           PIPELINE_REPO_BRANCH: >
             $env.branch ? $env.branch : 
-            $env.template.info.hosted_region !== "" ? 'main': 'master'
+            $env.template.info.hosted_region !== "" ? 'master': 'master'
           TEKTON_CATALOG_REPO: tekton-catalog-repo          
           GIT_COMMIT_EVENT_LISTENER_NAME: >
             if ( $env.source_provider === 'githubconsolidated' ) {
