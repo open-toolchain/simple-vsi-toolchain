@@ -62,7 +62,7 @@ steps:
     conditions:
       $ref: conditions.yml#/tools_conditions
  
- - name: artifactory
+  - name: artifactory
     indent_level: 1
     title:
       $ref: "#/messages/wizard.optional.tools.artifactory.title"
