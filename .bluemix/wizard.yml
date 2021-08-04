@@ -65,7 +65,7 @@ steps:
   - name: cos
     indent_level: 1
     title:
-      $ref: "#/messages/wizard.step.cos.title"
+      $ref: "#/messages/wizard.optional.tools.cos.title"
     form: customtool_cos-bucket
     visible:
       condition:
