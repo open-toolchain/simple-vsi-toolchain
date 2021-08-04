@@ -39,6 +39,19 @@
         "$ref": "#/messages/wizard.optional.tools.cos.description"
       }
     },
+    "artifactory": {
+      "type": "boolean",
+      "display": {
+        "component": "toggle",
+        "style": "card"
+      },
+      "title": {
+        "$ref": "#/messages/wizard.optional.tools.artifactory.title"
+      },
+      "description": {
+        "$ref": "#/messages/wizard.optional.tools.artifactory.description"
+      }
+    },
     "doi": {
       "type": "boolean",
       "display": {
@@ -56,6 +69,7 @@
   "form": [
     "webide",
     "doi",
-    "cos"
+    "cos",
+    "artifactory"
   ]
 }
