@@ -26,6 +26,19 @@
         "$ref": "#/messages/wizard.optional.tools.webide.description"
       }
     },
+    "cos": {
+      "type": "boolean",
+      "display": {
+        "component": "toggle",
+        "style": "card"
+      },
+      "title": {
+        "$ref": "#/messages/wizard.optional.tools.cos.title"
+      },
+      "description": {
+        "$ref": "#/messages/wizard.optional.tools.cos.description"
+      }
+    },
     "doi": {
       "type": "boolean",
       "display": {
