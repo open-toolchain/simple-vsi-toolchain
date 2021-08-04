@@ -92,6 +92,7 @@ services:
       enable_traceability: false
       legal: true
       kind: ['pipeline']
+      source_provider: 'hostedgit'
   tekton-catalog-repo:
     service_id: >
       $env.source_provider ? $env.source_provider : 'hostedgit'
@@ -113,6 +114,7 @@ services:
       has_issues: false
       enable_traceability: false
       kind: ['pipeline']
+      source_provider: 'hostedgit'
   inventory-repo:
     service_id: >
       $env.source_provider ? $env.source_provider : 'hostedgit' 
@@ -130,6 +132,7 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+      source_provider: 'hostedgit'
   pr:
     service_id: pipeline
     parameters:
