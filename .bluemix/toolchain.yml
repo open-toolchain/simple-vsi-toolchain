@@ -355,6 +355,7 @@ form:
     parameters:
       webide: true
       doi: true
+      cos: false
     schema:
       $ref: wizard_optional_tools.json
 
