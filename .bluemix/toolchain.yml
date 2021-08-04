@@ -24,6 +24,8 @@ template:
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
     hosted_region: ""
+  wizard:
+    $ref: wizard.yml
 toolchain:
   name: "simple-vsi-app-toolchain-{{timestamp}}"
   template:
