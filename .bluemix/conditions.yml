@@ -285,3 +285,19 @@ tools_conditions:
       - type: delete-service
         service_id: draservicebroker
         service_label: devops-insights
+  - condition:
+      any:
+        - parameter: cos
+          value: true
+    actions:
+      - type: create-service
+        service_id: customtool
+        service_label: cos-bucket
+  - condition:
+      any:
+        - parameter: cos
+          value: false
+    actions:
+      - type: delete-service
+        service_id: customtool
+        service_label: cos-bucket
