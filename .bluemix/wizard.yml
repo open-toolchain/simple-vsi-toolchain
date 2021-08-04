@@ -61,7 +61,18 @@ steps:
     form: wizard_optional_tools
     conditions:
       $ref: conditions.yml#/tools_conditions
-
+ 
+ - name: artifactory
+    indent_level: 1
+    title:
+      $ref: "#/messages/wizard.optional.tools.artifactory.title"
+    form: artifactory
+    visible:
+      condition:
+        any:
+          - form: wizard_optional_tools
+            parameter: artifactory
+            value: true
   - name: cos
     indent_level: 1
     title:
@@ -100,6 +111,8 @@ form:
     parameters:
       webide: true
       doi: true
+      cos: false
+      artifactory: false
     schema:
       $ref: wizard_optional_tools.json
 
