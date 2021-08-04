@@ -13,6 +13,13 @@ steps:
     advanced_form: repo
     conditions:
       $ref: conditions.yml#/repo_conditions
+  - name: inventory
+    label: 
+      $ref: "#/messages/wizard.step.inventory.label"
+    title:
+      $ref: "#/messages/wizard.step.inventory.title"
+    form: wizard_inventory
+    advanced_form: inventory
   - name: vault
     title:
       $ref: "#/messages/wizard.step.vault.title"
