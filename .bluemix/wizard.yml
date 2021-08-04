@@ -66,13 +66,7 @@ steps:
     indent_level: 1
     title:
       $ref: "#/messages/wizard.step.cos.title"
-    form: customtool_cos-bucket
-    visible:
-      condition:
-        any:
-          - form: evidence-repo
-            parameter: cos
-            value: true  
+    form: customtool_cos-bucket  
   - name: summary
     title:
       $ref: "#/messages/wizard.step.summary.title"
@@ -80,6 +74,10 @@ steps:
 
 form:
   wizard_app:
+    schema:
+      $ref: wizard_app.json
+
+  cos:
     schema:
       $ref: wizard_app.json
   wizard_inventory:
