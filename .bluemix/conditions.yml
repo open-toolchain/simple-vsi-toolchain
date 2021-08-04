@@ -308,3 +308,21 @@ tools_conditions:
       - type: delete-service
         service_id: customtool
         service_label: cos-bucket
+  - condition:
+      any:
+        - parameter: artifactory
+          value: true
+    actions:
+      - type: create-service
+        service_id: artifactory
+        service_label: artifactory
+        parameters:
+          type: maven
+  - condition:
+      any:
+        - parameter: artifactory
+          value: false
+    actions:
+      - type: delete-service
+        service_id: artifactory
+        service_label: artifactory
