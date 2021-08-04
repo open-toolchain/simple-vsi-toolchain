@@ -42,6 +42,7 @@
   },
   "form": [
     "webide",
-    "doi"
+    "doi",
+    "cos"
   ]
 }
