@@ -66,6 +66,7 @@ wizard.welcome.description: "With this toolchain, you can develop and deploy an 
 wizard.sourceHost: "Source Provider"
 wizard.step.application.title: "Application"
 wizard.step.inventory.title: "Inventory"
+wizard.step.inventory.label: "Inventory"
 wizard.step.vault.title: "Secrets"
 wizard.step.keyprotect.title: "IBM Key Protect"
 wizard.step.secretsmanager.title: "IBM Secrets Manager"
