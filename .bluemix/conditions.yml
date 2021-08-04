@@ -293,6 +293,16 @@ tools_conditions:
       - type: create-service
         service_id: customtool
         service_label: cos-bucket
+        parameters:
+          type: cos-bucket
+          lifecyclePhase: "MANAGE"
+          imageUrl:
+            $ref: cos-logo.png
+            $refType: image-data-uri
+          documentationUrl: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
+          name: Cloud Object Storage
+          dashboard_url: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
+          description: The information required to connect the toolchain with your Cloud Object Storage instance.
   - condition:
       any:
         - parameter: cos
