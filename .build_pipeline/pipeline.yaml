@@ -132,10 +132,6 @@ spec:
     - name: cra-discovery-scan
       runAfter:
         - build-source
-      when:
-        - input: "$(params.cos-region)"
-          operator: in
-          values: [ "ibm:yp:us-south" , "ibm:yp:us-east" ]
       taskRef:
         name: cra-discovery
       workspaces:

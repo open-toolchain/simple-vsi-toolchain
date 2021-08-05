@@ -89,10 +89,6 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: cra-discovery-scan
-      when:
-        - input: "$(params.toolchain-region)"
-          operator: in
-          values: [ "ibm:yp:us-south" , "ibm:yp:us-east" ]    
       runAfter:
         - git-clone-application-repo
       taskRef:
