@@ -351,14 +351,6 @@ form:
     schema:
       $ref: wizard_vault.json
 
-  wizard_optional_tools:
-    parameters:
-      webide: true
-      doi: true
-      cos: false
-    schema:
-      $ref: wizard_optional_tools.json
-
   wizard_summary:
     schema:
       $ref: wizard_summary.json
