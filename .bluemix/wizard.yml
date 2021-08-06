@@ -5,6 +5,10 @@ messages:
 welcome:
   description: 
       $ref: "#/messages/wizard.welcome.description"
+exclude:
+  service_labels:
+    - artifactory
+    - cos-bucket
 steps:
   - name: app
     title:
@@ -93,10 +97,9 @@ form:
   wizard_app:
     schema:
       $ref: wizard_app.json
-
   cos:
     schema:
-      $ref: wizard_app.json
+      $ref: cos.json
   wizard_inventory:
     schema:
       $ref: wizard_inventory.json
