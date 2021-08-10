@@ -53,4 +53,14 @@ properties:
     path: service_id
   - name: toolchain-region
     value: ${TOOLCHAIN_REGION}
-    type: text     
+    type: text  
+  - name: scripts-repo
+    value: ${APP_REPO}
+    type: integration
+    path: parameters.repo_url
+  - name: scripts-repo-branch
+    type: text
+    value: 'master'
+  - name: scripts-subpath
+    type: text
+    value: 'scripts'    

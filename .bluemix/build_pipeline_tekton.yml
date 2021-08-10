@@ -67,15 +67,28 @@ properties:
   - name: cos-region
     value: ${COS_REGION}
     type: text
-  - name: inventoryRepo
+  - name: inventory-repo
     value: ${INVENTORY_REPO}
     type: integration
     path: parameters.repo_url
   - name: repository
     value: ${APP_REPO}
     type: integration
-    path: parameters.repo_url  
+    path: parameters.repo_url
+  - name: scripts-repo
+    value: ${APP_REPO}
+    type: integration
+    path: parameters.repo_url      
   - name: insights
     value: ${INSIGHTS}
     type: integration
-    path: service_id    
+    path: service_id 
+  - name: scripts-repo-branch
+    type: text
+    value: 'master'
+  - name: inventory-repo-branch
+    type: text
+    value: "master"
+  - name: scripts-subpath
+    type: text
+    value: 'scripts'  

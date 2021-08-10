@@ -42,8 +42,10 @@ spec:
     - name: host-password
       description: The password required to login to the Virtual Server Instance
     - name: project-id
-    - name: inventoryRepo
+    - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: scripts-repo
+      description: The variable storing git integration for the repository storing build pipeline code for the toolchain         
     - name: cos-region
       description: The Region where Cloud Object Storage Instance is created
     - name: cos-api-key
@@ -55,6 +57,12 @@ spec:
       default: ""
     - name: insights
       description: The variable storing DevOps Insight integration with the toolchain
+    - name: scripts-subpath
+      description: The variable storing language scripts-subpath 
+    - name: scripts-repo-branch
+      description: The branch of the scripts-repo
+    - name: inventory-repo-branch
+      description: The branch of the inventory-repo
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -67,9 +75,11 @@ spec:
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
         - name: repository
-          value: $(params.inventoryRepo)
+          value: $(params.inventory-repo)
         - name: branch
-          value: "master"
+          value: $(params.inventory-repo-branch) 
+        - name: revision
+          value: $(params.inventory-repo-branch) 
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: git-credentials-json-file
@@ -77,12 +87,36 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-          subpath: inventory-repo    
+          subpath: inventory-repo
+    - name: git-clone-scripts-repo
+      runAfter: git-clone-inventory-repo
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: repository
+          value: $(params.scripts-repo)
+        - name: branch
+          value: $(params.scripts-repo-branch)
+        - name: revision
+          value: $(params.scripts-repo-branch)  
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: git-credentials-json-file
+          value: credentials.json
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+          subpath: scripts-repo             
     - name: download-artifacts
       taskRef:
         name: download-artifacts
       runAfter: 
-        - git-clone-inventory-repo 
+        - git-clone-inventory-repo
+        - git-clone-scripts-repo  
       params:
         - name: api
           value: $(params.api)
@@ -126,10 +160,12 @@ spec:
           value: $(params.cos-bucket-name)
         - name: cos-region
           value: $(params.cos-region)
-        - name: inventoryrepo
-          value: $(params.inventoryRepo)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
         - name: objectname
           value: $(tasks.download-artifacts.results.objectname)
+        - name: scripts-subpath
+          value: $(params.scripts-subpath)          
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -140,8 +176,10 @@ spec:
       params:
         - name: virtualserverinstance
           value: $(params.virtual-server-instance)
-        - name: inventoryrepo
-          value: $(params.inventoryRepo)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
+        - name: scripts-subpath
+          value: $(params.scripts-subpath)             
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -152,8 +190,13 @@ spec:
       params:
         - name: virtualserverinstance
           value: $(params.virtual-server-instance)
-        - name: inventoryrepo
-          value: $(params.inventoryRepo)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
+        - name: scripts-subpath
+          value: $(params.scripts-subpath)             
+      workspaces:
+        - name: output
+          workspace: pipeline-ws          
     - name: publish-doi-deployrecord
       taskRef:
         name: publish-doi-deployrecord
@@ -169,8 +212,8 @@ spec:
           value: $(params.apikey)
         - name: appname
           value: $(params.app-name)
-        - name: inventoryrepo
-          value: $(params.inventoryRepo)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
         - name: target
           value: $(params.target)
         - name: build_number
@@ -199,6 +242,8 @@ spec:
           value: "$(tasks.health-check.status)"
         - name: acceptanceCheckStatus
           value: "$(tasks.acceptance-test.status)"
+        - name: scripts-subpath
+          value: $(params.scripts-subpath)             
       workspaces:
         - name: output
           workspace: pipeline-ws
