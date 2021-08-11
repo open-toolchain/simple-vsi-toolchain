@@ -153,7 +153,25 @@ spec:
     - name: objectname
       description: The name of the build artifact
     - name: scripts-subpath
-      description: The application lanugage scripts-subpath       
+      description: The application lanugage scripts-subpath
+    - name: bastion-host
+      description: Bastion Host virtual-server-instance
+    - name: bastion-host-user-name
+      description: Bastion Host User Name
+    - name: bastion-host-ssh-keys
+      description: Bastion host 
+    - name: blue-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt
+    - name: green-pool
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: pool-ssh-keys
+      description: Blue and Green Pool base64 encoded private SSH key 
+    - name: pool-user-name   
+      description: Blue and Green Pool User Name            
   workspaces:
     - name: output
       description: A workspace
@@ -197,6 +215,24 @@ spec:
           value: $(params.scripts-subpath)
         - name: FILE
           value: inventory.json
+        - name: BASTION_HOST
+          value: $(params.bastion-host)
+        - name: BASTION_HOST_USER_NAME
+          value: $(params.bastion-host-user-name)        
+        - name: BASTION_HOST_SSH_KEYS
+          value: $(params.bastion-host-ssh-keys)      
+        - name: BLUE_POOL
+          value: $(params.blue-pool)                 
+        - name: GREEN_POOL
+          value: $(params.green-pool)          
+        - name: LOAD_BALANCER_NAME
+          value: $(params.loadbalancer)                   
+        - name: DEPLLOYMENT_STRATEGY
+          value: $(params.deployment-strategy)                
+        - name: POOL_SSH_KEYS
+          value: $(params.pool-ssh-keys)         
+        - name: POOL_USER_NAME
+          value: $(params.pool-user-name)           
       script: |
         #!/bin/bash
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -214,7 +250,11 @@ spec:
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
-        source ./scripts-repo/${subpath}/setup-remote-deploy.sh
+        if [ $DEPLLOYMENT_STRATEGY == "interrupt" ]; then 
+          source ./scripts-repo/${subpath}/setup-remote-deploy.sh
+        else
+          source ./scripts-repo/${subpath}/setup-remote-deploy-blue-green.sh
+        fi          
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -222,12 +262,38 @@ metadata:
   name: health-check-task
 spec:
   params:
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
+    - name: api
+      description: the IBM Cloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: apikey
+      description: The IBM Cloud API Key  
     - name: virtualserverinstance
       description: The IP Address of the Virtual Server Instance
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-subpath
-      description: The subpath to the scripts 
+      description: The subpath to the scripts
+    - name: bastion-host
+      description: Bastion Host virtual-server-instance
+    - name: bastion-host-user-name
+      description: Bastion Host User Name
+    - name: bastion-host-ssh-keys
+      description: Bastion host 
+    - name: blue-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt
+    - name: green-pool
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: pool-ssh-keys
+      description: Blue and Green Pool base64 encoded private SSH key 
+    - name: pool-user-name   
+      description: Blue and Green Pool User Name      
   workspaces:
     - name: output
       description: A workspace
@@ -237,16 +303,44 @@ spec:
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
       env:
+        - name: REGION
+          value: $(params.region)
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)      
         - name: VIRTUAL_SERVER_INSTANCE
           value: $(params.virtualserverinstance)
         - name: INVENTORY_REPO
           value: $(params.inventory-repo)
         - name: scripts-subpath
-          value: $(params.scripts-subpath)            
+          value: $(params.scripts-subpath)
+        - name: BASTION_HOST
+          value: $(params.bastion-host)
+        - name: BASTION_HOST_USER_NAME
+          value: $(params.bastion-host-user-name)        
+        - name: BASTION_HOST_SSH_KEYS
+          value: $(params.bastion-host-ssh-keys)      
+        - name: BLUE_POOL
+          value: $(params.blue-pool)                 
+        - name: GREEN_POOL
+          value: $(params.green-pool)          
+        - name: LOAD_BALANCER_NAME
+          value: $(params.loadbalancer)        
+        - name: DEPLLOYMENT_STRATEGY
+          value: $(params.deployment-strategy)                
+        - name: POOL_SSH_KEYS
+          value: $(params.pool-ssh-keys)         
+        - name: POOL_USER_NAME
+          value: $(params.pool-user-name)                       
       script: |
         #!/bin/bash
         subpath="$(params.scripts-subpath)"
-        source ./scripts-repo/${subpath}/health-check.sh
+        if [ $DEPLLOYMENT_STRATEGY == "interrupt" ]; then 
+          source ./scripts-repo/${subpath}/health-check.sh
+        else
+          source ./scripts-repo/${subpath}/health-check-blue-green.sh
+        fi  
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -254,32 +348,160 @@ metadata:
   name: acceptance-test
 spec:
   params:
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
+    - name: api
+      description: the IBM Cloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: apikey
+      description: The IBM Cloud API Key  
     - name: virtualserverinstance
       description: The IP Address of the Virtual Server Instance
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-subpath
-      description: The subpath to the script repo from root    
+      description: The subpath to the script repo from root
+    - name: bastion-host
+      description: Bastion Host virtual-server-instance
+    - name: bastion-host-user-name
+      description: Bastion Host User Name
+    - name: bastion-host-ssh-keys
+      description: Bastion host 
+    - name: blue-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt
+    - name: green-pool
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: pool-ssh-keys
+      description: Blue and Green Pool base64 encoded private SSH key 
+    - name: pool-user-name   
+      description: Blue and Green Pool User Name         
   workspaces:
     - name: output
       description: A workspace
       mountPath: /output  
   steps:
-    - name: check-application-health
+    - name: acceptance-test
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
       env:
+        - name: REGION
+          value: $(params.region)
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)       
         - name: VIRTUAL_SERVER_INSTANCE
           value: $(params.virtualserverinstance)
         - name: INVENTORY_REPO
           value: $(params.inventory-repo)
         - name: scripts-subpath
-          value: $(params.scripts-subpath)            
+          value: $(params.scripts-subpath)     
+        - name: BASTION_HOST
+          value: $(params.bastion-host)
+        - name: BASTION_HOST_USER_NAME
+          value: $(params.bastion-host-user-name)        
+        - name: BASTION_HOST_SSH_KEYS
+          value: $(params.bastion-host-ssh-keys)      
+        - name: BLUE_POOL
+          value: $(params.blue-pool)                 
+        - name: GREEN_POOL
+          value: $(params.green-pool)          
+        - name: LOAD_BALANCER_NAME
+          value: $(params.loadbalancer)       
+        - name: DEPLLOYMENT_STRATEGY
+          value: $(params.deployment-strategy)                        
+        - name: POOL_SSH_KEYS
+          value: $(params.pool-ssh-keys)         
+        - name: POOL_USER_NAME
+          value: $(params.pool-user-name)                       
       script: |
         #!/bin/bash
         subpath="$(params.scripts-subpath)"
         source ./scripts-repo/${subpath}/acceptance-tests.sh
 ---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: prod-release
+spec:
+  params:
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
+    - name: api
+      description: the IBM Cloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: apikey
+      description: The IBM Cloud API Key  
+    - name: scripts-subpath
+      description: The subpath to the script repo from root
+    - name: blue-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: green-pool
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name         
+  workspaces:
+    - name: output
+      description: A workspace
+      mountPath: /output  
+  steps:
+    - name: prod-release
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: REGION
+          value: $(params.region)
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)      
+        - name: scripts-subpath
+          value: $(params.scripts-subpath)      
+        - name: BLUE_POOL
+          value: $(params.blue-pool)                 
+        - name: GREEN_POOL
+          value: $(params.green-pool)          
+        - name: LOAD_BALANCER_NAME
+          value: $(params.loadbalancer)                                
+      script: |
+        #!/bin/bash
+        ibmcloud plugin install infrastructure-service -v 1.1.0
+        ibmcloud login -a $API -r $REGION --apikey $APIKEY;
+
+        LOAD_BALANCER_ID=$(ibmcloud is load-balancers -json | jq -r ".[] | select(.name==\"$LOAD_BALANCER_NAME\") | .id" )
+        ACTIVE_LISTNER_ID=( $(ibmcloud is load-balancer-listeners $LOAD_BALANCER_ID -json |jq -r '.[].default_pool.id' | sort -u) )
+        count=0
+        for i in "${ACTIVE_LISTNER_ID[@]}"
+        do
+          ACTIVE_LISTNER_NAME=$(ibmcloud is load-balancer-pools $LOAD_BALANCER_ID -json | jq -r ".[] | select(.id==\"$i\") | .name")
+          if [[ $count -ge 1  && ( "$ACTIVE_LISTNER_NAME" == "$BLUE_POOL" || "$ACTIVE_LISTNER_NAME" == "$GREEN_POOL" ) ]]
+          then
+            echo "Both the pools are present in the listner. Please update the listner to one pool and re run the pipeline."
+          elif [ "$ACTIVE_LISTNER_NAME" == "$BLUE_POOL" ]
+          then
+            OLD_POOL_NAME=$BLUE_POOL
+            NEW_POOL_NAME=$GREEN_POOL
+          elif [ "$ACTIVE_LISTNER_NAME" == "$GREEN_POOL" ]
+          then
+            OLD_POOL_NAME=$GREEN_POOL
+            NEW_POOL_NAME=$BLUE_POOL
+          fi
+        done
+        POOL_ID=$(ibmcloud is load-balancer-pools $LOAD_BALANCER_ID -json | jq -r ".[] | select(.name==\"${NEW_POOL_NAME}\") |  .id")
+        LOAD_BALANCER_LISTNER_ID=( $(ibmcloud is load-balancer-listeners $LOAD_BALANCER_ID -json | jq -r ".[] | select(.default_pool.name==\"$OLD_POOL_NAME\") |.id") )
+        echo "Load Balancer Listner id: $LOAD_BALANCER_LISTNER_ID "
+        echo "pool id : $POOL_ID "
+        for i in "${LOAD_BALANCER_LISTNER_ID[@]}"
+        do
+          ibmcloud is load-balancer-listener-update $LOAD_BALANCER_ID $i  --default-pool $POOL_ID
+        done
+---        
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -303,7 +525,9 @@ spec:
     - name: acceptanceCheckStatus
       description: The acceptance check status whether Failed|Passed
     - name: scripts-subpath
-      description: The subpath to the script repo from root      
+      description: The subpath to the script repo from root 
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt              
   workspaces:
     - name: output
       description: A workspace
@@ -335,18 +559,24 @@ spec:
           value: $(params.acceptanceCheckStatus)
         - name: scripts-subpath
           value: $(params.scripts-subpath) 
+        - name: DEPLLOYMENT_STRATEGY
+          value: $(params.deployment-strategy)           
       script: |
         #!/bin/bash
-        echo "DEPLOY_STATUS=$DEPLOY_STATUS"
-        echo "HEALTH_CHECK_STATUS=$HEALTH_CHECK_STATUS"
-        echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
-        subpath="$(params.scripts-subpath)"
-        if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
-          source ./scripts-repo/${subpath}/rollback-deploy.sh
+        if [ $DEPLLOYMENT_STRATEGY == "interrupt" ]; then 
+          echo "DEPLOY_STATUS=$DEPLOY_STATUS"
+          echo "HEALTH_CHECK_STATUS=$HEALTH_CHECK_STATUS"
+          echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
+          subpath="$(params.scripts-subpath)"
+          if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
+            source ./scripts-repo/${subpath}/rollback-deploy.sh
+          else
+            source ./scripts-repo/${subpath}/perform-cleanup.sh
+            echo "All Checks Passed. Roll Back Not required."
+          fi
         else
-          source ./scripts-repo/${subpath}/perform-cleanup.sh
-          echo "All Checks Passed. Roll Back Not required."
-        fi
+          echo "In Blue Green deployment the Load Balancer will point to the earlier backend pool, if deployment failed. "  
+        fi 
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
