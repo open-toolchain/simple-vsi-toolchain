@@ -284,11 +284,7 @@ spec:
     - name: prod-release
       taskRef:
         name: prod-release
-      runAfter: [ acceptance-test ]
-      when:
-        - input: $(params.deployment-strategy)
-          operator: in
-          values: ["blueGreen"]      
+      runAfter: [ acceptance-test ]     
       params:
         - name: region
           value: $(params.region)

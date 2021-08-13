@@ -3,7 +3,7 @@ inputs:
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
-    path: .deploy_pipeline
+    path: .build_pipeline
   - type: git
     branch: ${DEFINITIONS_BRANCH}
     service: ${TEKTON_CATALOG_REPO}
@@ -32,7 +32,7 @@ triggers:
   - type: git
     name: commit-push
     eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
-    service: ${INVENTORY_REPO}
+    service: ${APP_REPO}
     branch: ${APP_REPO_BRANCH}
     events: { "push": true }
   - type: manual
@@ -44,28 +44,19 @@ triggers:
         value: ${APP_REPO_BRANCH}
 properties:
   - name: apikey
-    value: ${API_KEY}
+    value: ${BLUE_GREEN_API_KEY}
     type: SECURE
   - name: app-name
-    value: ${APP_NAME}
+    value: ${BLUE_GREEN_APP_NAME}
     type: text
   - name: artifactory
     value: ${ARTIFACTORY}
     type: Integration     
-  - name: virtual-server-instance
-    value: ${VIRTUAL_SERVER_INSTANCE}
-    type: text
-  - name: host-user-name
-    value: ${HOST_USER_NAME}
-    type: text
-  - name: host-password
-    value: ${HOST_USER_PASSWORD}
-    type: secure    
-  - name: host-ssh-keys
-    value: ${HOST_SSH_KEYS}
-    type: secure
-  - name : region
-    value: ${REGION}
+  - name: region
+    value: ${VPC_REGION}
+    type: text  
+  - name: revision
+    value: 'master'
     type: text
   - name: cos-bucket-name
     value: ${COS_BUCKET_NAME}
@@ -80,17 +71,18 @@ properties:
     value: ${INVENTORY_REPO}
     type: integration
     path: parameters.repo_url
+  - name: repository
+    value: ${APP_REPO}
+    type: integration
+    path: parameters.repo_url
   - name: scripts-repo
     value: ${APP_REPO}
     type: integration
-    path: parameters.repo_url    
-  - name: target
-    value: ${TARGET}
-    type: text
+    path: parameters.repo_url      
   - name: insights
     value: ${INSIGHTS}
     type: integration
-    path: service_id
+    path: service_id 
   - name: scripts-repo-branch
     type: text
     value: 'master'

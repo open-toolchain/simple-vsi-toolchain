@@ -44,29 +44,14 @@ triggers:
         value: ${APP_REPO_BRANCH}
 properties:
   - name: apikey
-    value: ${API_KEY}
+    value: ${BLUE_GREEN_API_KEY}
     type: SECURE
   - name: app-name
-    value: ${APP_NAME}
+    value: ${BLUE_GREEN_APP_NAME}
     type: text
   - name: artifactory
     value: ${ARTIFACTORY}
     type: Integration     
-  - name: virtual-server-instance
-    value: ${VIRTUAL_SERVER_INSTANCE}
-    type: text
-  - name: host-user-name
-    value: ${HOST_USER_NAME}
-    type: text
-  - name: host-password
-    value: ${HOST_USER_PASSWORD}
-    type: secure    
-  - name: host-ssh-keys
-    value: ${HOST_SSH_KEYS}
-    type: secure
-  - name : region
-    value: ${REGION}
-    type: text
   - name: cos-bucket-name
     value: ${COS_BUCKET_NAME}
     type: text
@@ -76,6 +61,39 @@ properties:
   - name: cos-region
     value: ${COS_REGION}
     type: text
+  - name: target
+    value: ${TARGET}
+    type: text
+  - name: deployment-strategy
+    value: ${DEPLOYMENT_STRATEGY}
+    type: text
+  - name: blue-pool
+    value: ${BLUE_POOL}  
+    type: text
+  - name: green-pool
+    value: ${GREEN_POOL}
+    type: text
+  - name: loadbalancer
+    value: ${LOADBALANCER}
+    type: text
+  - name: bastion-host
+    value: ${BASTION_HOST}
+    type: text
+  - name: region
+    value: ${VPC_REGION}
+    type: text   
+  - name: bastion-host-user-name
+    value: ${BASTION_HOST_USER_NAME}
+    type: text
+  - name: bastion-host-ssh-keys
+    value: ${BASTION_HOST_SSH_KEYS}
+    type: SECURE    
+  - name: pool-user-name
+    value: ${POOL_HOST_USER_NAME}
+    type: text 
+  - name: pool-ssh-keys
+    value: ${POOL_HOST_SSH_KEYS}
+    type: SECURE
   - name: inventory-repo
     value: ${INVENTORY_REPO}
     type: integration
@@ -84,9 +102,6 @@ properties:
     value: ${APP_REPO}
     type: integration
     path: parameters.repo_url    
-  - name: target
-    value: ${TARGET}
-    type: text
   - name: insights
     value: ${INSIGHTS}
     type: integration
@@ -99,7 +114,4 @@ properties:
     value: "master"
   - name: scripts-subpath
     type: text
-    value: 'scripts'  
-  - name: deployment-strategy
-    value: ${DEPLOYMENT_STRATEGY}
-    type: text    
+    value: 'scripts'      

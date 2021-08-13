@@ -1,5 +1,5 @@
 ---
-version: "2"
+version: "3"
 messages:
   $i18n: locales.yml
 template:
@@ -24,6 +24,8 @@ template:
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
     hosted_region: ""
+  wizard:
+    $ref: wizard.yml
 toolchain:
   name: "simple-vsi-app-toolchain-{{timestamp}}"
   template:
@@ -44,50 +46,48 @@ services:
       description: The information required to connect the toolchain with your Cloud Object Storage instance.
   repo:
     service_id: >
-      $env.source_provider ? $env.source_provider : 'hostedgit'
+      if ( $env.ENABLE_SETUP_WIZARD === 'true' ) {
+        'hostedgit';
+      } else {
+        $env.source_provider ? $env.source_provider : 'hostedgit';
+      }
     parameters:
       repo_name: "java-spring-app-{{timestamp}}"
       repo_url: >
-        if ( $env.template.info.hosted_region !== "" ) {
-          "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/java-spring-app"
-        } else {
-          "https://github.com/open-toolchain/java-spring-app"
-        }
+          https://github.ibm.com/open-toolchain/java-spring-app
       source_repo_url: >
-        if ( $env.template.info.hosted_region !== "" ) {
-          "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/java-spring-app"
-        } else {
-          "https://github.com/open-toolchain/java-spring-app"
-        }
+          https://github.ibm.com/open-toolchain/java-spring-app
       type: $env.type || 'clone'
       has_issues: true
       enable_traceability: true
       legal: true
+      source_provider: 'hostedgit'
   pipeline-repo:
     service_id: >
-      $env.source_provider ? $env.source_provider : 'hostedgit'
+      if ( $env.ENABLE_SETUP_WIZARD === 'true' ) {
+        'hostedgit';
+      } else {
+        $env.source_provider ? $env.source_provider : 'hostedgit';
+      }
     parameters:
       repo_name: "simple-vsi-app-pipeline-{{timestamp}}"
       repo_url: >
-        if ( $env.template.info.hosted_region !== "" ) {
-          "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/simple-vsi-toolchain"
-        } else {
-          "https://github.com/open-toolchain/simple-vsi-toolchain"
-        }
+          https://github.ibm.com/open-toolchain/simple-vsi-toolchain
       source_repo_url: >
-        if ( $env.template.info.hosted_region !== "" ) {
-          "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/simple-vsi-toolchain"
-        } else {
-          "https://github.com/open-toolchain/simple-vsi-toolchain"
-        }
+          https://github.ibm.com/open-toolchain/simple-vsi-toolchain
       type: 'clone'
       has_issues: false
       enable_traceability: false
       legal: true
       kind: ['pipeline']
+      source_provider: 'hostedgit'
   tekton-catalog-repo:
     service_id: >
-      $env.source_provider ? $env.source_provider : 'hostedgit'
+      if ( $env.ENABLE_SETUP_WIZARD === 'true' ) {
+        'hostedgit';
+      } else {
+        $env.source_provider ? $env.source_provider : 'hostedgit';
+      }
     parameters:
       repo_name: 'tekton-catalog-{{timestamp}}'
       repo_url: >
@@ -106,9 +106,14 @@ services:
       has_issues: false
       enable_traceability: false
       kind: ['pipeline']
+      source_provider: 'hostedgit'
   inventory-repo:
     service_id: >
-      $env.source_provider ? $env.source_provider : 'hostedgit' 
+      if ( $env.ENABLE_SETUP_WIZARD === 'true' ) {
+        'hostedgit';
+      } else {
+        $env.source_provider ? $env.source_provider : 'hostedgit';
+      } 
     parameters:
       repo_name: 'inventory-{{timestamp}}'
       type: $env.type || 'clone'
@@ -123,6 +128,7 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+      source_provider: 'hostedgit'
   pr:
     service_id: pipeline
     parameters:
@@ -149,17 +155,25 @@ services:
             $env.template.info.hosted_region !== "" ? 'master': 'master'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           GIT_COMMIT_EVENT_LISTENER_NAME: >
-            if ( $env.source_provider === 'githubconsolidated' ) {
-              'github-pr-listener';
-            } else if ( $env.source_provider === 'gitlab' ) {
+            if ( $env.ENABLE_SETUP_WIZARD === 'true' ) {
               'gitlab-pr-listener';
-            } else if ( $env.source_provider === 'bitbucketgit' ) {
-              'bitbucket-commit';
-            } else if ( $env.source_provider === 'github_integrated' ) {
-              'github-ent-pr-listener';
             } else {
-              'gitlab-pr-listener';
+              if ( $env.source_provider === 'githubconsolidated' ) {
+                'github-pr-listener';
+              } else if ( $env.source_provider === 'gitlab' ) {
+                'gitlab-pr-listener';
+              } else if ( $env.source_provider === 'bitbucketgit' ) {
+                'bitbucket-commit';
+              } else if ( $env.source_provider === 'github_integrated' ) {
+                'github-ent-pr-listener';
+              } else {
+                'gitlab-pr-listener';
+              }
             }
+          VPC_REGION: "{{form.pipeline_blue_green.parameters.vpcRegion}}"              
+          DEPLOYMENT_STRATEGY: '{{form.deployment_strategy.parameters.deployment-strategy}}'
+          BLUE_GREEN_APP_NAME: "{{form.pipeline_blue_green.parameters.app-name}}"
+          BLUE_GREEN_API_KEY: "{{form.pipeline_blue_green.parameters.api-key}}"             
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
@@ -199,17 +213,25 @@ services:
             $env.template.info.hosted_region !== "" ? 'master': 'master'
           TEKTON_CATALOG_REPO: tekton-catalog-repo          
           GIT_COMMIT_EVENT_LISTENER_NAME: >
-            if ( $env.source_provider === 'githubconsolidated' ) {
-              'github-commit';
-            } else if ( $env.source_provider === 'gitlab' ) {
+            if ( $env.ENABLE_SETUP_WIZARD === 'true') {
               'grit-or-gitlab-commit';
-            } else if ( $env.source_provider === 'bitbucketgit' ) {
-              'bitbucket-commit';
-            } else if ( $env.source_provider === 'github_integrated' ) {
-              'github-ent-commit';
             } else {
-              'grit-or-gitlab-commit';
+              if ( $env.source_provider === 'githubconsolidated' ) {
+                'github-commit';
+              } else if ( $env.source_provider === 'gitlab' ) {
+                'grit-or-gitlab-commit';
+              } else if ( $env.source_provider === 'bitbucketgit' ) {
+                'bitbucket-commit';
+              } else if ( $env.source_provider === 'github_integrated' ) {
+                'github-ent-commit';
+              } else {
+                'grit-or-gitlab-commit';
+              }
             }
+          VPC_REGION: "{{form.pipeline_blue_green.parameters.vpcRegion}}"              
+          DEPLOYMENT_STRATEGY: '{{form.deployment_strategy.parameters.deployment-strategy}}'
+          BLUE_GREEN_APP_NAME: "{{form.pipeline_blue_green.parameters.app-name}}"
+          BLUE_GREEN_API_KEY: "{{form.pipeline_blue_green.parameters.api-key}}"             
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
@@ -227,7 +249,7 @@ services:
       type: tekton
       configuration:
         content:
-          $text: "deploy_pipeline_tekton.yml"
+          $text: deploy_pipeline_tekton.yml
         env:
           APP_REPO: repo
           APP_NAME: "{{form.pipeline.parameters.app-name}}"
@@ -235,11 +257,11 @@ services:
           ARTIFACTORY: artifactory
           INSIGHTS: devops-insights
           RESOURCE_GROUP: "{{form.pipeline.parameters.resource-group}}"
-          VIRTUAL_SERVER_INSTANCE: "{{form.pipeline.parameters.virtual-server-instance}}"
-          VIRTUAL_SERVER_REGION: "{{form.pipeline.parameters.vsiRegion}}"
+          VIRTUAL_SERVER_INSTANCE: "{{form.pipeline.parameters.virtual-server-instance}}" 
+          VIRTUAL_SERVER_REGION: "{{form.pipeline.parameters.vsiRegion}}" 
           HOST_SSH_KEYS: '{{form.pipeline.parameters.host-ssh-keys}}'
           HOST_USER_NAME: '{{form.pipeline.parameters.host-user-name}}'
-          HOST_USER_PASSWORD: '{{form.pipeline.parameters.host-user-password}}'
+          HOST_USER_PASSWORD: '{{form.pipeline.parameters.host-user-password}}'   
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           TARGET: "prod"
@@ -252,22 +274,39 @@ services:
             $env.template.info.hosted_region !== "" ? 'master': 'master'
           TEKTON_CATALOG_REPO: tekton-catalog-repo          
           GIT_COMMIT_EVENT_LISTENER_NAME: >
-            if ( $env.source_provider === 'githubconsolidated' ) {
-              'github-commit';
-            } else if ( $env.source_provider === 'gitlab' ) {
+            if ( $env.ENABLE_SETUP_WIZARD === 'true') {
               'grit-or-gitlab-commit';
-            } else if ( $env.source_provider === 'bitbucketgit' ) {
-              'bitbucket-commit';
-            } else if ( $env.source_provider === 'github_integrated' ) {
-              'github-ent-commit';
             } else {
-              'grit-or-gitlab-commit';
+              if ( $env.source_provider === 'githubconsolidated' ) {
+                'github-commit';
+              } else if ( $env.source_provider === 'gitlab' ) {
+                'grit-or-gitlab-commit';
+              } else if ( $env.source_provider === 'bitbucketgit' ) {
+                'bitbucket-commit';
+              } else if ( $env.source_provider === 'github_integrated' ) {
+                'github-ent-commit';
+              } else {
+                'grit-or-gitlab-commit';
+              }
             }
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
-            $env.template.info.hosted_region !== "" ? 'master': 'master'
+            $env.template.info.hosted_region !== "" ? 'master': 'master' 
+          VPC_REGION: "{{form.pipeline_blue_green.parameters.vpcRegion}}"              
+          DEPLOYMENT_STRATEGY: '{{form.deployment_strategy.parameters.deployment-strategy}}'
+          BLUE_GREEN_APP_NAME: "{{form.pipeline_blue_green.parameters.app-name}}"
+          BLUE_GREEN_API_KEY: "{{form.pipeline_blue_green.parameters.api-key}}"  
+          BASTION_HOST: "{{form.pipeline_blue_green.parameters.virtual-server-instance}}"
+          BASTION_HOST_SSH_KEYS: '{{form.pipeline_blue_green.parameters.bastion-host-ssh-keys}}'
+          BASTION_HOST_USER_NAME: '{{form.pipeline_blue_green.parameters.bastion-host-user-name}}'
+          POOL_HOST_SSH_KEYS: '{{form.pipeline_blue_green.parameters.host-ssh-keys}}'
+          POOL_HOST_USER_NAME: '{{form.pipeline_blue_green.parameters.host-user-name}}'
+          LOADBALANCER: "{{form.pipeline_blue_green.parameters.load-balancer-name}}"
+          GREEN_POOL: "{{form.pipeline_blue_green.parameters.green-pool-name}}"
+          BLUE_POOL: "{{form.pipeline_blue_green.parameters.blue-pool-name}}"             
         execute: false
+
   webide:
     service_id: orion 
   devops-insights:
@@ -295,9 +334,78 @@ form:
           '{{hostUserPassword}}' : '' 
     schema:
       $ref: deploy.json
+
+  pipeline_blue_green:
+    parameters:
+      app-name: >
+        $env.appName ?
+          '{{appName}}' : '{{services.repo.parameters.repo_name}}'
+      api-key: '{{apiKey}}'
+      resource-group: '{{resourceGroup}}'
+      vpcRegion: '{{vpcRegion}}'
+      virtual-server-instance: '{{virtualServerInstance}}'
+      host-ssh-keys: >
+        $env.hostSshKeys ?
+          '{{hostSshKeys}}' : ''
+      host-user-name: >
+        $env.hostUserName ?
+          '{{hostUserName}}' : ''
+      bastion-host-ssh-keys: >
+        $env.hostSshKeys ?
+          '{{hostSshKeys}}' : ''
+      bastion-host-user-name: >
+        $env.hostUserName ?
+          '{{hostUserName}}' : ''            
+      load-balancer-name: >
+        $env.loadBalancerName ?
+          '{{loadBalancerName}}' : '' 
+      green-pool-name: >
+        $env.greenPoolName ?
+          '{{greenPoolName}}' : ''   
+      blue-pool-name: >
+        $env.bluePoolName ?
+          '{{bluePoolName}}' : ''                   
+    schema:
+      $ref: deploy_blue_green.json
+
   customtool_cos-bucket:
     parameters:
       cos-bucket-name: >
         $env.cosBucketName ? '{{cosBucketName}}' : 'simple-vsi-app-toolchain-{{timestamp}}'
     schema:
       $ref: cos.json
+
+  wizard_app:
+    schema:
+      $ref: wizard_app.json
+  
+  wizard_inventory:
+    schema:
+      $ref: wizard_inventory.json
+  
+  wizard_vault:
+    parameters:
+      key-protect: false
+      hashicorp-vault: false
+    schema:
+      $ref: wizard_vault.json
+
+  deployment_strategy:
+    parameters:
+      deployment-strategy:  >
+        $env.deploymentStrategy ?
+          '{{deploymentStrategy}}' : 'interrupt' 
+    schema:
+      $ref: wizard_strategy.json
+
+  storage:
+    parameters:
+      storage:  >
+        $env.storage ?
+          '{{storage}}' : 'cos' 
+    schema:
+      $ref: wizard_storage.json
+      
+  wizard_summary:
+    schema:
+      $ref: wizard_summary.json

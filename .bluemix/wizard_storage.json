@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "messages": {
+    "$i18n": "locales.yml"
+  },
+  "title": {
+    "$ref": "#/messages/wizard.storage.title"
+  },
+  "description": "",
+  "longDescription": {
+    "$ref": "#/messages/wizard.storage.longDescription"
+  },
+  "type": "object",
+  "properties": {
+    "storage": {
+      "type": "string",
+      "enum": [
+        {
+          "name": "Cloud Object Storage",
+          "value": "cos"
+        },
+        {
+          "name": "Artifactory",
+          "value": "artifactory"
+        }
+      ]
+    }
+  },
+  "form": [{
+    "type": "info",
+    "text": {
+      "$ref": "#/messages/wizard.storage.text"
+    }
+  }, {
+    "type": "tilegroup",
+    "key": "storage",
+    "display": {
+      "showLabel": false,
+      "orientation": "horizontal"
+    }
+  },
+  {
+    "type": "notification",
+    "display": {
+      "title": "Note: ",
+      "subtitle": {
+        "$ref": "#/messages/wizard.storage.note"
+      },
+      "showInAdvancedMode": true,
+      "advancedModePosition": "bottom"
+    },
+    "visible": true
+  }]
+}

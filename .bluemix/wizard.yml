@@ -1,0 +1,168 @@
+---
+version: '1'
+messages:
+  $i18n: locales.yml
+welcome:
+  description: 
+      $ref: "#/messages/wizard.welcome.description"
+
+exclude:
+  service_labels:
+    - artifactory
+    
+steps:
+  - name: app
+    title:
+      $ref: "#/messages/wizard.step.application.title"
+    form: wizard_app
+    advanced_form: repo
+    conditions:
+      $ref: conditions.yml#/repo_conditions
+
+  - name: inventory
+    label: 
+      $ref: "#/messages/wizard.step.inventory.label"
+    title:
+      $ref: "#/messages/wizard.step.inventory.title"
+    form: wizard_inventory
+    advanced_form: inventory-repo
+
+  - name: vault
+    title:
+      $ref: "#/messages/wizard.step.vault.title"
+    form: wizard_vault
+    secretsStep: true
+    conditions:
+      $ref: conditions.yml#/vault_conditions
+
+  - name: keyprotect
+    indent_level: 1
+    title:
+      $ref: "#/messages/wizard.step.keyprotect.title"
+    form: keyprotect
+    visible:
+      condition:
+        any:
+          - form: wizard_vault
+            parameter: key-protect
+            value: true
+
+  - name: hashicorpvault
+    indent_level: 1
+    title:
+      $ref: "#/messages/wizard.step.hashicorpvault.title"
+    form: hashicorpvault
+    visible:
+      condition:
+        any:
+          - form: wizard_vault
+            parameter: hashicorp-vault
+            value: true
+
+  - name: deployment_strategy
+    form: deployment_strategy
+    title:
+      $ref: "#/messages/wizard.step.deployment_strategy.title"
+    conditions:
+      $ref: conditions.yml#/deploy_conditions
+
+  - name: deploy
+    indent_level: 1  
+    label: 
+      $ref: "#/messages/wizard.step.deploy.label"
+    title:
+      $ref: "#/messages/wizard.step.deploy.title"
+    form: pipeline    
+    visible:
+      condition:
+        any:
+          - form: deployment_strategy
+            parameter: deployment-strategy
+            value: interrupt
+
+  - name: deploy_blue_green
+    indent_level: 1  
+    label: 
+      $ref: "#/messages/wizard.step.deploy.blueGreen.label"
+    title:
+      $ref: "#/messages/wizard.step.deploy.blueGreentitle"
+    form: pipeline_blue_green
+    visible:
+      condition:
+        any:
+          - form: deployment_strategy
+            parameter: deployment-strategy
+            value: blueGreen
+
+  - name: storage
+    form: storage
+    title:
+      $ref: "#/messages/wizard.step.storage.title"
+    conditions:
+      $ref: conditions.yml#/storage_conditions
+  - name: artifactory
+    indent_level: 1
+    title:
+      $ref: "#/messages/wizard.optional.tools.artifactory.title"
+    conditions:
+      $ref: conditions.yml#/storage_conditions     
+    form: artifactory
+    visible:
+      condition:
+        any:
+          - form: storage
+            parameter: storage
+            value: artifactory
+  - name: cos
+    indent_level: 1
+    title:
+      $ref: "#/messages/wizard.optional.tools.cos.title"
+    conditions:
+      $ref: conditions.yml#/storage_conditions     
+    form: customtool_cos-bucket
+    visible:
+      condition:
+        any:
+          - form: storage
+            parameter: storage
+            value: cos
+
+  - name: optionaltools
+    title:
+      $ref: "#/messages/wizard.step.optionaltools.title"
+    form: wizard_optional_tools
+    conditions:
+      $ref: conditions.yml#/tools_conditions
+ 
+  - name: summary
+    title:
+      $ref: "#/messages/wizard.step.summary.title"
+    form: wizard_summary
+
+form:
+  wizard_app:
+    schema:
+      $ref: wizard_app.json
+  cos:
+    schema:
+      $ref: cos.json
+  wizard_inventory:
+    schema:
+      $ref: wizard_inventory.json
+  wizard_vault:
+    parameters:
+      key-protect: false
+      hashicorp-vault: false
+    schema:
+      $ref: wizard_vault.json
+
+  wizard_optional_tools:
+    parameters:
+      webide: true
+      doi: true
+    schema:
+      $ref: wizard_optional_tools.json
+
+  wizard_summary:
+    schema:
+      $ref: wizard_summary.json

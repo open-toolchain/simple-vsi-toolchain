@@ -3,7 +3,7 @@ inputs:
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
-    path: .build_pipeline
+    path: .pr_pipeline
   - type: git
     branch: ${DEFINITIONS_BRANCH}
     service: ${TEKTON_CATALOG_REPO}
@@ -17,9 +17,9 @@ inputs:
     service: ${TEKTON_CATALOG_REPO}
     path: cra
   - type: git
-    service: ${TEKTON_CATALOG_REPO}
     branch: ${DEFINITIONS_BRANCH}
-    path: devops-insights
+    service: ${TEKTON_CATALOG_REPO}
+    path: linter
   - type: git
     branch: ${DEFINITIONS_BRANCH}
     service: ${TEKTON_CATALOG_REPO}
@@ -30,68 +30,46 @@ inputs:
     path: utils
 triggers:
   - type: git
-    name: commit-push
-    eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
+    name: Git PR Trigger
     service: ${APP_REPO}
     branch: ${APP_REPO_BRANCH}
-    events: { "push": true }
-  - type: manual
-    name: manual-run
-    eventListener: manual-run
-    properties:
-      - name: branch
-        type: text
-        value: ${APP_REPO_BRANCH}
+    events:
+      pull_request: true
+    eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
 properties:
   - name: apikey
-    value: ${API_KEY}
+    value: ${BLUE_GREEN_API_KEY}
     type: SECURE
   - name: app-name
-    value: ${APP_NAME}
+    value: ${BLUE_GREEN_APP_NAME}
     type: text
-  - name: artifactory
-    value: ${ARTIFACTORY}
-    type: Integration     
-  - name: region
-    value: ${REGION}
-    type: text  
-  - name: revision
-    value: 'master'
+  - name: pipeline-debug
+    value: "0"
     type: text
-  - name: cos-bucket-name
-    value: ${COS_BUCKET_NAME}
-    type: text
-  - name: cos-api-key
-    value: ${COS_API_KEY}
-    type: SECURE
-  - name: cos-region
-    value: ${COS_REGION}
-    type: text
-  - name: inventory-repo
-    value: ${INVENTORY_REPO}
-    type: integration
-    path: parameters.repo_url
   - name: repository
     value: ${APP_REPO}
-    type: integration
+    type: Integration
     path: parameters.repo_url
-  - name: scripts-repo
-    value: ${APP_REPO}
-    type: integration
-    path: parameters.repo_url      
   - name: insights
     value: ${INSIGHTS}
     type: integration
-    path: service_id 
+    path: service_id
+  - name: toolchain-region
+    value: ${TOOLCHAIN_REGION}
+    type: text  
+  - name: scripts-repo
+    value: ${APP_REPO}
+    type: integration
+    path: parameters.repo_url
   - name: scripts-repo-branch
     type: text
     value: 'master'
-  - name: inventory-repo-branch
-    type: text
-    value: "master"
   - name: scripts-subpath
     type: text
-    value: 'scripts'  
+    value: 'scripts'
+  - name: region
+    value: ${VPC_REGION}
+    type: text  
   - name: deployment-strategy
     value: ${DEPLOYMENT_STRATEGY}
-    type: text    
+    type: text            
