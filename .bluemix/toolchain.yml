@@ -54,9 +54,17 @@ services:
     parameters:
       repo_name: "java-spring-app-{{timestamp}}"
       repo_url: >
-          https://github.ibm.com/open-toolchain/java-spring-app
+        if ( $env.template.info.hosted_region !== "" ) {
+           "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/java-spring-app"
+         } else {
+           "https://github.com/open-toolchain/java-spring-app"
+         }
       source_repo_url: >
-          https://github.ibm.com/open-toolchain/java-spring-app
+         if ( $env.template.info.hosted_region !== "" ) {
+           "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/java-spring-app"
+         } else {
+           "https://github.com/open-toolchain/java-spring-app"
+         }
       type: $env.type || 'clone'
       has_issues: true
       enable_traceability: true
@@ -72,9 +80,17 @@ services:
     parameters:
       repo_name: "simple-vsi-app-pipeline-{{timestamp}}"
       repo_url: >
-          https://github.ibm.com/open-toolchain/simple-vsi-toolchain
+          if ( $env.template.info.hosted_region !== "" ) {
+           "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/simple-vsi-toolchain"
+          } else {
+           "https://github.com/open-toolchain/simple-vsi-toolchain"
+          }
       source_repo_url: >
-          https://github.ibm.com/open-toolchain/simple-vsi-toolchain
+          if ( $env.template.info.hosted_region !== "" ) {
+           "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/simple-vsi-toolchain"
+          } else {
+           "https://github.com/open-toolchain/simple-vsi-toolchain"
+          }
       type: 'clone'
       has_issues: false
       enable_traceability: false
@@ -302,9 +318,9 @@ services:
           BASTION_HOST_USER_NAME: '{{form.pipeline_blue_green.parameters.bastion-host-user-name}}'
           POOL_HOST_SSH_KEYS: '{{form.pipeline_blue_green.parameters.host-ssh-keys}}'
           POOL_HOST_USER_NAME: '{{form.pipeline_blue_green.parameters.host-user-name}}'
-          LOADBALANCER: "{{form.pipeline_blue_green.parameters.load-balancer-name}}"
-          GREEN_POOL: "{{form.pipeline_blue_green.parameters.green-pool-name}}"
-          BLUE_POOL: "{{form.pipeline_blue_green.parameters.blue-pool-name}}"             
+          LOADBALANCER: "{{form.pipeline_blue_green.parameters.loadbalancer}}"
+          GREEN_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsgreen}}"
+          BLUE_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsblue}}"             
         execute: false
 
   webide:
@@ -356,13 +372,13 @@ form:
       bastion-host-user-name: >
         $env.hostUserName ?
           '{{hostUserName}}' : ''            
-      load-balancer-name: >
+      loadbalancer: >
         $env.loadBalancerName ?
           '{{loadBalancerName}}' : '' 
-      green-pool-name: >
+      loadbalancerpoolsgreen: >
         $env.greenPoolName ?
           '{{greenPoolName}}' : ''   
-      blue-pool-name: >
+      loadbalancerpoolsblue: >
         $env.bluePoolName ?
           '{{bluePoolName}}' : ''                   
     schema:
