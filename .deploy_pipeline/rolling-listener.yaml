@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: blue-green-trigger-template-simple-vsi-app
+  name: rolling-trigger-template-simple-vsi-app
 spec:
   params:
     - name: repository
@@ -106,7 +106,7 @@ spec:
         name: simple-vsi-app-$(uid)
       spec:
         pipelineRef:
-          name: blue-green-simple-vsi-app-pipeline
+          name: rolling-simple-vsi-app-pipeline
         params:
           - name: repository
             value: $(params.repository)
@@ -192,123 +192,27 @@ spec:
               claimName: simple-vsi-app-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
-kind: TriggerTemplate
-metadata:
-  name: blue-green-switch-trigger-template
-spec:
-  params:
-    - name: apikey
-      description: The IBM Cloud API Key   
-    - name: region
-      description: The IBM Cloud Region in which Virtual Server Instance is running
-    - name: api
-      description: the IBM Cloud api endpoint
-      default: "https://cloud.ibm.com" 
-    - name: scripts-subpath
-      description: TThe subpath to the script repo from root        
-    - name: fail-on-lint-errors
-      description: Force failure of task when docker lint errors are found
-      default: "true"
-    - name: fail-on-scanned-issues
-      description: Force failure of task when vulnerability advisor scan issues are found
-      default: "false"
-    - name: pipeline-debug
-      default: "0"
-    - name: blue-pool
-      description: Blue Pool for Blue Green Deployemnt
-    - name: deployment-strategy
-      description: Green Pool for Blue Green Deployemnt
-    - name: green-pool
-      description: Green Pool for Blue Green Deployemnt
-    - name: loadbalancer
-      description: Load Balancer Name 
-  resourcetemplates:
-    - apiVersion: v1
-      kind: PersistentVolumeClaim
-      metadata:
-        name: simple-vsi-app-$(uid)-pvc
-      spec:
-        resources:
-          requests:
-            storage: 5Gi
-        volumeMode: Filesystem
-        accessModes:
-          - ReadWriteOnce
-    - apiVersion: tekton.dev/v1beta1
-      kind: PipelineRun
-      metadata:
-        name: simple-vsi-app-$(uid)
-      spec:
-        pipelineRef:
-          name: blue-green-switch-pipeline
-        params:
-          - name: api
-            value: $(params.api)
-          - name: region
-            value: $(params.region) 
-          - name: apikey
-            value: $(params.apikey)                   
-          - name: fail-on-lint-errors
-            value: $(params.fail-on-lint-errors)
-          - name: fail-on-scanned-issues
-            value: $(params.fail-on-scanned-issues)
-          - name: pipeline-debug
-            value: $(params.pipeline-debug)    
-          - name: blue-pool
-            value: $(params.blue-pool)          
-          - name: deployment-strategy
-            value: $(params.deployment-strategy)        
-          - name: green-pool
-            value: $(params.green-pool)          
-          - name: loadbalancer
-            value: $(params.loadbalancer) 
-          - name: scripts-subpath
-            value: $(params.scripts-subpath)                                                                                                           
-        workspaces:
-          - name: pipeline-ws
-            persistentVolumeClaim:
-              claimName: simple-vsi-app-$(uid)-pvc
----
-apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-trigger-binding-manual
-spec:
-  params:
----
-apiVersion: tekton.dev/v1beta1
-kind: TriggerBinding
-metadata:
-  name: blue-green-switch-trigger-binding-manual
+  name: rolling-trigger-binding-manual
 spec:
   params:
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-manual-run
+  name: rolling-manual-run
 spec:
   triggers:
     - binding:
-        name: blue-green-trigger-binding-manual
+        name: rolling-trigger-binding-manual
       template:
-        name: blue-green-trigger-template-simple-vsi-app
----
-apiVersion: tekton.dev/v1beta1
-kind: EventListener
-metadata:
-  name: blue-green-switch-manual-run
-spec:
-  triggers:
-    - binding:
-        name: blue-green-switch-trigger-binding-manual
-      template:
-        name: blue-green-switch-trigger-template
+        name: rolling-trigger-template-simple-vsi-app
 ---        
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-github-ent-commit
+  name: rolling-github-ent-commit
 spec:
   params:
     - name: branch
@@ -325,18 +229,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-github-ent-commit
+  name: rolling-github-ent-commit
 spec:
   triggers:
     - bindings: 
-        - name: blue-green-github-ent-commit   
+        - name: rolling-github-ent-commit   
       template:
-        name: blue-green-trigger-template-simple-vsi-app
+        name: rolling-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-github-commit
+  name: rolling-github-commit
 spec:
   params:
     - name: branch
@@ -353,18 +257,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-github-commit
+  name: rolling-github-commit
 spec:
   triggers:
     - bindings:  
-        - name: blue-green-github-commit   
+        - name: rolling-github-commit   
       template:
-        name: blue-green-trigger-template-simple-vsi-app
+        name: rolling-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-grit-or-gitlab-commit
+  name: rolling-grit-or-gitlab-commit
 spec:
   params:
     - name: branch
@@ -381,18 +285,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-grit-or-gitlab-commit
+  name: rolling-grit-or-gitlab-commit
 spec:
   triggers:
     - bindings:   
-        - name: blue-green-grit-or-gitlab-commit
+        - name: rolling-grit-or-gitlab-commit
       template:
-        name: blue-green-trigger-template-simple-vsi-app
+        name: rolling-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-bitbucket-commit
+  name: rolling-bitbucket-commit
 spec:
   params:
     - name: repository
@@ -411,10 +315,10 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-bitbucket-commit
+  name: rolling-bitbucket-commit
 spec:
   triggers:
     - binding:
-        name: blue-green-bitbucket-commit
+        name: rolling-bitbucket-commit
       template:
-        name: blue-green-trigger-template-simple-vsi-app
+        name: rolling-trigger-template-simple-vsi-app

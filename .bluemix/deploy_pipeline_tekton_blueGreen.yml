@@ -30,14 +30,14 @@ inputs:
     path: utils
 triggers:
   - type: git
-    name: commit-push
-    eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
+    name: blue-green-commit-push
+    eventListener: blue-green-${GIT_COMMIT_EVENT_LISTENER_NAME}
     service: ${INVENTORY_REPO}
     branch: ${APP_REPO_BRANCH}
     events: { "push": true }
   - type: manual
-    name: manual-run
-    eventListener: manual-run
+    name: blue-green-manual-run
+    eventListener: blue-green-manual-run
     properties:
       - name: branch
         type: text
@@ -45,7 +45,22 @@ triggers:
   - type: manual
     name: switch-blue-green
     eventListener: blue-green-switch-manual-run
-    properties: []        
+    properties: []
+  - type: git
+    name: rolling-commit-push
+    eventListener: rolling-${GIT_COMMIT_EVENT_LISTENER_NAME}
+    service: ${INVENTORY_REPO}
+    branch: ${APP_REPO_BRANCH}
+    events: { "push": true }
+    disabled: true    
+  - type: manual
+    name: rolling-manual-run
+    eventListener: rolling-manual-run
+    properties:
+      - name: branch
+        type: text
+        value: ${APP_REPO_BRANCH}
+    disabled: true                
 properties:
   - name: apikey
     value: ${BLUE_GREEN_API_KEY}
