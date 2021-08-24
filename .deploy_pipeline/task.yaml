@@ -447,7 +447,9 @@ spec:
     - name: green-pool
       description: Green Pool for Blue Green Deployemnt
     - name: loadbalancer
-      description: Load Balancer Name         
+      description: Load Balancer Name
+    - name: deployment-strategy
+      description: Deployment Strategy             
   workspaces:
     - name: output
       description: A workspace
@@ -470,7 +472,9 @@ spec:
         - name: GREEN_POOL
           value: $(params.green-pool)          
         - name: LOAD_BALANCER_NAME
-          value: $(params.loadbalancer)                                
+          value: $(params.loadbalancer)
+        - name: DEPLLOYMENT_STRATEGY
+          value: $(params.deployment-strategy)                                          
       script: |
         #!/bin/bash
         if [[ $DEPLLOYMENT_STRATEGY == "blueGreen" ]]; then

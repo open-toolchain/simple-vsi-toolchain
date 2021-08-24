@@ -42,6 +42,10 @@ triggers:
       - name: branch
         type: text
         value: ${APP_REPO_BRANCH}
+  - type: manual
+    name: switch-blue-green
+    eventListener: blue-green-switch-manual-run
+    properties: []        
 properties:
   - name: apikey
     value: ${BLUE_GREEN_API_KEY}
