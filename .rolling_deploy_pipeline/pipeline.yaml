@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: simple-vsi-app-pipeline
+  name: rolling-simple-vsi-app-pipeline
 spec:
   params:
     - name: repository
@@ -63,6 +63,24 @@ spec:
       description: The branch of the scripts-repo
     - name: inventory-repo-branch
       description: The branch of the inventory-repo
+    - name: bastion-host
+      description: Bastion Host virtual-server-instance
+    - name: bastion-host-user-name
+      description: Bastion Host User Name
+    - name: bastion-host-ssh-keys
+      description: Bastion host 
+    - name: blue-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt
+    - name: green-pool
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: pool-ssh-keys
+      description: Blue and Green Pool base64 encoded private SSH key 
+    - name: pool-user-name   
+      description: Blue and Green Pool User Name         
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -165,42 +183,70 @@ spec:
         - name: objectname
           value: $(tasks.download-artifacts.results.objectname)
         - name: scripts-subpath
-          value: $(params.scripts-subpath)          
-      workspaces:
-        - name: output
-          workspace: pipeline-ws
-    - name: health-check
-      taskRef:
-        name: health-check-task
-      runAfter: [ deploy ]
-      params:
-        - name: virtualserverinstance
-          value: $(params.virtual-server-instance)
-        - name: inventory-repo
-          value: $(params.inventory-repo)
-        - name: scripts-subpath
-          value: $(params.scripts-subpath)             
+          value: $(params.scripts-subpath)
+        - name: bastion-host
+          value: $(params.bastion-host)
+        - name: bastion-host-user-name
+          value: $(params.bastion-host-user-name)        
+        - name: bastion-host-ssh-keys
+          value: $(params.bastion-host-ssh-keys)      
+        - name: blue-pool
+          value: $(params.blue-pool)          
+        - name: deployment-strategy
+          value: $(params.deployment-strategy)        
+        - name: green-pool
+          value: $(params.green-pool)          
+        - name: loadbalancer
+          value: $(params.loadbalancer)         
+        - name: pool-ssh-keys
+          value: $(params.pool-ssh-keys)         
+        - name: pool-user-name   
+          value: $(params.pool-user-name)                     
       workspaces:
         - name: output
           workspace: pipeline-ws
     - name: acceptance-test
       taskRef:
         name: acceptance-test
-      runAfter: [ health-check ]
+      runAfter: [ deploy ]
       params:
+        - name: region
+          value: $(params.region)
+        - name: api
+          value: $(params.api)
+        - name: apikey
+          value: $(params.apikey)      
         - name: virtualserverinstance
           value: $(params.virtual-server-instance)
         - name: inventory-repo
           value: $(params.inventory-repo)
         - name: scripts-subpath
-          value: $(params.scripts-subpath)             
+          value: $(params.scripts-subpath)
+        - name: bastion-host
+          value: $(params.bastion-host)
+        - name: bastion-host-user-name
+          value: $(params.bastion-host-user-name)        
+        - name: bastion-host-ssh-keys
+          value: $(params.bastion-host-ssh-keys)      
+        - name: blue-pool
+          value: $(params.blue-pool)          
+        - name: deployment-strategy
+          value: $(params.deployment-strategy)        
+        - name: green-pool
+          value: $(params.green-pool)          
+        - name: loadbalancer
+          value: $(params.loadbalancer)         
+        - name: pool-ssh-keys
+          value: $(params.pool-ssh-keys)         
+        - name: pool-user-name   
+          value: $(params.pool-user-name)                       
       workspaces:
         - name: output
-          workspace: pipeline-ws          
+          workspace: pipeline-ws                  
     - name: publish-doi-deployrecord
       taskRef:
         name: publish-doi-deployrecord
-      runAfter: [deploy]
+      runAfter: [acceptance-test]
       when:
         - input: $(params.insights)
           operator: in
@@ -220,30 +266,4 @@ spec:
           value: $(tasks.download-artifacts.results.build_number)
       workspaces:
         - name: output
-          workspace: pipeline-ws
-  finally:
-    - name: check-if-roll-back-required
-      taskRef:
-        name: roll-back-deployment-task
-      params:
-        - name: appname
-          value: $(params.app-name)
-        - name: virtualserverinstance
-          value: $(params.virtual-server-instance)
-        - name: hostsshkeys
-          value: $(params.host-ssh-keys)
-        - name: hostusername
-          value: $(params.host-user-name)
-        - name: hostpassword
-          value: $(params.host-password)
-        - name: deployStatus
-          value: "$(tasks.deploy.status)"
-        - name: healthCheckStatus
-          value: "$(tasks.health-check.status)"
-        - name: acceptanceCheckStatus
-          value: "$(tasks.acceptance-test.status)"
-        - name: scripts-subpath
-          value: $(params.scripts-subpath)             
-      workspaces:
-        - name: output
-          workspace: pipeline-ws
+          workspace: pipeline-ws     

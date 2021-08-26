@@ -3,7 +3,7 @@ inputs:
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
-    path: .build_pipeline
+    path: .rolling_deploy_pipeline
   - type: git
     branch: ${DEFINITIONS_BRANCH}
     service: ${TEKTON_CATALOG_REPO}
@@ -30,34 +30,28 @@ inputs:
     path: utils
 triggers:
   - type: git
-    name: commit-push
-    eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
-    service: ${APP_REPO}
+    name: rolling-commit-push
+    eventListener: rolling-${GIT_COMMIT_EVENT_LISTENER_NAME}
+    service: ${INVENTORY_REPO}
     branch: ${APP_REPO_BRANCH}
     events: { "push": true }
   - type: manual
-    name: manual-run
-    eventListener: manual-run
+    name: rolling-manual-run
+    eventListener: rolling-manual-run
     properties:
       - name: branch
         type: text
-        value: ${APP_REPO_BRANCH}
+        value: ${APP_REPO_BRANCH}              
 properties:
   - name: apikey
-    value: ${BLUE_GREEN_API_KEY}
+    value: ${API_KEY}
     type: SECURE
   - name: app-name
-    value: ${BLUE_GREEN_APP_NAME}
+    value: ${APP_NAME}
     type: text
   - name: artifactory
     value: ${ARTIFACTORY}
     type: Integration     
-  - name: region
-    value: ${VPC_REGION}
-    type: text  
-  - name: revision
-    value: 'master'
-    type: text
   - name: cos-bucket-name
     value: ${COS_BUCKET_NAME}
     type: text
@@ -67,22 +61,48 @@ properties:
   - name: cos-region
     value: ${COS_REGION}
     type: text
+  - name: target
+    value: ${TARGET}
+    type: text
+  - name: deployment-strategy
+    value: ${DEPLOYMENT_STRATEGY}
+    type: text
+  - name: blue-pool
+    value: ${BLUE_POOL}  
+    type: text
+  - name: loadbalancer
+    value: ${LOADBALANCER}
+    type: text
+  - name: bastion-host
+    value: ${VIRTUAL_SERVER_INSTANCE}
+    type: text
+  - name: region
+    value: ${REGION}
+    type: text   
+  - name: bastion-host-user-name
+    value: ${BASTION_HOST_USER_NAME}
+    type: text
+  - name: bastion-host-ssh-keys
+    value: ${BASTION_HOST_SSH_KEYS}
+    type: SECURE    
+  - name: pool-user-name
+    value: ${HOST_USER_NAME}
+    type: text 
+  - name: pool-ssh-keys
+    value: ${HOST_SSH_KEYS}
+    type: SECURE
   - name: inventory-repo
     value: ${INVENTORY_REPO}
-    type: integration
-    path: parameters.repo_url
-  - name: repository
-    value: ${APP_REPO}
     type: integration
     path: parameters.repo_url
   - name: scripts-repo
     value: ${APP_REPO}
     type: integration
-    path: parameters.repo_url      
+    path: parameters.repo_url    
   - name: insights
     value: ${INSIGHTS}
     type: integration
-    path: service_id 
+    path: service_id
   - name: scripts-repo-branch
     type: text
     value: 'master'
@@ -91,7 +111,4 @@ properties:
     value: "master"
   - name: scripts-subpath
     type: text
-    value: 'scripts'  
-  - name: deployment-strategy
-    value: ${DEPLOYMENT_STRATEGY}
-    type: text    
+    value: 'scripts'      

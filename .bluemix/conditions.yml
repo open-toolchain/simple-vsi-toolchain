@@ -206,20 +206,117 @@ deploy_conditions:
           configuration:
             content:
               $text: deploy_pipeline_tekton_blueGreen.yml
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: blueGreen
+    actions:
       - type: update-service-parameters
         service_id: pipeline
-        service_label: pr
+        service_label: deploy
         parameters:
           configuration:
-            content:
-              $text: pr_pipeline_tekton_blueGreen.yml
+            env:
+              APP_NAME: "{{form.pipeline_blue_green.parameters.app-name}}"
+              API_KEY: "{{form.pipeline_blue_green.parameters.api-key}}"
+              REGION: "{{form.pipeline_blue_green.parameters.vpcRegion}}"
+              VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_blue_green.parameters.virtual-server-instance}}" 
+              HOST_SSH_KEYS: "{{form.pipeline_blue_green.parameters.host-ssh-keys}}"
+              HOST_USER_NAME: "{{form.pipeline_blue_green.parameters.host-user-name}}"
+              BASTION_HOST_SSH_KEYS: "{{form.pipeline_blue_green.parameters.bastion-host-ssh-keys}}"
+              BASTION_HOST_USER_NAME: "{{form.pipeline_blue_green.parameters.bastion-host-user-name}}"
+              LOADBALANCER: "{{form.pipeline_blue_green.parameters.loadbalancer}}"
+              GREEN_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsgreen}}"
+              BLUE_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsblue}}"                           
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: blueGreen
+    actions:
       - type: update-service-parameters
         service_id: pipeline
         service_label: build
         parameters:
           configuration:
+            env:
+              APP_NAME: "{{form.pipeline_blue_green.parameters.app-name}}"
+              API_KEY: "{{form.pipeline_blue_green.parameters.api-key}}"
+              REGION: "{{form.pipeline_blue_green.parameters.vpcRegion}}"
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: blueGreen
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: pr
+        parameters:
+          configuration:
+            env:
+              APP_NAME: "{{form.pipeline_blue_green.parameters.app-name}}"
+              API_KEY: "{{form.pipeline_blue_green.parameters.api-key}}"
+              REGION: "{{form.pipeline_blue_green.parameters.vpcRegion}}"
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: rolling
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: deploy
+        parameters:
+          configuration:
             content:
-              $text: build_pipeline_tekton_blueGreen.yml                            
+              $text: deploy_pipeline_tekton_rolling.yml
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: rolling
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: deploy
+        parameters:
+          configuration:
+            env:
+              APP_NAME: "{{form.pipeline_rolling.parameters.app-name}}"
+              API_KEY: "{{form.pipeline_rolling.parameters.api-key}}"
+              REGION: "{{form.pipeline_rolling.parameters.vpcRegion}}"
+              VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_rolling.parameters.virtual-server-instance}}" 
+              HOST_SSH_KEYS: "{{form.pipeline_rolling.parameters.host-ssh-keys}}"
+              HOST_USER_NAME: "{{form.pipeline_rolling.parameters.host-user-name}}"
+              BASTION_HOST_SSH_KEYS: "{{form.pipeline_rolling.parameters.bastion-host-ssh-keys}}"
+              BASTION_HOST_USER_NAME: "{{form.pipeline_rolling.parameters.bastion-host-user-name}}"
+              LOADBALANCER: "{{form.pipeline_rolling.parameters.loadbalancer}}"
+              BLUE_POOL: "{{form.pipeline_rolling.parameters.loadbalancerpoolsblue}}"                           
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: rolling
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: build
+        parameters:
+          configuration:
+            env:
+              APP_NAME: "{{form.pipeline_rolling.parameters.app-name}}"
+              API_KEY: "{{form.pipeline_rolling.parameters.api-key}}"
+              REGION: "{{form.pipeline_rolling.parameters.vpcRegion}}"
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: rolling
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: pr
+        parameters:
+          configuration:
+            env:
+              APP_NAME: "{{form.pipeline_rolling.parameters.app-name}}"
+              API_KEY: "{{form.pipeline_rolling.parameters.api-key}}"
+              REGION: "{{form.pipeline_rolling.parameters.vpcRegion}}"              
   - condition:
       any:
         - parameter: deployment-strategy
@@ -232,20 +329,51 @@ deploy_conditions:
           configuration:
             content:
               $text: deploy_pipeline_tekton.yml
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: recreate
+    actions:
       - type: update-service-parameters
         service_id: pipeline
-        service_label: pr
+        service_label: deploy
         parameters:
           configuration:
-            content:
-              $text: pr_pipeline_tekton.yml
+            env:
+              APP_NAME: "{{form.pipeline.parameters.app-name}}"
+              API_KEY: "{{form.pipeline.parameters.api-key}}"
+              REGION: "{{form.pipeline.parameters.vsiRegion}}"
+              VIRTUAL_SERVER_INSTANCE: "{{form.pipeline.parameters.virtual-server-instance}}" 
+              HOST_SSH_KEYS: "{{form.pipeline.parameters.host-ssh-keys}}"
+              HOST_USER_NAME: "{{form.pipeline.parameters.host-user-name}}"
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: recreate
+    actions:
       - type: update-service-parameters
         service_id: pipeline
         service_label: build
         parameters:
           configuration:
-            content:
-              $text: build_pipeline_tekton.yml                
+            env:
+              APP_NAME: "{{form.pipeline.parameters.app-name}}"
+              API_KEY: "{{form.pipeline.parameters.api-key}}"
+              REGION: "{{form.pipeline.parameters.vsiRegion}}"
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: recreate
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: pr
+        parameters:
+          configuration:
+            env:
+              APP_NAME: "{{form.pipeline.parameters.app-name}}"
+              API_KEY: "{{form.pipeline.parameters.api-key}}"
+              REGION: "{{form.pipeline.parameters.vsiRegion}}"                            
 
 vault_conditions:
   - condition:

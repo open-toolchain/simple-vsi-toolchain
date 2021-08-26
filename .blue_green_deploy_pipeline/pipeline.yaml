@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: rolling-simple-vsi-app-pipeline
+  name: blue-green-simple-vsi-app-pipeline
 spec:
   params:
     - name: repository
@@ -280,7 +280,31 @@ spec:
           value: $(params.pool-user-name)                       
       workspaces:
         - name: output
-          workspace: pipeline-ws                  
+          workspace: pipeline-ws
+    - name: prod-release
+      taskRef:
+        name: prod-release
+      runAfter: [ acceptance-test ]     
+      params:
+        - name: region
+          value: $(params.region)
+        - name: api
+          value: $(params.api)
+        - name: apikey
+          value: $(params.apikey)      
+        - name: scripts-subpath
+          value: $(params.scripts-subpath)     
+        - name: blue-pool
+          value: $(params.blue-pool)                 
+        - name: green-pool
+          value: $(params.green-pool)          
+        - name: loadbalancer
+          value: $(params.loadbalancer)
+        - name: deployment-strategy
+          value: $(params.deployment-strategy)                                        
+      workspaces:
+        - name: output
+          workspace: pipeline-ws                    
     - name: publish-doi-deployrecord
       taskRef:
         name: publish-doi-deployrecord
@@ -304,4 +328,58 @@ spec:
           value: $(tasks.download-artifacts.results.build_number)
       workspaces:
         - name: output
-          workspace: pipeline-ws     
+          workspace: pipeline-ws
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: blue-green-switch-pipeline
+spec:
+  params:
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+    - name: api
+      description: The IBM Cloud API Endpoint
+    - name: apikey
+      description: The IBM Cloud API Key  
+    - name: scripts-subpath
+      description: The variable storing language scripts-subpath 
+    - name: fail-on-scanned-issues
+      description: Force failure of task when vulnerability advisor scan issues are found
+      default: "true"
+    - name: pipeline-debug
+      default: "0"
+    - name: blue-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt
+    - name: green-pool
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name        
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: blue-green-switch
+      taskRef:
+        name: prod-release     
+      params:
+        - name: region
+          value: $(params.region)
+        - name: api
+          value: $(params.api)
+        - name: apikey
+          value: $(params.apikey)      
+        - name: scripts-subpath
+          value: $(params.scripts-subpath)     
+        - name: blue-pool
+          value: $(params.blue-pool)                 
+        - name: green-pool
+          value: $(params.green-pool)          
+        - name: loadbalancer
+          value: $(params.loadbalancer)
+        - name: deployment-strategy
+          value: $(params.deployment-strategy)                                         
+      workspaces:
+        - name: output
+          workspace: pipeline-ws

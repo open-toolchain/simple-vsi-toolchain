@@ -3,7 +3,7 @@ inputs:
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
-    path: .deploy_pipeline
+    path: .blue_green_deploy_pipeline
   - type: git
     branch: ${DEFINITIONS_BRANCH}
     service: ${TEKTON_CATALOG_REPO}
@@ -45,28 +45,13 @@ triggers:
   - type: manual
     name: switch-blue-green
     eventListener: blue-green-switch-manual-run
-    properties: []
-  - type: git
-    name: rolling-commit-push
-    eventListener: rolling-${GIT_COMMIT_EVENT_LISTENER_NAME}
-    service: ${INVENTORY_REPO}
-    branch: ${APP_REPO_BRANCH}
-    events: { "push": true }
-    disabled: true    
-  - type: manual
-    name: rolling-manual-run
-    eventListener: rolling-manual-run
-    properties:
-      - name: branch
-        type: text
-        value: ${APP_REPO_BRANCH}
-    disabled: true                
+    properties: []               
 properties:
   - name: apikey
-    value: ${BLUE_GREEN_API_KEY}
+    value: ${API_KEY}
     type: SECURE
   - name: app-name
-    value: ${BLUE_GREEN_APP_NAME}
+    value: ${APP_NAME}
     type: text
   - name: artifactory
     value: ${ARTIFACTORY}
@@ -96,10 +81,10 @@ properties:
     value: ${LOADBALANCER}
     type: text
   - name: bastion-host
-    value: ${BASTION_HOST}
+    value: ${VIRTUAL_SERVER_INSTANCE}
     type: text
   - name: region
-    value: ${VPC_REGION}
+    value: ${REGION}
     type: text   
   - name: bastion-host-user-name
     value: ${BASTION_HOST_USER_NAME}
@@ -108,10 +93,10 @@ properties:
     value: ${BASTION_HOST_SSH_KEYS}
     type: SECURE    
   - name: pool-user-name
-    value: ${POOL_HOST_USER_NAME}
+    value: ${HOST_USER_NAME}
     type: text 
   - name: pool-ssh-keys
-    value: ${POOL_HOST_SSH_KEYS}
+    value: ${HOST_SSH_KEYS}
     type: SECURE
   - name: inventory-repo
     value: ${INVENTORY_REPO}

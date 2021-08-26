@@ -141,6 +141,7 @@ services:
         env:
           TOOLCHAIN_REGION: $env.env_id
           PIPELINE_REPO: pipeline-repo
+          REGION: "{{form.pipeline.parameters.vsiRegion}}"
           APP_REPO: repo
           INSIGHTS: devops-insights
           API_KEY: '{{form.pipeline.parameters.api-key}}'
@@ -165,11 +166,8 @@ services:
               } else {
                 'gitlab-pr-listener';
               }
-            }
-          VPC_REGION: "{{form.pipeline_blue_green.parameters.vpcRegion}}"              
-          DEPLOYMENT_STRATEGY: '{{form.deployment_strategy.parameters.deployment-strategy}}'
-          BLUE_GREEN_APP_NAME: "{{form.pipeline_blue_green.parameters.app-name}}"
-          BLUE_GREEN_API_KEY: "{{form.pipeline_blue_green.parameters.api-key}}"             
+            }           
+          DEPLOYMENT_STRATEGY: '{{form.deployment_strategy.parameters.deployment-strategy}}'            
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
@@ -223,11 +221,8 @@ services:
               } else {
                 'grit-or-gitlab-commit';
               }
-            }
-          VPC_REGION: "{{form.pipeline_blue_green.parameters.vpcRegion}}"              
-          DEPLOYMENT_STRATEGY: '{{form.deployment_strategy.parameters.deployment-strategy}}'
-          BLUE_GREEN_APP_NAME: "{{form.pipeline_blue_green.parameters.app-name}}"
-          BLUE_GREEN_API_KEY: "{{form.pipeline_blue_green.parameters.api-key}}"             
+            }           
+          DEPLOYMENT_STRATEGY: '{{form.deployment_strategy.parameters.deployment-strategy}}'           
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
@@ -254,7 +249,6 @@ services:
           INSIGHTS: devops-insights
           RESOURCE_GROUP: "{{form.pipeline.parameters.resource-group}}"
           VIRTUAL_SERVER_INSTANCE: "{{form.pipeline.parameters.virtual-server-instance}}" 
-          VIRTUAL_SERVER_REGION: "{{form.pipeline.parameters.vsiRegion}}" 
           HOST_SSH_KEYS: '{{form.pipeline.parameters.host-ssh-keys}}'
           HOST_USER_NAME: '{{form.pipeline.parameters.host-user-name}}'
           HOST_USER_PASSWORD: '{{form.pipeline.parameters.host-user-password}}'   
@@ -288,16 +282,10 @@ services:
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
-            $env.template.info.hosted_region !== "" ? 'master': 'master' 
-          VPC_REGION: "{{form.pipeline_blue_green.parameters.vpcRegion}}"              
+            $env.template.info.hosted_region !== "" ? 'master': 'master'             
           DEPLOYMENT_STRATEGY: '{{form.deployment_strategy.parameters.deployment-strategy}}'
-          BLUE_GREEN_APP_NAME: "{{form.pipeline_blue_green.parameters.app-name}}"
-          BLUE_GREEN_API_KEY: "{{form.pipeline_blue_green.parameters.api-key}}"  
-          BASTION_HOST: "{{form.pipeline_blue_green.parameters.virtual-server-instance}}"
           BASTION_HOST_SSH_KEYS: '{{form.pipeline_blue_green.parameters.bastion-host-ssh-keys}}'
           BASTION_HOST_USER_NAME: '{{form.pipeline_blue_green.parameters.bastion-host-user-name}}'
-          POOL_HOST_SSH_KEYS: '{{form.pipeline_blue_green.parameters.host-ssh-keys}}'
-          POOL_HOST_USER_NAME: '{{form.pipeline_blue_green.parameters.host-user-name}}'
           LOADBALANCER: "{{form.pipeline_blue_green.parameters.loadbalancer}}"
           GREEN_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsgreen}}"
           BLUE_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsblue}}"             
@@ -347,11 +335,11 @@ form:
         $env.hostUserName ?
           '{{hostUserName}}' : ''
       bastion-host-ssh-keys: >
-        $env.hostSshKeys ?
-          '{{hostSshKeys}}' : ''
+        $env.bastioHostSshKeys ?
+          '{{bastioHostSshKeys}}' : ''
       bastion-host-user-name: >
-        $env.hostUserName ?
-          '{{hostUserName}}' : ''            
+        $env.bastionHostUserName ?
+          '{{bastionHostUserName}}' : ''            
       loadbalancer: >
         $env.loadBalancerName ?
           '{{loadBalancerName}}' : '' 
@@ -363,6 +351,36 @@ form:
           '{{bluePoolName}}' : ''                   
     schema:
       $ref: deploy_blue_green.json
+
+  pipeline_rolling:
+    parameters:
+      app-name: >
+        $env.appName ?
+          '{{appName}}' : '{{services.repo.parameters.repo_name}}'
+      api-key: '{{apiKey}}'
+      resource-group: '{{resourceGroup}}'
+      vpcRegion: '{{vpcRegion}}'
+      virtual-server-instance: '{{virtualServerInstance}}'
+      host-ssh-keys: >
+        $env.hostSshKeys ?
+          '{{hostSshKeys}}' : ''
+      host-user-name: >
+        $env.hostUserName ?
+          '{{hostUserName}}' : ''
+      bastion-host-ssh-keys: >
+        $env.bastioHostSshKeys ?
+          '{{bastioHostSshKeys}}' : ''
+      bastion-host-user-name: >
+        $env.bastionHostUserName ?
+          '{{bastionHostUserName}}' : ''           
+      loadbalancer: >
+        $env.loadBalancerName ?
+          '{{loadBalancerName}}' : ''
+      loadbalancerpoolsblue: >
+        $env.bluePoolName ?
+          '{{bluePoolName}}' : ''                   
+    schema:
+      $ref: deploy_rolling.json
 
   customtool_cos-bucket:
     parameters:
@@ -390,7 +408,7 @@ form:
     parameters:
       deployment-strategy:  >
         $env.deploymentStrategy ?
-          '{{deploymentStrategy}}' : 'interrupt' 
+          '{{deploymentStrategy}}' : 'recreate' 
     schema:
       $ref: wizard_strategy.json
 

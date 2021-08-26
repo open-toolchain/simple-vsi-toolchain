@@ -101,6 +101,20 @@ steps:
             parameter: deployment-strategy
             value: blueGreen
 
+  - name: deploy_rolling
+    indent_level: 1  
+    label: 
+      $ref: "#/messages/wizard.step.deploy.label"
+    title:
+      $ref: "#/messages/wizard.step.deploy.title"
+    form: pipeline_rolling
+    visible:
+      condition:
+        any:
+          - form: deployment_strategy
+            parameter: deployment-strategy
+            value: rolling
+
   - name: storage
     form: storage
     title:

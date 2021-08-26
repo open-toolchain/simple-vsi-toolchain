@@ -21,6 +21,10 @@
           "value": "recreate"
         },
         {
+          "name": "Rolling",
+          "value": "rolling"
+        },  
+        {
           "name": {
             "$ref": "#/messages/wizard.deploymentStrategy.blueGreen.title"
           },
