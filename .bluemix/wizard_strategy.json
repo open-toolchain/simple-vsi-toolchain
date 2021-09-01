@@ -32,7 +32,7 @@
   "form": [{
     "type": "info",
     "text": {
-      "$ref": "#/messages/wizard.deployment_strategy.text"
+      "$ref": "#/messages/wizard.deploymentStrategy.text"
     }
   }, {
     "type": "tilegroup",
