@@ -223,7 +223,7 @@ deploy_conditions:
   - condition:
       any:
         - parameter: deployment-strategy
-          value: interrupt
+          value: recreate
     actions:
       - type: update-service-parameters
         service_id: pipeline
