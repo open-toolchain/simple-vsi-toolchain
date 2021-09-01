@@ -4,22 +4,26 @@
     "$i18n": "locales.yml"
   },
   "title": {
-    "$ref": "#/messages/wizard.deployment_strategy.title"
+    "$ref": "#/messages/wizard.deploymentStrategy.title"
   },
   "description": "",
   "longDescription": {
-    "$ref": "#/messages/wizard.deployment_strategy.longDescription"
+    "$ref": "#/messages/wizard.deploymentStrategy.longDescription"
   },
   "type": "object",
   "properties": {
-    "deployment-strategy": {
+    "deploymentStrategy": {
       "type": "string",
       "enum": [{
-          "name": "Interrupt",
+          "name": {
+            "$ref": "#/messages/wizard.deploymentStrategy.interrupt.title"
+          },
           "value": "interrupt"
         },
         {
-          "name": "Blue-Green",
+          "name": {
+            "$ref": "#/messages/wizard.deploymentStrategy.blueGreen.title"
+          },
           "value": "blueGreen"
         }
       ]
@@ -28,26 +32,14 @@
   "form": [{
     "type": "info",
     "text": {
-      "$ref": "#/messages/wizard.deployment_strategy.text"
+      "$ref": "#/messages/wizard.deploymentStrategy.text"
     }
   }, {
     "type": "tilegroup",
-    "key": "deployment-strategy",
+    "key": "deploymentStrategy",
     "display": {
       "showLabel": false,
-      "orientation": "horizontal"
+      "orientation": "vertical"
     }
-  },
-  {
-    "type": "notification",
-    "display": {
-      "title": "Note: ",
-      "subtitle": {
-        "$ref": "#/messages/wizard.deployment_strategy.note"
-      },
-      "showInAdvancedMode": true,
-      "advancedModePosition": "bottom"
-    },
-    "visible": true
   }]
 }

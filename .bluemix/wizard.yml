@@ -34,7 +34,6 @@ steps:
     secretsStep: true
     conditions:
       $ref: conditions.yml#/vault_conditions
-
   - name: keyprotect
     indent_level: 1
     title:
@@ -46,7 +45,17 @@ steps:
           - form: wizard_vault
             parameter: key-protect
             value: true
-
+  - name: secretsmanager
+    indent_level: 1
+    form: secretsmanager
+    title:
+      $ref: "#/messages/wizard.step.secretsmanager.title"
+    visible:
+      condition:
+        any:
+          - form: wizard_vault
+            parameter: secrets-manager
+            value: true
   - name: hashicorpvault
     indent_level: 1
     title:
@@ -62,10 +71,9 @@ steps:
   - name: deployment_strategy
     form: deployment_strategy
     title:
-      $ref: "#/messages/wizard.step.deployment_strategy.title"
+      $ref: "#/messages/wizard.step.deploymentStrategy.title"
     conditions:
       $ref: conditions.yml#/deploy_conditions
-
   - name: deploy
     indent_level: 1  
     label: 
@@ -79,7 +87,6 @@ steps:
           - form: deployment_strategy
             parameter: deployment-strategy
             value: interrupt
-
   - name: deploy_blue_green
     indent_level: 1  
     label: 

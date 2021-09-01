@@ -26,6 +26,19 @@
         "style": "card"
       }
     },
+    "secrets-manager": {
+      "title": {
+        "$ref": "#/messages/wizard.vault.secretsManager.title"
+      },
+      "description": {
+        "$ref": "#/messages/wizard.vault.secretsManager.description"
+      },
+      "type": "boolean",
+      "display": {
+        "component": "toggle",
+        "style": "card"
+      }
+    },
     "hashicorp-vault": {
       "title": {
         "$ref": "#/messages/wizard.vault.hashicorp.title"
@@ -40,13 +53,29 @@
       }
     }
   },
-  "form": [{
+  "form": [
+    {
+      "type": "notification",
+      "display": {
+        "style": "warning",
+        "title": {
+          "$ref": "#/messages/wizard.vault.notification.title"
+        },
+        "subtitle": {
+          "$ref": "#/messages/wizard.vault.notification.sutitle"
+        },
+        "showInAdvancedMode": true,
+        "advancedModePosition": "bottom"
+      }
+    },
+    {
       "type": "info",
       "text": {
         "$ref": "#/messages/wizard.vault.info"
       }
     },
     "key-protect",
+    "secrets-manager",
     "hashicorp-vault"
   ]
 }
