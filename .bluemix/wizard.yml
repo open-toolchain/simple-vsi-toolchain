@@ -86,7 +86,7 @@ steps:
         any:
           - form: deployment_strategy
             parameter: deployment-strategy
-            value: interrupt
+            value: recreate
   - name: deploy_blue_green
     indent_level: 1  
     label: 

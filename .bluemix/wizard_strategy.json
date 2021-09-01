@@ -8,7 +8,7 @@
   },
   "description": "",
   "longDescription": {
-    "$ref": "#/messages/wizard.deployment_strategy.longDescription"
+    "$ref": "#/messages/wizard.deploymentStrategy.longDescription"
   },
   "type": "object",
   "properties": {
