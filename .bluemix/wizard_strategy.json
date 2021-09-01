@@ -15,11 +15,15 @@
     "deployment-strategy": {
       "type": "string",
       "enum": [{
-          "name": "Interrupt",
-          "value": "interrupt"
+        "name": {
+          "$ref": "#/messages/wizard.deploymentStrategy.recreate.title"
+        },
+          "value": "recreate"
         },
         {
-          "name": "Blue-Green",
+          "name": {
+            "$ref": "#/messages/wizard.deploymentStrategy.blueGreen.title"
+          },
           "value": "blueGreen"
         }
       ]
@@ -35,19 +39,7 @@
     "key": "deployment-strategy",
     "display": {
       "showLabel": false,
-      "orientation": "horizontal"
+      "orientation": "vertical"
     }
-  },
-  {
-    "type": "notification",
-    "display": {
-      "title": "Note: ",
-      "subtitle": {
-        "$ref": "#/messages/wizard.deployment_strategy.note"
-      },
-      "showInAdvancedMode": true,
-      "advancedModePosition": "bottom"
-    },
-    "visible": true
   }]
 }
