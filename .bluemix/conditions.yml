@@ -196,7 +196,7 @@ repo_conditions:
 deploy_conditions:
   - condition:
       any:
-        - parameter: deploymentStrategy
+        - parameter: deployment-strategy
           value: blueGreen
     actions:
       - type: update-service-parameters
@@ -222,7 +222,7 @@ deploy_conditions:
               $text: build_pipeline_tekton_blueGreen.yml                            
   - condition:
       any:
-        - parameter: deploymentStrategy
+        - parameter: deployment-strategy
           value: interrupt
     actions:
       - type: update-service-parameters
