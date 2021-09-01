@@ -104,7 +104,7 @@ wizard.optional.tools.doi.description: "DevOps Insights provides comprehensive i
 wizard.optional.tools.cos.title: "Cloud Object Storage"
 wizard.optional.tools.cos.description: "Information for Cloud Object Storage Integration."
 wizard.optional.tools.artifactory.title: "Artifactory"
-wizard.deployment_strategy.title: "Deployment Strategy"
+wizard.deployment_strategy.title: "Deploy"
 wizard.deployment_strategy.longDescription: "IBM Kubernetes Services offers Deployment strategies that allow you to update in a variety of ways depending on the needs of the your apllication."
 wizard.deployment_strategy.text: "Identify the deployment strategy for you application."
 wizard.deployment_strategy.note: "Please note that you can change the selected deployment strategy in environement properties of the CD-Deployment pipeline."
