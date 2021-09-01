@@ -83,9 +83,9 @@ steps:
   - name: deploy_blue_green
     indent_level: 1  
     label: 
-      $ref: "#/messages/wizard.step.deploy.blueGreen.label"
+      $ref: "#/messages/wizard.step.deploy.label"
     title:
-      $ref: "#/messages/wizard.step.deploy.blueGreentitle"
+      $ref: "#/messages/wizard.step.deploy.title"
     form: pipeline_blue_green
     visible:
       condition:
