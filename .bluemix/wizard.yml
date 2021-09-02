@@ -11,6 +11,12 @@ exclude:
     - artifactory
     
 steps:
+  - name: deployment_strategy
+    form: deployment_strategy
+    title:
+      $ref: "#/messages/wizard.step.deploymentStrategy.title"
+    conditions:
+      $ref: conditions.yml#/deploy_conditions
   - name: app
     title:
       $ref: "#/messages/wizard.step.application.title"
@@ -68,14 +74,7 @@ steps:
             parameter: hashicorp-vault
             value: true
 
-  - name: deployment_strategy
-    form: deployment_strategy
-    title:
-      $ref: "#/messages/wizard.step.deploymentStrategy.title"
-    conditions:
-      $ref: conditions.yml#/deploy_conditions
-  - name: deploy
-    indent_level: 1  
+  - name: deploy 
     label: 
       $ref: "#/messages/wizard.step.deploy.label"
     title:
@@ -88,7 +87,6 @@ steps:
             parameter: deployment-strategy
             value: recreate
   - name: deploy_blue_green
-    indent_level: 1  
     label: 
       $ref: "#/messages/wizard.step.deploy.label"
     title:
@@ -100,9 +98,7 @@ steps:
           - form: deployment_strategy
             parameter: deployment-strategy
             value: blueGreen
-
   - name: deploy_rolling
-    indent_level: 1  
     label: 
       $ref: "#/messages/wizard.step.deploy.label"
     title:
