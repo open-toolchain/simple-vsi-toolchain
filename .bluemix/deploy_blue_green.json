@@ -4,13 +4,13 @@
       "$i18n":"locales.yml"
    },
    "title":{
-      "$ref":"#/messages/deploy.title"
+      "$ref":"#/messages/deploy.blueGreen.title"
    },
    "description":{
       "$ref":"#/messages/deploy.description"
    },
    "longDescription":{
-      "$ref":"#/messages/deploy.longDescription"
+      "$ref":"#/messages/deploy.blueGreen.longDescription"
    },
    "type":"object",
    "properties":{

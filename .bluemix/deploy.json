@@ -10,7 +10,7 @@
         "$ref": "#/messages/deploy.description"
     },
     "longDescription": {
-        "$ref": "#/messages/deploy.longDescription"
+        "$ref": "#/messages/deploy.recreate.longDescription"
     },
     "type": "object",
     "properties": {
