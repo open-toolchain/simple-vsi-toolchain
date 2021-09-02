@@ -4,7 +4,7 @@
         "$i18n": "locales.yml"
     },
     "title": {
-        "$ref": "#/messages/deploy.title"
+        "$ref": "#/messages/deploy.recreate.title"
     },
     "description": {
         "$ref": "#/messages/deploy.description"

@@ -8,6 +8,8 @@ deploy.description: "Toolchain to build and deploy simple Maven Based Java hello
 deploy.recreate.longDescription: "Enter a name for the app that you want to deploy. Create a new IBM Cloud API Key or use an existing IBM Cloud API Key to retrieve IBM Cloud VPC Infrastructure for the Continuous Delivery Pipeline to automate deployment of the built application binary to Virtual Machines within VPC. \n\n **Recreate Strategy** uses the minimal infrastructure components and deploys the application on the single Virtual Server Instance and attaches the Floating IP for user access"
 deploy.blueGreen.longDescription: "Enter a name for the app that you want to deploy. Create a new IBM Cloud API Key or use an existing IBM Cloud API Key to retrieve IBM Cloud VPC Infrastructure for the Continuous Delivery Pipeline to automate deployment of the built application binary to Virtual Machines within VPC. \n\n **Blue-Green Strategy** uses identical infrastructure environments designated as Blue and Green. While one environment serves as production, the deployment is carried on the other idle environment."
 deploy.appDescription: "Enter a name for the app that you want to deploy."
+deploy.recreate.title: "Deployment Target - Recreate"
+deploy.blueGreen.title: "Deployment Target - Blue Green"
 deploy.appName: "App name"
 deploy.apikeyDescription: "The IBM Cloud API key is used to access the IBM Cloud Kubernetes Service API and interact with the cluster. You can create your API by using the [IBM Cloud console](https://cloud.ibm.com/iam/apikeys) or by using the ibmcloud [iam api-key-create](https://cloud.ibm.com/docs/cli?topic=cli-ibmcloud_commands_iam#ibmcloud_iam_api_key_create) command. "
 deploy.registryRegionDescription: "The IBM Cloud region for image registry"
