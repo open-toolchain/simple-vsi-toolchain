@@ -4,13 +4,13 @@
         "$i18n": "locales.yml"
     },
     "title": {
-        "$ref": "#/messages/deploy.recreate.title"
+        "$ref": "#/messages/deploy.basic.title"
     },
     "description": {
-        "$ref": "#/messages/deploy.description"
+        "$ref": "#/messages/deploy.basic.longDescription"
     },
     "longDescription": {
-        "$ref": "#/messages/deploy.recreate.longDescription"
+        "$ref": "#/messages/deploy.basic.longDescription"
     },
     "type": "object",
     "properties": {
@@ -24,7 +24,7 @@
                 "v-type": "api-key"
             }
         },
-        "vsiRegion": {
+        "vpcRegion": {
             "description": {
                 "$ref": "#/messages/deploy.vsiRegionLabel"
             },
@@ -36,6 +36,7 @@
                 ]
             }
         },
+
         "type": {
             "description": {
                 "$ref": "#/messages/deploy.vsiAuthType"
@@ -48,31 +49,6 @@
                 "credentials",
                 "ssh_private_key"
             ]
-        },
-        "host-user-name": {
-            "description": {
-                "$ref": "#/messages/deploy.vsiUserName"
-            },
-            "title": {
-                "$ref": "#/messages/deploy.userName"
-            },
-            "type": "string"
-        },
-        "host-ssh-keys": {
-            "description": {
-                "$ref": "#/messages/deploy.vsiSshKey"
-            },
-            "title": {
-                "$ref": "#/messages/deploy.hostSshKeys"
-            },
-            "type": "password"
-        },
-        "host-user-password": {
-            "description": {
-                "$ref": "#/messages/deploy.vsiUserPassword"
-            },
-            "title": "Password",
-            "type": "password"
         },
         "app-name": {
             "description": {
@@ -88,7 +64,7 @@
             "validator": {
                 "v-type": "vsi-instances",
                 "params": [
-                    "vsiRegion"
+                    "vpcRegion"
                 ]
             },
             "type": "string",
@@ -116,7 +92,7 @@
     "required": [
         "app-name",
         "api-key",
-        "vsiRegion",
+        "vpcRegion",
         "virtual-server-instance"
     ],
     "form": [
@@ -149,7 +125,7 @@
             "placeholder": {
                 "$ref": "#/messages/deploy.regionPlaceHolder"
             },
-            "key": "vsiRegion"
+            "key": "vpcRegion"
         },
 
         {

@@ -3,7 +3,7 @@ inputs:
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
-    path: .rolling_deploy_pipeline
+    path: .canary_deploy_pipeline
   - type: git
     branch: ${DEFINITIONS_BRANCH}
     service: ${TEKTON_CATALOG_REPO}
@@ -30,18 +30,22 @@ inputs:
     path: utils
 triggers:
   - type: git
-    name: rolling-commit-push
-    eventListener: rolling-${GIT_COMMIT_EVENT_LISTENER_NAME}
+    name: canary-commit-push
+    eventListener: canary-${GIT_COMMIT_EVENT_LISTENER_NAME}
     service: ${INVENTORY_REPO}
     branch: ${APP_REPO_BRANCH}
     events: { "push": true }
   - type: manual
-    name: rolling-manual-run
-    eventListener: rolling-manual-run
+    name: canary-manual-run
+    eventListener: canary-manual-run
     properties:
       - name: branch
         type: text
-        value: ${APP_REPO_BRANCH}              
+        value: ${APP_REPO_BRANCH}
+  - type: manual
+    name: abort-canary
+    eventListener: abort-canary
+    properties: []               
 properties:
   - name: apikey
     value: ${API_KEY}
@@ -68,11 +72,26 @@ properties:
     value: ${DEPLOYMENT_STRATEGY}
     type: text
   - name: lb-pool
-    value: ${ROLLING_POOL}  
+    value: ${CANARY_POOL}  
     type: text
   - name: loadbalancer
     value: ${LOADBALANCER}
     type: text
+  - name: instance-group-region
+    value: ${IG_REGION}  
+    type: text
+  - name: instance-group-1
+    value: ${IG1}
+    type: text
+  - name: instance-group-2
+    value: ${IG2}
+    type: text
+  - name: canary-step-size
+    value: ${STEP_SIZE}
+    type: text
+  - name: canary-step-interval
+    value: ${STEP_INTERVAL}
+    type: text            
   - name: bastion-host
     value: ${VIRTUAL_SERVER_INSTANCE}
     type: text

@@ -85,7 +85,7 @@ steps:
         any:
           - form: deployment_strategy
             parameter: deployment-strategy
-            value: recreate
+            value: basic
   - name: deploy_blue_green
     label: 
       $ref: "#/messages/wizard.step.deploy.label"
@@ -110,6 +110,18 @@ steps:
           - form: deployment_strategy
             parameter: deployment-strategy
             value: rolling
+  - name: deploy_canary
+    label: 
+      $ref: "#/messages/wizard.step.deploy.label"
+    title:
+      $ref: "#/messages/wizard.step.deploy.title"
+    form: pipeline_canary
+    visible:
+      condition:
+        any:
+          - form: deployment_strategy
+            parameter: deployment-strategy
+            value: canary            
 
   - name: storage
     form: storage
@@ -166,9 +178,11 @@ form:
   wizard_inventory:
     schema:
       $ref: wizard_inventory.json
+
   wizard_vault:
     parameters:
       key-protect: false
+      secrets-manager: true
       hashicorp-vault: false
     schema:
       $ref: wizard_vault.json

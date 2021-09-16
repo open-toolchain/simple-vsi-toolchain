@@ -153,7 +153,7 @@ spec:
     - name: bastion-host-ssh-keys
       description: Bastion host 
     - name: lb-pool
-      description: Load Balancer Pool for the Deployemnt
+      description: Blue Pool for Blue Green Deployemnt
     - name: deployment-strategy
       description: Green Pool for Blue Green Deployemnt
     - name: loadbalancer
@@ -161,7 +161,13 @@ spec:
     - name: pool-ssh-keys
       description: Blue and Green Pool base64 encoded private SSH key 
     - name: pool-user-name   
-      description: Blue and Green Pool User Name            
+      description: Blue and Green Pool User Name
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval                  
   workspaces:
     - name: output
       description: A workspace
@@ -208,7 +214,17 @@ spec:
         - name: POOL_SSH_KEYS
           value: $(params.pool-ssh-keys)         
         - name: POOL_USER_NAME
-          value: $(params.pool-user-name)           
+          value: $(params.pool-user-name) 
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)                     
       script: |
         #!/bin/bash
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -227,12 +243,12 @@ spec:
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
         REGION=$(echo ${REGION::-2});
-        source ./scripts-repo/${subpath}/setup-remote-deploy-rolling.sh
+        source ./scripts-repo/${subpath}/setup-remote-deploy-blue-green.sh      
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: acceptance-test
+  name: canary-release
 spec:
   params:
     - name: region
@@ -243,32 +259,26 @@ spec:
       default: "https://cloud.ibm.com"
     - name: apikey
       description: The IBM Cloud API Key  
-    - name: inventory-repo
-      description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-subpath
       description: The subpath to the script repo from root
-    - name: bastion-host
-      description: Bastion Host virtual-server-instance
-    - name: bastion-host-user-name
-      description: Bastion Host User Name
-    - name: bastion-host-ssh-keys
-      description: Bastion host 
     - name: lb-pool
-      description: Load Balancer Pool for the Deployemnt
-    - name: deployment-strategy
-      description: Deployment Strategy
+      description: Blue Pool for Blue Green Deployemnt
     - name: loadbalancer
       description: Load Balancer Name
-    - name: pool-ssh-keys
-      description: Base64 encoded private SSH key 
-    - name: pool-user-name   
-      description: Pool User Name         
+    - name: deployment-strategy
+      description: Deployment Strategy
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval                   
   workspaces:
     - name: output
       description: A workspace
       mountPath: /output  
   steps:
-    - name: acceptance-test
+    - name: canary-release
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
       env:
@@ -277,31 +287,28 @@ spec:
         - name: API
           value: $(params.api)
         - name: APIKEY
-          value: $(params.apikey)       
-        - name: INVENTORY_REPO
-          value: $(params.inventory-repo)
+          value: $(params.apikey)      
         - name: scripts-subpath
-          value: $(params.scripts-subpath)     
-        - name: BASTION_HOST
-          value: $(params.bastion-host)
-        - name: BASTION_HOST_USER_NAME
-          value: $(params.bastion-host-user-name)        
-        - name: BASTION_HOST_SSH_KEYS
-          value: $(params.bastion-host-ssh-keys)                       
+          value: $(params.scripts-subpath)      
         - name: LB_POOL
-          value: $(params.lb-pool)          
+          value: $(params.lb-pool)                         
         - name: LOAD_BALANCER_NAME
-          value: $(params.loadbalancer)       
+          value: $(params.loadbalancer)
         - name: DEPLLOYMENT_STRATEGY
-          value: $(params.deployment-strategy)                        
-        - name: POOL_SSH_KEYS
-          value: $(params.pool-ssh-keys)         
-        - name: POOL_USER_NAME
-          value: $(params.pool-user-name)                       
+          value: $(params.deployment-strategy)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)                                                     
       script: |
         #!/bin/bash
-        subpath="$(params.scripts-subpath)"
-        source ./scripts-repo/${subpath}/acceptance-tests.sh
+        exit 1
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -368,3 +375,68 @@ spec:
         ibmcloud login -a $API --apikey $APIKEY --no-region
         ibmcloud doi publishdeployrecord --env "${TARGET}" --status=${DEPLOY_STATUS} --joburl="${JOB_URL}" \
           --buildnumber="${BUILD_NUMBER}" --logicalappname="${APP_NAME}" ${INVENTORY_REPO}
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: abort-canary
+spec:
+  params:
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
+    - name: api
+      description: the IBM Cloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: apikey
+      description: The IBM Cloud API Key  
+    - name: scripts-subpath
+      description: The subpath to the script repo from root
+    - name: lb-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: deployment-strategy
+      description: Deployment Strategy
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval                   
+  workspaces:
+    - name: output
+      description: A workspace
+      mountPath: /output  
+  steps:
+    - name: abort-canary
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: REGION
+          value: $(params.region)
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)      
+        - name: scripts-subpath
+          value: $(params.scripts-subpath)      
+        - name: LB_POOL
+          value: $(params.lb-pool)                         
+        - name: LOAD_BALANCER_NAME
+          value: $(params.loadbalancer)
+        - name: DEPLLOYMENT_STRATEGY
+          value: $(params.deployment-strategy)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)                                                     
+      script: |
+        #!/bin/bash
+        exit 1

@@ -136,14 +136,6 @@ spec:
       description: The variable storing artifactory integration with the toolchain
     - name: appname
       description: The name of the application passed as environment variable
-    - name: virtualserverinstance
-      description: The IP Address of the Virtual Server Instance
-    - name: hostsshkeys
-      description: The private SSH Key required to login to the Virtual Server Instance
-    - name: hostusername
-      description: The username required to login to the Virtual Server Instance
-    - name: hostpassword
-      description: The password required to login to the Virtual Server Instance
     - name: cos-region
       description: The Region where Cloud Object Storage Instance is created
     - name: cos-bucket-name
@@ -191,18 +183,6 @@ spec:
           value: $(params.artifactory)
         - name: APPNAME
           value: $(params.appname)
-        - name: VIRTUAL_SERVER_INSTANCE
-          value: $(params.virtualserverinstance)
-        - name: HOST_SSH_KEYS
-          value: $(params.hostsshkeys)
-        - name: HOST_USER_NAME
-          value: $(params.hostusername)
-        - name: HOST_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: secure-properties
-              key: host-password
-              optional: true
         - name: COSBUCKETNAME
           value: $(params.cos-bucket-name)
         - name: COSREGION
@@ -256,89 +236,6 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: health-check-task
-spec:
-  params:
-    - name: region
-      description: The IBM Cloud Region in which Virtual Server Instance is running
-      default: region
-    - name: api
-      description: the IBM Cloud api endpoint
-      default: "https://cloud.ibm.com"
-    - name: apikey
-      description: The IBM Cloud API Key  
-    - name: virtualserverinstance
-      description: The IP Address of the Virtual Server Instance
-    - name: inventory-repo
-      description: The variable storing git integration for the repository storing build inventory with the toolchain
-    - name: scripts-subpath
-      description: The subpath to the scripts
-    - name: bastion-host
-      description: Bastion Host virtual-server-instance
-    - name: bastion-host-user-name
-      description: Bastion Host User Name
-    - name: bastion-host-ssh-keys
-      description: Bastion host 
-    - name: blue-pool
-      description: Blue Pool for Blue Green Deployemnt
-    - name: deployment-strategy
-      description: Green Pool for Blue Green Deployemnt
-    - name: green-pool
-      description: Green Pool for Blue Green Deployemnt
-    - name: loadbalancer
-      description: Load Balancer Name
-    - name: pool-ssh-keys
-      description: Blue and Green Pool base64 encoded private SSH key 
-    - name: pool-user-name   
-      description: Blue and Green Pool User Name      
-  workspaces:
-    - name: output
-      description: A workspace
-      mountPath: /output
-  steps:
-    - name: check-application-health
-      image: ibmcom/pipeline-base-image:2.11
-      workingDir: /output
-      env:
-        - name: REGION
-          value: $(params.region)
-        - name: API
-          value: $(params.api)
-        - name: APIKEY
-          value: $(params.apikey)      
-        - name: VIRTUAL_SERVER_INSTANCE
-          value: $(params.virtualserverinstance)
-        - name: INVENTORY_REPO
-          value: $(params.inventory-repo)
-        - name: scripts-subpath
-          value: $(params.scripts-subpath)
-        - name: BASTION_HOST
-          value: $(params.bastion-host)
-        - name: BASTION_HOST_USER_NAME
-          value: $(params.bastion-host-user-name)        
-        - name: BASTION_HOST_SSH_KEYS
-          value: $(params.bastion-host-ssh-keys)      
-        - name: BLUE_POOL
-          value: $(params.blue-pool)                 
-        - name: GREEN_POOL
-          value: $(params.green-pool)          
-        - name: LOAD_BALANCER_NAME
-          value: $(params.loadbalancer)        
-        - name: DEPLLOYMENT_STRATEGY
-          value: $(params.deployment-strategy)                
-        - name: POOL_SSH_KEYS
-          value: $(params.pool-ssh-keys)         
-        - name: POOL_USER_NAME
-          value: $(params.pool-user-name)                       
-      script: |
-        #!/bin/bash
-        subpath="$(params.scripts-subpath)"
-        REGION=$(echo ${REGION::-2});
-        source ./scripts-repo/${subpath}/health-check-blue-green.sh
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
   name: acceptance-test
 spec:
   params:
@@ -350,8 +247,6 @@ spec:
       default: "https://cloud.ibm.com"
     - name: apikey
       description: The IBM Cloud API Key  
-    - name: virtualserverinstance
-      description: The IP Address of the Virtual Server Instance
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-subpath
@@ -389,8 +284,6 @@ spec:
           value: $(params.api)
         - name: APIKEY
           value: $(params.apikey)       
-        - name: VIRTUAL_SERVER_INSTANCE
-          value: $(params.virtualserverinstance)
         - name: INVENTORY_REPO
           value: $(params.inventory-repo)
         - name: scripts-subpath

@@ -4,13 +4,13 @@
       "$i18n":"locales.yml"
    },
    "title":{
-      "$ref": "#/messages/deploy.rolling.title"
+      "$ref":"#/messages/basic"
    },
    "description":{
-      "$ref":"#/messages/deploy.rolling.longDescription"
+      "$ref":"#/messages/deploy.blueGreen.description"
    },
    "longDescription":{
-      "$ref":"#/messages/deploy.rolling.longDescription"
+      "$ref":"#/messages/deploy.blueGreen.longDescription"
    },
    "type":"object",
    "properties":{
@@ -48,7 +48,19 @@
            ]
         }
      },
-     "loadbalancerpool":{
+     "loadbalancerpoolsblue":{
+        "description":{
+           "$ref":"#/messages/deploy.vpcRegionLabel"
+        },
+        "type":"string",
+        "validator":{
+           "v-type":"alb-pools",
+           "params":[
+              "loadbalancer"
+           ]
+        }
+     }, 
+     "loadbalancerpoolsgreen":{
         "description":{
            "$ref":"#/messages/deploy.vpcRegionLabel"
         },
@@ -127,7 +139,8 @@
       "host-ssh-keys",
       "host-user-name",
       "loadbalancer",
-      "loadbalancerpool"
+      "loadbalancerpoolsblue",
+      "loadbalancerpoolsgreen"
    ],
    "form":[
       {
@@ -151,16 +164,12 @@
          "key":"api-key"
       },
       {
-         "type": "info",
-         "text": "VSI details"
-     },            
-      {
          "type":"table",
          "columnCount":3,
          "widths":[
-            "47%",
+            "50%",
             "3%",
-            "50%"
+            "47%"
          ],
          "items":[
             {
@@ -210,14 +219,14 @@
                "key":"virtual-server-instance"
             }
          ]
-      },      
+      },
       {
         "type":"table",
         "columnCount":3,
         "widths":[
-           "47%",
+           "37%",
            "3%",
-           "50%"
+           "60%"
         ],
         "items":[ 
            {
@@ -247,9 +256,6 @@
         "title": {
            "$ref": "#/messages/deploy.bastionUsernameVirtualServer"
         },
-        "placeholder":{
-         "$ref":"#/messages/deploy.bastionUsernamePlaceHolder"
-      },        
         "key":"bastion-host-user-name"
       }, 
       {
@@ -264,24 +270,19 @@
        "title": {
            "$ref": "#/messages/deploy.bastionSshVirtualServer"
        },
-       "placeholder":{
-         "$ref":"#/messages/deploy.bastionSshVirtualServerPlaceHolder"
-      },
         "key":"bastion-host-ssh-keys"
      }
   ]
-},    
-{
-   "type": "info",
-   "text": "Load Balancer Details"
-},       
+},            
       {
          "type":"table",
-         "columnCount":3,
+         "columnCount":5,
          "widths":[
-            "47%",
+            "37%",
             "3%",
-            "50%"
+            "29%",
+            "2%",
+            "29%"
          ],
          "items":[
             {
@@ -303,7 +304,20 @@
                    "$ref":"#/messages/deploy.loadBalancerName"
                 },
                "title":{
-                  "$ref":"#/messages/deploy.poolName"
+                  "$ref":"#/messages/deploy.bluePoolName"
+               }
+            },
+            {
+               "type":"label",
+               "title":""
+            },
+            {
+               "type":"label",
+               "description":{
+                   "$ref":"#/messages/deploy.loadBalancerName"
+                },
+               "title":{
+                  "$ref":"#/messages/deploy.greenPoolName"
                }
             },
             {
@@ -311,9 +325,6 @@
                "readonly":true,
                "title":{
                   "$ref":"#/messages/deploy.loadBalancerName"
-               },
-               "placeholder":{
-                  "$ref":"#/messages/deploy.loadBalancerPlaceHolder"
                },
                "key":"loadbalancer"
             },
@@ -325,12 +336,21 @@
                "type":"select",
                "readonly":true,
                "title":{
-                  "$ref":"#/messages/deploy.poolName"
+                  "$ref":"#/messages/deploy.bluePoolName"
                },
-               "placeholder":{
-                  "$ref":"#/messages/deploy.poolNamePlaceHolder"
+               "key":"loadbalancerpoolsblue"
+            },
+            {
+               "type":"label",
+               "title":""
+            },
+            {
+               "type":"select",
+               "readonly":true,
+               "title":{
+                  "$ref":"#/messages/deploy.greenPoolName"
                },
-               "key":"loadbalancerpool"
+               "key":"loadbalancerpoolsgreen"
             }
          ]
       },
@@ -338,9 +358,9 @@
         "type":"table",
         "columnCount":3,
         "widths":[
-           "47%",
+           "37%",
            "3%",
-           "50%"
+           "60%"
         ],
         "items":[ 
            {
@@ -369,9 +389,6 @@
         "type":"text",
         "title": {
            "$ref": "#/messages/deploy.poolUsernameVirtualServer"
-        },
-        "placeholder":{
-         "$ref":"#/messages/deploy.bastionUsernamePlaceHolder"
         },
         "key":"host-user-name"
       }, 

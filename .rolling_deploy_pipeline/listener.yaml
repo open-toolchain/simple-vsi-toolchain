@@ -41,14 +41,6 @@ spec:
       default: ""
     - name: artifactory
       description: The variable storing artifactory integration with the toolchain
-    - name: virtual-server-instance
-      description: The IP Address of the Virtual Server Instance
-    - name: host-ssh-keys
-      description: The private SSH Key required to login to the Virtual Server Instance
-    - name: host-user-name
-      description: The username required to login to the Virtual Server Instance
-    - name: host-password
-      description: The password required to login to the Virtual Server Instance
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-repo
@@ -76,12 +68,10 @@ spec:
       description: Bastion Host User Name
     - name: bastion-host-ssh-keys
       description: Bastion host 
-    - name: blue-pool
-      description: Blue Pool for Blue Green Deployemnt
+    - name: lb-pool
+      description: Load Balancer Pool for the Deployemnt
     - name: deployment-strategy
-      description: Green Pool for Blue Green Deployemnt
-    - name: green-pool
-      description: Green Pool for Blue Green Deployemnt
+      description: Deployemnt Stratergy 
     - name: loadbalancer
       description: Load Balancer Name
     - name: pool-ssh-keys
@@ -138,14 +128,6 @@ spec:
             value: $(params.project-id) 
           - name: artifactory
             value: $(params.artifactory)
-          - name: virtual-server-instance
-            value: $(params.virtual-server-instance)
-          - name: host-ssh-keys
-            value: $(params.host-ssh-keys)
-          - name: host-user-name
-            value: $(params.host-user-name)   
-          - name: host-password
-            value: $(params.host-password) 
           - name: region
             value: $(params.region)
           - name: cos-bucket-name
@@ -174,12 +156,10 @@ spec:
             value: $(params.bastion-host-user-name)        
           - name: bastion-host-ssh-keys
             value: $(params.bastion-host-ssh-keys)      
-          - name: blue-pool
-            value: $(params.blue-pool)          
+          - name: lb-pool
+            value: $(params.lb-pool)          
           - name: deployment-strategy
-            value: $(params.deployment-strategy)        
-          - name: green-pool
-            value: $(params.green-pool)          
+            value: $(params.deployment-strategy)                
           - name: loadbalancer
             value: $(params.loadbalancer)         
           - name: pool-ssh-keys

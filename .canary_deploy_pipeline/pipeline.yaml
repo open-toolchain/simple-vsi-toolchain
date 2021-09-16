@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: blue-green-simple-vsi-app-pipeline
+  name: canary-simple-vsi-app-pipeline
 spec:
   params:
     - name: repository
@@ -61,18 +61,22 @@ spec:
       description: Bastion Host User Name
     - name: bastion-host-ssh-keys
       description: Bastion host 
-    - name: blue-pool
+    - name: lb-pool
       description: Blue Pool for Blue Green Deployemnt
     - name: deployment-strategy
-      description: Green Pool for Blue Green Deployemnt
-    - name: green-pool
       description: Green Pool for Blue Green Deployemnt
     - name: loadbalancer
       description: Load Balancer Name
     - name: pool-ssh-keys
       description: Blue and Green Pool base64 encoded private SSH key 
     - name: pool-user-name   
-      description: Blue and Green Pool User Name         
+      description: Blue and Green Pool User Name 
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval              
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -174,61 +178,34 @@ spec:
           value: $(params.bastion-host-user-name)        
         - name: bastion-host-ssh-keys
           value: $(params.bastion-host-ssh-keys)      
-        - name: blue-pool
-          value: $(params.blue-pool)          
+        - name: lb-pool
+          value: $(params.lb-pool)          
         - name: deployment-strategy
-          value: $(params.deployment-strategy)        
-        - name: green-pool
-          value: $(params.green-pool)          
+          value: $(params.deployment-strategy)              
         - name: loadbalancer
           value: $(params.loadbalancer)         
         - name: pool-ssh-keys
           value: $(params.pool-ssh-keys)         
         - name: pool-user-name   
-          value: $(params.pool-user-name)                     
+          value: $(params.pool-user-name)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)                               
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: acceptance-test
+
+    - name: canary-release
       taskRef:
-        name: acceptance-test
-      runAfter: [ deploy ]
-      params:
-        - name: region
-          value: $(params.region)
-        - name: api
-          value: $(params.api)
-        - name: apikey
-          value: $(params.apikey)      
-        - name: inventory-repo
-          value: $(params.inventory-repo)
-        - name: scripts-subpath
-          value: $(params.scripts-subpath)
-        - name: bastion-host
-          value: $(params.bastion-host)
-        - name: bastion-host-user-name
-          value: $(params.bastion-host-user-name)        
-        - name: bastion-host-ssh-keys
-          value: $(params.bastion-host-ssh-keys)      
-        - name: blue-pool
-          value: $(params.blue-pool)          
-        - name: deployment-strategy
-          value: $(params.deployment-strategy)        
-        - name: green-pool
-          value: $(params.green-pool)          
-        - name: loadbalancer
-          value: $(params.loadbalancer)         
-        - name: pool-ssh-keys
-          value: $(params.pool-ssh-keys)         
-        - name: pool-user-name   
-          value: $(params.pool-user-name)                       
-      workspaces:
-        - name: output
-          workspace: pipeline-ws
-    - name: prod-release
-      taskRef:
-        name: prod-release
-      runAfter: [ acceptance-test ]     
+        name: canary-release
+      runAfter: [ deploy ]     
       params:
         - name: region
           value: $(params.region)
@@ -238,21 +215,29 @@ spec:
           value: $(params.apikey)      
         - name: scripts-subpath
           value: $(params.scripts-subpath)     
-        - name: blue-pool
-          value: $(params.blue-pool)                 
-        - name: green-pool
-          value: $(params.green-pool)          
+        - name: lb-pool
+          value: $(params.lb-pool)                          
         - name: loadbalancer
           value: $(params.loadbalancer)
         - name: deployment-strategy
-          value: $(params.deployment-strategy)                                        
+          value: $(params.deployment-strategy)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)                                                   
       workspaces:
         - name: output
           workspace: pipeline-ws                    
     - name: publish-doi-deployrecord
       taskRef:
         name: publish-doi-deployrecord
-      runAfter: [acceptance-test]
+      runAfter: [canary-release]
       when:
         - input: $(params.insights)
           operator: in
@@ -277,7 +262,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: blue-green-switch-pipeline
+  name: canary-switch-pipeline
 spec:
   params:
     - name: region
@@ -293,20 +278,24 @@ spec:
       default: "true"
     - name: pipeline-debug
       default: "0"
-    - name: blue-pool
+    - name: lb-pool
       description: Blue Pool for Blue Green Deployemnt
     - name: deployment-strategy
       description: Green Pool for Blue Green Deployemnt
-    - name: green-pool
-      description: Green Pool for Blue Green Deployemnt
     - name: loadbalancer
-      description: Load Balancer Name        
+      description: Load Balancer Name
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval               
   workspaces:
     - name: pipeline-ws
   tasks:
-    - name: blue-green-switch
+    - name: abort-canary
       taskRef:
-        name: prod-release     
+        name: abort-canary
       params:
         - name: region
           value: $(params.region)
@@ -316,14 +305,22 @@ spec:
           value: $(params.apikey)      
         - name: scripts-subpath
           value: $(params.scripts-subpath)     
-        - name: blue-pool
-          value: $(params.blue-pool)                 
-        - name: green-pool
-          value: $(params.green-pool)          
+        - name: lb-pool
+          value: $(params.lb-pool)                           
         - name: loadbalancer
           value: $(params.loadbalancer)
         - name: deployment-strategy
-          value: $(params.deployment-strategy)                                         
+          value: $(params.deployment-strategy)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)                                                    
       workspaces:
         - name: output
           workspace: pipeline-ws

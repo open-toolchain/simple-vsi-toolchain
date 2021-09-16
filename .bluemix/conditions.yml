@@ -225,9 +225,7 @@ deploy_conditions:
               HOST_USER_NAME: "{{form.pipeline_blue_green.parameters.host-user-name}}"
               BASTION_HOST_SSH_KEYS: "{{form.pipeline_blue_green.parameters.bastion-host-ssh-keys}}"
               BASTION_HOST_USER_NAME: "{{form.pipeline_blue_green.parameters.bastion-host-user-name}}"
-              LOADBALANCER: "{{form.pipeline_blue_green.parameters.loadbalancer}}"
-              GREEN_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsgreen}}"
-              BLUE_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsblue}}"                           
+              LOADBALANCER: "{{form.pipeline_blue_green.parameters.loadbalancer}}"                          
   - condition:
       any:
         - parameter: deployment-strategy
@@ -287,8 +285,7 @@ deploy_conditions:
               HOST_USER_NAME: "{{form.pipeline_rolling.parameters.host-user-name}}"
               BASTION_HOST_SSH_KEYS: "{{form.pipeline_rolling.parameters.bastion-host-ssh-keys}}"
               BASTION_HOST_USER_NAME: "{{form.pipeline_rolling.parameters.bastion-host-user-name}}"
-              LOADBALANCER: "{{form.pipeline_rolling.parameters.loadbalancer}}"
-              BLUE_POOL: "{{form.pipeline_rolling.parameters.loadbalancerpoolsblue}}"                           
+              LOADBALANCER: "{{form.pipeline_rolling.parameters.loadbalancer}}"                         
   - condition:
       any:
         - parameter: deployment-strategy
@@ -320,7 +317,7 @@ deploy_conditions:
   - condition:
       any:
         - parameter: deployment-strategy
-          value: recreate
+          value: basic
     actions:
       - type: update-service-parameters
         service_id: pipeline
@@ -332,7 +329,7 @@ deploy_conditions:
   - condition:
       any:
         - parameter: deployment-strategy
-          value: recreate
+          value: basic
     actions:
       - type: update-service-parameters
         service_id: pipeline
@@ -342,14 +339,14 @@ deploy_conditions:
             env:
               APP_NAME: "{{form.pipeline.parameters.app-name}}"
               API_KEY: "{{form.pipeline.parameters.api-key}}"
-              REGION: "{{form.pipeline.parameters.vsiRegion}}"
+              REGION: "{{form.pipeline.parameters.vpcRegion}}"
               VIRTUAL_SERVER_INSTANCE: "{{form.pipeline.parameters.virtual-server-instance}}" 
               HOST_SSH_KEYS: "{{form.pipeline.parameters.host-ssh-keys}}"
               HOST_USER_NAME: "{{form.pipeline.parameters.host-user-name}}"
   - condition:
       any:
         - parameter: deployment-strategy
-          value: recreate
+          value: basic
     actions:
       - type: update-service-parameters
         service_id: pipeline
@@ -359,11 +356,11 @@ deploy_conditions:
             env:
               APP_NAME: "{{form.pipeline.parameters.app-name}}"
               API_KEY: "{{form.pipeline.parameters.api-key}}"
-              REGION: "{{form.pipeline.parameters.vsiRegion}}"
+              REGION: "{{form.pipeline.parameters.vpcRegion}}"
   - condition:
       any:
         - parameter: deployment-strategy
-          value: recreate
+          value: basic
     actions:
       - type: update-service-parameters
         service_id: pipeline
@@ -373,7 +370,67 @@ deploy_conditions:
             env:
               APP_NAME: "{{form.pipeline.parameters.app-name}}"
               API_KEY: "{{form.pipeline.parameters.api-key}}"
-              REGION: "{{form.pipeline.parameters.vsiRegion}}"                            
+              REGION: "{{form.pipeline.parameters.vpcRegion}}"                            
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: canary
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: deploy
+        parameters:
+          configuration:
+            content:
+              $text: deploy_pipeline_tekton_canary.yml
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: canary
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: deploy
+        parameters:
+          configuration:
+            env:
+              APP_NAME: "{{form.pipeline_canary.parameters.app-name}}"
+              API_KEY: "{{form.pipeline_canary.parameters.api-key}}"
+              REGION: "{{form.pipeline_canary.parameters.vpcRegion}}"
+              VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_canary.parameters.virtual-server-instance}}" 
+              HOST_SSH_KEYS: "{{form.pipeline_canary.parameters.host-ssh-keys}}"
+              HOST_USER_NAME: "{{form.pipeline_canary.parameters.host-user-name}}"
+              BASTION_HOST_SSH_KEYS: "{{form.pipeline_canary.parameters.bastion-host-ssh-keys}}"
+              BASTION_HOST_USER_NAME: "{{form.pipeline_canary.parameters.bastion-host-user-name}}"
+              LOADBALANCER: "{{form.pipeline_canary.parameters.loadbalancer}}"                          
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: canary
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: build
+        parameters:
+          configuration:
+            env:
+              APP_NAME: "{{form.pipeline_canary.parameters.app-name}}"
+              API_KEY: "{{form.pipeline_canary.parameters.api-key}}"
+              REGION: "{{form.pipeline_canary.parameters.vpcRegion}}"
+  - condition:
+      any:
+        - parameter: deployment-strategy
+          value: canary
+    actions:
+      - type: update-service-parameters
+        service_id: pipeline
+        service_label: pr
+        parameters:
+          configuration:
+            env:
+              APP_NAME: "{{form.pipeline_canary.parameters.app-name}}"
+              API_KEY: "{{form.pipeline_canary.parameters.api-key}}"
+              REGION: "{{form.pipeline_canary.parameters.vpcRegion}}"
 
 vault_conditions:
   - condition:

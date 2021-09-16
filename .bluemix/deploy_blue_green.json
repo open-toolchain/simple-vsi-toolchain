@@ -7,7 +7,7 @@
       "$ref":"#/messages/deploy.blueGreen.title"
    },
    "description":{
-      "$ref":"#/messages/deploy.description"
+      "$ref":"#/messages/deploy.blueGreen.longDescription"
    },
    "longDescription":{
       "$ref":"#/messages/deploy.blueGreen.longDescription"
@@ -133,7 +133,14 @@
       "app-name",
       "api-key",
       "vpcRegion",
-      "virtual-server-instance"
+      "virtual-server-instance",
+      "bastion-host-ssh-keys",
+      "bastion-host-user-name",
+      "host-ssh-keys",
+      "host-user-name",
+      "loadbalancer",
+      "loadbalancerpoolsblue",
+      "loadbalancerpoolsgreen"
    ],
    "form":[
       {
@@ -156,6 +163,10 @@
          },
          "key":"api-key"
       },
+      {
+         "type":"info",
+         "text": "Bastion Host Details"
+      },      
       {
          "type":"table",
          "columnCount":3,
@@ -249,6 +260,9 @@
         "title": {
            "$ref": "#/messages/deploy.bastionUsernameVirtualServer"
         },
+        "placeholder":{
+         "$ref":"#/messages/deploy.bastionUsernamePlaceHolder"
+      },
         "key":"bastion-host-user-name"
       }, 
       {
@@ -263,10 +277,17 @@
        "title": {
            "$ref": "#/messages/deploy.bastionSshVirtualServer"
        },
+       "placeholder":{
+         "$ref":"#/messages/deploy.bastionSshVirtualServerPlaceHolder"
+      },
         "key":"bastion-host-ssh-keys"
      }
   ]
-},            
+},   
+{
+   "type":"info",
+   "text": "Load Balancer Host Details"
+},         
       {
          "type":"table",
          "columnCount":5,
@@ -319,6 +340,9 @@
                "title":{
                   "$ref":"#/messages/deploy.loadBalancerName"
                },
+               "placeholder":{
+                  "$ref":"#/messages/deploy.loadBalancerPlaceHolder"
+               },
                "key":"loadbalancer"
             },
             {
@@ -331,6 +355,9 @@
                "title":{
                   "$ref":"#/messages/deploy.bluePoolName"
                },
+               "placeholder":{
+                  "$ref":"#/messages/deploy.bluePoolNamePlaceHolder"
+               },
                "key":"loadbalancerpoolsblue"
             },
             {
@@ -342,6 +369,9 @@
                "readonly":true,
                "title":{
                   "$ref":"#/messages/deploy.greenPoolName"
+               },
+               "placeholder":{
+                  "$ref":"#/messages/deploy.greenPoolNamePlaceHolder"
                },
                "key":"loadbalancerpoolsgreen"
             }
@@ -383,6 +413,9 @@
         "title": {
            "$ref": "#/messages/deploy.poolUsernameVirtualServer"
         },
+        "placeholder":{
+         "$ref":"#/messages/deploy.bastionUsernamePlaceHolder"
+      },
         "key":"host-user-name"
       }, 
       {

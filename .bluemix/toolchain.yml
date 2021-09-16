@@ -141,12 +141,13 @@ services:
         env:
           TOOLCHAIN_REGION: $env.env_id
           PIPELINE_REPO: pipeline-repo
-          REGION: "{{form.pipeline.parameters.vsiRegion}}"
+          REGION: "{{form.pipeline_rolling.parameters.vpcRegion}}"
           APP_REPO: repo
           INSIGHTS: devops-insights
-          API_KEY: '{{form.pipeline.parameters.api-key}}'
-          APP_NAME: "{{form.pipeline.parameters.app-name}}"
+          API_KEY: '{{form.pipeline_rolling.parameters.api-key}}'
+          APP_NAME: "{{form.pipeline_rolling.parameters.app-name}}"
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
+          VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_rolling.parameters.virtual-server-instance}}"
           PIPELINE_REPO_BRANCH: >
             $env.branch ? $env.branch : 
             $env.template.info.hosted_region !== "" ? 'master': 'master'
@@ -192,9 +193,10 @@ services:
           $text: "build_pipeline_tekton.yml"
         env:
           APP_REPO: repo
-          APP_NAME: "{{form.pipeline.parameters.app-name}}"
-          API_KEY: "{{form.pipeline.parameters.api-key}}"
-          REGION: "{{form.pipeline.parameters.vsiRegion}}"
+          APP_NAME: "{{form.pipeline_rolling.parameters.app-name}}"
+          API_KEY: "{{form.pipeline_rolling.parameters.api-key}}"
+          REGION: "{{form.pipeline_rolling.parameters.vpcRegion}}"
+          VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_rolling.parameters.virtual-server-instance}}"
           ARTIFACTORY: artifactory
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_REGION: $env.env_id
@@ -240,23 +242,23 @@ services:
       type: tekton
       configuration:
         content:
-          $text: deploy_pipeline_tekton.yml
+          $text: deploy_pipeline_tekton_rolling.yml
         env:
           APP_REPO: repo
-          APP_NAME: "{{form.pipeline.parameters.app-name}}"
-          API_KEY: "{{form.pipeline.parameters.api-key}}"
+          APP_NAME: "{{form.pipeline_rolling.parameters.app-name}}"
+          API_KEY: "{{form.pipeline_rolling.parameters.api-key}}"
           ARTIFACTORY: artifactory
           INSIGHTS: devops-insights
-          RESOURCE_GROUP: "{{form.pipeline.parameters.resource-group}}"
-          VIRTUAL_SERVER_INSTANCE: "{{form.pipeline.parameters.virtual-server-instance}}" 
-          HOST_SSH_KEYS: '{{form.pipeline.parameters.host-ssh-keys}}'
-          HOST_USER_NAME: '{{form.pipeline.parameters.host-user-name}}'
-          HOST_USER_PASSWORD: '{{form.pipeline.parameters.host-user-password}}'   
+          RESOURCE_GROUP: "{{form.pipeline_rolling.parameters.resource-group}}"
+          VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_rolling.parameters.virtual-server-instance}}" 
+          HOST_SSH_KEYS: '{{form.pipeline_rolling.parameters.host-ssh-keys}}'
+          HOST_USER_NAME: '{{form.pipeline_rolling.parameters.host-user-name}}'
+          HOST_USER_PASSWORD: '{{form.pipeline_rolling.parameters.host-user-password}}'   
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           TARGET: "prod"
           COS_REGION: $env.env_id
-          REGION: "{{form.pipeline.parameters.vsiRegion}}"
+          REGION: "{{form.pipeline_rolling.parameters.vpcRegion}}"
           PIPELINE_REPO: pipeline-repo
           INVENTORY_REPO: inventory-repo
           PIPELINE_REPO_BRANCH: >
@@ -282,13 +284,20 @@ services:
           DEFINITIONS_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
-            $env.template.info.hosted_region !== "" ? 'master': 'master'             
+            $env.template.info.hosted_region !== "" ? 'master': 'master'
+          BASTION_HOST_SSH_KEYS: '{{form.pipeline_rolling.parameters.bastion-host-ssh-keys}}'
+          BASTION_HOST_USER_NAME: '{{form.pipeline_rolling.parameters.bastion-host-user-name}}'
+          LOADBALANCER: "{{form.pipeline_rolling.parameters.loadbalancer}}"               
           DEPLOYMENT_STRATEGY: '{{form.deployment_strategy.parameters.deployment-strategy}}'
-          BASTION_HOST_SSH_KEYS: '{{form.pipeline_blue_green.parameters.bastion-host-ssh-keys}}'
-          BASTION_HOST_USER_NAME: '{{form.pipeline_blue_green.parameters.bastion-host-user-name}}'
-          LOADBALANCER: "{{form.pipeline_blue_green.parameters.loadbalancer}}"
           GREEN_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsgreen}}"
-          BLUE_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsblue}}"             
+          BLUE_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsblue}}"
+          CANARY_POOL: "{{form.pipeline_canary.parameters.loadbalancerpool}}"
+          ROLLING_POOL: "{{form.pipeline_rolling.parameters.loadbalancerpool}}"
+          IG_REGION: "{{form.pipeline_canary.parameters.instancegroupsRegion}}"
+          IG1: "{{form.pipeline_canary.parameters.instancegroup1}}"
+          IG2: "{{form.pipeline_canary.parameters.instancegroup2}}"
+          STEP_SIZE: "{{form.pipeline_canary.parameters.canary-step-size}}"
+          STEP_INTERVAL: "{{form.pipeline_canary.parameters.canary-step-interval}}"
         execute: false
 
   webide:
@@ -296,7 +305,17 @@ services:
   devops-insights:
     service_id: 'draservicebroker' 
     $ref: dra.yml 
-
+  sm-vault:
+    service_id: secretsmanager
+    parameters:
+      name: >
+        $env.smName ? '{{smName}}' : 'sm-compliance-secrets'
+      region: >
+        $env.smRegion ? '{{smRegion}}' : ''
+      resource-group: >
+        $env.smResourceGroup ? '{{smResourceGroup}}' : ''
+      instance-name: >
+        $env.smInstanceName ? '{{smInstanceName}}' : ''
 form:
   pipeline:
     parameters:
@@ -305,8 +324,10 @@ form:
           '{{appName}}' : '{{services.repo.parameters.repo_name}}'
       api-key: '{{apiKey}}'
       resource-group: '{{resourceGroup}}'
-      vsiRegion: '{{vsiRegion}}'
-      virtual-server-instance: '{{virtualServerInstance}}'
+      vpcRegion: >
+        $env.vpcRegion ? '{{vpcRegion}}' : ''
+      virtual-server-instance: >
+        $env.virtualServerInstance ? '{{virtualServerInstance}}' : ''
       host-ssh-keys: >
         $env.hostSshKeys ?
           '{{hostSshKeys}}' : ''
@@ -326,8 +347,10 @@ form:
           '{{appName}}' : '{{services.repo.parameters.repo_name}}'
       api-key: '{{apiKey}}'
       resource-group: '{{resourceGroup}}'
-      vpcRegion: '{{vpcRegion}}'
-      virtual-server-instance: '{{virtualServerInstance}}'
+      vpcRegion: >
+        $env.vpcRegion ? '{{vpcRegion}}' : ''
+      virtual-server-instance: >
+        $env.virtualServerInstance ? '{{virtualServerInstance}}' : ''
       host-ssh-keys: >
         $env.hostSshKeys ?
           '{{hostSshKeys}}' : ''
@@ -352,6 +375,52 @@ form:
     schema:
       $ref: deploy_blue_green.json
 
+  pipeline_canary:
+    parameters:
+      app-name: >
+        $env.appName ?
+          '{{appName}}' : '{{services.repo.parameters.repo_name}}'
+      api-key: '{{apiKey}}'
+      resource-group: '{{resourceGroup}}'
+      vpcRegion: >
+        $env.vpcRegion ? '{{vpcRegion}}' : ''
+      virtual-server-instance: >
+        $env.virtualServerInstance ? '{{virtualServerInstance}}' : ''
+      host-ssh-keys: >
+        $env.hostSshKeys ?
+          '{{hostSshKeys}}' : ''
+      host-user-name: >
+        $env.hostUserName ?
+          '{{hostUserName}}' : ''
+      bastion-host-ssh-keys: >
+        $env.bastioHostSshKeys ?
+          '{{bastioHostSshKeys}}' : ''
+      bastion-host-user-name: >
+        $env.bastionHostUserName ?
+          '{{bastionHostUserName}}' : ''            
+      loadbalancer: >
+        $env.loadBalancerName ?
+          '{{loadBalancerName}}' : '' 
+      loadbalancerpool: >
+        $env.poolName ?
+          '{{poolName}}' : ''   
+      instancegroupsRegion: > 
+        $env.instancegroupsRegion ?
+          '{{instancegroupsRegion}}' : '' 
+      instancegroup1: > 
+        $env.instancegroup1 ?
+          '{{instancegroup1}}' : '' 
+      instancegroup2: > 
+        $env.instancegroup2 ?
+          '{{instancegroup2}}' : '' 
+      canary-step-size: > 
+        $env.canaryStepSize ?
+          '{{canaryStepSize}}' : '' 
+      canary-step-interval: > 
+        $env.canaryStepInterval ?
+          '{{canaryStepInterval}}' : ''                                                
+    schema:
+      $ref: deploy_canary.json
   pipeline_rolling:
     parameters:
       app-name: >
@@ -359,8 +428,10 @@ form:
           '{{appName}}' : '{{services.repo.parameters.repo_name}}'
       api-key: '{{apiKey}}'
       resource-group: '{{resourceGroup}}'
-      vpcRegion: '{{vpcRegion}}'
-      virtual-server-instance: '{{virtualServerInstance}}'
+      vpcRegion: >
+        $env.vpcRegion ? '{{vpcRegion}}' : ''
+      virtual-server-instance: >
+        $env.virtualServerInstance ? '{{virtualServerInstance}}' : ''
       host-ssh-keys: >
         $env.hostSshKeys ?
           '{{hostSshKeys}}' : ''
@@ -376,9 +447,9 @@ form:
       loadbalancer: >
         $env.loadBalancerName ?
           '{{loadBalancerName}}' : ''
-      loadbalancerpoolsblue: >
-        $env.bluePoolName ?
-          '{{bluePoolName}}' : ''                   
+      loadbalancerpool: >
+        $env.poolName ?
+          '{{poolName}}' : ''                   
     schema:
       $ref: deploy_rolling.json
 
@@ -397,18 +468,11 @@ form:
     schema:
       $ref: wizard_inventory.json
   
-  wizard_vault:
-    parameters:
-      key-protect: false
-      hashicorp-vault: false
-    schema:
-      $ref: wizard_vault.json
-
   deployment_strategy:
     parameters:
       deployment-strategy:  >
         $env.deploymentStrategy ?
-          '{{deploymentStrategy}}' : 'recreate' 
+          '{{deploymentStrategy}}' : 'rolling' 
     schema:
       $ref: wizard_strategy.json
 

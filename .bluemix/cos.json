@@ -6,7 +6,7 @@
     "title": {
       "$ref": "#/messages/cos.title"
     },
-    "description": {
+    "longDescription": {
       "$ref": "#/messages/cos.description"
     },
     "type": "object",

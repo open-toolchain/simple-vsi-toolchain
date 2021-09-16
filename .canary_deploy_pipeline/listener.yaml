@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: blue-green-trigger-template-simple-vsi-app
+  name: canary-trigger-template-simple-vsi-app
 spec:
   params:
     - name: repository
@@ -68,18 +68,22 @@ spec:
       description: Bastion Host User Name
     - name: bastion-host-ssh-keys
       description: Bastion host 
-    - name: blue-pool
-      description: Blue Pool for Blue Green Deployemnt
+    - name: lb-pool
+      description: Load Balancer Pool for the Deployemnt
     - name: deployment-strategy
       description: Deployment Strategy
-    - name: green-pool
-      description: Green Pool for Blue Green Deployemnt
     - name: loadbalancer
       description: Load Balancer Name
     - name: pool-ssh-keys
       description: Blue and Green Pool base64 encoded private SSH key 
     - name: pool-user-name   
       description: Blue and Green Pool User Name 
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -98,7 +102,7 @@ spec:
         name: simple-vsi-app-$(uid)
       spec:
         pipelineRef:
-          name: blue-green-simple-vsi-app-pipeline
+          name: canary-simple-vsi-app-pipeline
         params:
           - name: repository
             value: $(params.repository)
@@ -158,18 +162,26 @@ spec:
             value: $(params.bastion-host-user-name)        
           - name: bastion-host-ssh-keys
             value: $(params.bastion-host-ssh-keys)      
-          - name: blue-pool
-            value: $(params.blue-pool)          
+          - name: lb-pool
+            value: $(params.lb-pool)          
           - name: deployment-strategy
-            value: $(params.deployment-strategy)        
-          - name: green-pool
-            value: $(params.green-pool)          
+            value: $(params.deployment-strategy)                 
           - name: loadbalancer
             value: $(params.loadbalancer)         
           - name: pool-ssh-keys
             value: $(params.pool-ssh-keys)         
           - name: pool-user-name   
-            value: $(params.pool-user-name)                                                                               
+            value: $(params.pool-user-name) 
+          - name:  instance-group-region
+            value: $(params.instance-group-region) 
+          - name: instance-group-1
+            value: $(params.instance-group-1)
+          - name: instance-group-2
+            value: $(params.instance-group-2)
+          - name: canary-step-size
+            value: $(params.canary-step-size)
+          - name: canary-step-interval
+            value: $(params.canary-step-interval)                                                                              
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
@@ -178,7 +190,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: blue-green-switch-trigger-template
+  name: canary-switch-trigger-template
 spec:
   params:
     - name: apikey
@@ -198,14 +210,18 @@ spec:
       default: "false"
     - name: pipeline-debug
       default: "0"
-    - name: blue-pool
+    - name: lb-pool
       description: Blue Pool for Blue Green Deployemnt
     - name: deployment-strategy
       description: Green Pool for Blue Green Deployemnt
-    - name: green-pool
-      description: Green Pool for Blue Green Deployemnt
     - name: loadbalancer
       description: Load Balancer Name 
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval      
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -224,7 +240,7 @@ spec:
         name: simple-vsi-app-$(uid)
       spec:
         pipelineRef:
-          name: blue-green-switch-pipeline
+          name: canary-switch-pipeline
         params:
           - name: api
             value: $(params.api)
@@ -238,16 +254,24 @@ spec:
             value: $(params.fail-on-scanned-issues)
           - name: pipeline-debug
             value: $(params.pipeline-debug)    
-          - name: blue-pool
-            value: $(params.blue-pool)          
+          - name: lb-pool
+            value: $(params.lb-pool)          
           - name: deployment-strategy
-            value: $(params.deployment-strategy)        
-          - name: green-pool
-            value: $(params.green-pool)          
+            value: $(params.deployment-strategy)               
           - name: loadbalancer
             value: $(params.loadbalancer) 
           - name: scripts-subpath
-            value: $(params.scripts-subpath)                                                                                                           
+            value: $(params.scripts-subpath)
+          - name:  instance-group-region
+            value: $(params.instance-group-region) 
+          - name: instance-group-1
+            value: $(params.instance-group-1)
+          - name: instance-group-2
+            value: $(params.instance-group-2)
+          - name: canary-step-size
+            value: $(params.canary-step-size)
+          - name: canary-step-interval
+            value: $(params.canary-step-interval)                                                                                                          
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
@@ -256,43 +280,43 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-trigger-binding-manual
+  name: canary-trigger-binding-manual
 spec:
   params:
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-switch-trigger-binding-manual
+  name: canary-switch-trigger-binding-manual
 spec:
   params:
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-manual-run
+  name: canary-manual-run
 spec:
   triggers:
     - binding:
-        name: blue-green-trigger-binding-manual
+        name: canary-trigger-binding-manual
       template:
-        name: blue-green-trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-switch-manual-run
+  name: abort-canary
 spec:
   triggers:
     - binding:
-        name: blue-green-switch-trigger-binding-manual
+        name: canary-switch-trigger-binding-manual
       template:
-        name: blue-green-switch-trigger-template
+        name: canary-switch-trigger-template
 ---        
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-github-ent-commit
+  name: canary-github-ent-commit
 spec:
   params:
     - name: branch
@@ -309,18 +333,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-github-ent-commit
+  name: canary-github-ent-commit
 spec:
   triggers:
     - bindings: 
-        - name: blue-green-github-ent-commit   
+        - name: canary-github-ent-commit   
       template:
-        name: blue-green-trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-github-commit
+  name: canary-github-commit
 spec:
   params:
     - name: branch
@@ -337,18 +361,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-github-commit
+  name: canary-github-commit
 spec:
   triggers:
     - bindings:  
-        - name: blue-green-github-commit   
+        - name: canary-github-commit   
       template:
-        name: blue-green-trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-grit-or-gitlab-commit
+  name: canary-grit-or-gitlab-commit
 spec:
   params:
     - name: branch
@@ -365,18 +389,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-grit-or-gitlab-commit
+  name: canary-grit-or-gitlab-commit
 spec:
   triggers:
     - bindings:   
-        - name: blue-green-grit-or-gitlab-commit
+        - name: canary-grit-or-gitlab-commit
       template:
-        name: blue-green-trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: blue-green-bitbucket-commit
+  name: canary-bitbucket-commit
 spec:
   params:
     - name: repository
@@ -395,10 +419,10 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: blue-green-bitbucket-commit
+  name: canary-bitbucket-commit
 spec:
   triggers:
     - binding:
-        name: blue-green-bitbucket-commit
+        name: canary-bitbucket-commit
       template:
-        name: blue-green-trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app

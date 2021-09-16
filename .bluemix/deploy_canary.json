@@ -4,13 +4,13 @@
       "$i18n":"locales.yml"
    },
    "title":{
-      "$ref": "#/messages/deploy.rolling.title"
+      "$ref":"#/messages/deploy.canary.title"
    },
    "description":{
-      "$ref":"#/messages/deploy.rolling.longDescription"
+      "$ref":"#/messages/deploy.canary.longDescription"
    },
    "longDescription":{
-      "$ref":"#/messages/deploy.rolling.longDescription"
+      "$ref":"#/messages/deploy.canary.longDescription"
    },
    "type":"object",
    "properties":{
@@ -24,6 +24,20 @@
             "v-type":"api-key"
          }
       },
+      "canary-step-size": {
+         "description": {
+             "$ref": "#/messages/deploy.canaryStepSize"
+         },
+         "type": "string",
+         "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+     },
+     "canary-step-interval": {
+         "description": {
+             "$ref": "#/messages/deploy.canaryStepInterval"
+         },
+         "type": "string",
+         "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+     },      
       "vpcRegion":{
          "description":{
             "$ref":"#/messages/deploy.vpcRegionLabel"
@@ -60,6 +74,44 @@
            ]
         }
      },
+     "instancegroupsRegion":{
+      "description":{
+         "$ref":"#/messages/deploy.vpcRegionLabel"
+      },
+      "type":"string",
+      "validator":{
+         "v-type":"vpc-instance-group-region",
+         "params":[
+            "api-key"
+         ]
+      }
+   },
+     "instancegroup1":{
+      "description":{
+         "$ref":"#/messages/deploy.vpcRegionLabel"
+      },
+      "type":"string",
+      "validator":{
+         "v-type":"vpc-instance-group",
+         "params":[
+            "api-key",
+             "instancegroupsRegion"
+         ]
+      }
+   }, 
+   "instancegroup2":{
+      "description":{
+         "$ref":"#/messages/deploy.vpcRegionLabel"
+      },
+      "type":"string",
+      "validator":{
+         "v-type":"vpc-instance-group",
+         "params":[
+            "api-key",
+             "instancegroupsRegion"
+         ]
+      }
+   },         
       "host-user-name":{
          "description":{
             "$ref":"#/messages/deploy.poolUsernameVirtualServer"
@@ -126,8 +178,11 @@
       "bastion-host-user-name",
       "host-ssh-keys",
       "host-user-name",
+      "instancegroupsRegion",
       "loadbalancer",
-      "loadbalancerpool"
+      "loadbalancerpool",
+      "canary-step-interval",
+      "canary-step-size"
    ],
    "form":[
       {
@@ -151,9 +206,9 @@
          "key":"api-key"
       },
       {
-         "type": "info",
-         "text": "VSI details"
-     },            
+         "type":"info",
+         "text": "Bastion Host Details"
+      },            
       {
          "type":"table",
          "columnCount":3,
@@ -210,7 +265,7 @@
                "key":"virtual-server-instance"
             }
          ]
-      },      
+      },
       {
         "type":"table",
         "columnCount":3,
@@ -249,7 +304,7 @@
         },
         "placeholder":{
          "$ref":"#/messages/deploy.bastionUsernamePlaceHolder"
-      },        
+      },
         "key":"bastion-host-user-name"
       }, 
       {
@@ -261,18 +316,18 @@
         "description": {
            "$ref": "#/messages/deploy.bastionSshVirtualServer"
        },
-       "title": {
-           "$ref": "#/messages/deploy.bastionSshVirtualServer"
-       },
        "placeholder":{
          "$ref":"#/messages/deploy.bastionSshVirtualServerPlaceHolder"
       },
+       "title": {
+           "$ref": "#/messages/deploy.bastionSshVirtualServer"
+       },
         "key":"bastion-host-ssh-keys"
      }
   ]
-},    
+},     
 {
-   "type": "info",
+   "type":"info",
    "text": "Load Balancer Details"
 },       
       {
@@ -333,7 +388,7 @@
                "key":"loadbalancerpool"
             }
          ]
-      },
+      },      
       {
         "type":"table",
         "columnCount":3,
@@ -372,7 +427,7 @@
         },
         "placeholder":{
          "$ref":"#/messages/deploy.bastionUsernamePlaceHolder"
-        },
+      },
         "key":"host-user-name"
       }, 
       {
@@ -390,6 +445,159 @@
         "key":"host-ssh-keys"
      }
   ]
-}                 
+},
+{
+   "type":"info",
+   "text": "Instance Group Details"
+},
+{
+   "type":"table",
+   "columnCount":5,
+   "widths":[
+      "30%",
+      "3%",
+      "30%",
+      "3%",
+      "31%"
+   ],
+   "items":[ 
+      {
+         "type":"label",
+         "description": {
+            "$ref": "#/messages/deploy.instanceGroupRegion"
+         },    
+         "title":{
+            "$ref": "#/messages/deploy.instanceGroupRegion.title"
+         }  
+      },
+      {
+         "type":"label",
+         "title":""
+      },
+      {
+         "type":"label",
+         "description": {
+            "$ref": "#/messages/deploy.instanceGroup1"
+         },    
+         "title":{
+            "$ref": "#/messages/deploy.instanceGroup1.title"
+         } 
+      },      
+      {
+         "type":"label",
+         "title":""
+      },
+      {
+         "type":"label",
+         "description": {
+            "$ref": "#/messages/deploy.instanceGroup2"
+         },    
+         "title":{
+            "$ref": "#/messages/deploy.instanceGroup2.title"
+         } 
+      },
+      {
+         "type":"select",
+         "title":{
+            "$ref": "#/messages/deploy.instanceGroupRegion.title"
+         },
+         "placeholder":{
+            "$ref":"#/messages/deploy.instanceGroupRegionPlaceHolder"
+         },
+         "key":"instancegroupsRegion"
+      },
+      {
+         "type":"label",
+         "title":""
+      },                          
+      {
+         "type":"select",
+         "readonly":true,
+         "title":{
+            "$ref": "#/messages/deploy.instanceGroup1.title"
+         },
+         "placeholder":{
+            "$ref":"#/messages/deploy.instanceGroup1PlaceHolder"
+         },
+         "key":"instancegroup1"
+      },
+      {
+         "type":"label",
+         "title":""
+      },                          
+      {
+         "type":"select",
+         "readonly":true,
+         "title":{
+            "$ref": "#/messages/deploy.instanceGroup2.title"
+         },
+         "placeholder":{
+            "$ref":"#/messages/deploy.instanceGroup2PlaceHolder"
+         },
+         "key":"instancegroup2"
+      } 
+]
+},
+{
+   "type":"info",
+   "text": " Canary Details"
+},
+{
+   "type":"table",
+   "columnCount":3,
+   "widths":[
+      "47%",
+      "3%",
+      "50%"
+   ],
+   "items":[
+      {
+         "type":"label",
+         "description":{
+             "$ref":"#/messages/deploy.canaryStepSize"
+          },
+          "title":{
+             "$ref":"#/messages/deploy.canaryStepSize.title"
+          }
+      },
+      {
+         "type":"label",
+         "title":""
+      },
+      {
+         "type":"label",
+         "description":{
+             "$ref":"#/messages/deploy.canaryStepInterval"
+          },
+         "title":{
+            "$ref":"#/messages/deploy.canaryStepInterval.title"
+         }
+      },     
+      {
+         "type":"text",
+         "title":{
+            "$ref":"#/messages/deploy.canaryStepSize.title"
+         },
+         "placeholder":{
+            "$ref":"#/messages/deploy.canaryStepSizePlaceHolder"
+         },
+         "key":"canary-step-size"
+      },
+      {
+         "type":"label",
+         "title":""
+      },
+      {
+         "type":"text",
+         "title":{
+            "$ref":"#/messages/deploy.canaryStepInterval.title"
+         },
+         "placeholder":{
+            "$ref":"#/messages/deploy.canaryStepIntervalPlaceHolder"
+         },
+         "key":"canary-step-interval"
+      }
+   ]
+}                
    ]
 }
