@@ -41,12 +41,23 @@
       ]
     }
   },
-  "form": [{
-    "type": "info",
-    "text": {
-      "$ref": "#/messages/wizard.deploymentStrategy.text"
-    }
-  }, {
+  "form": [ 
+  {
+    "type": "notification",
+    "display": {
+      "style": "warning",
+      "title": {
+        "$ref": "#/messages/wizard.deploymentStrategy.warning.title"
+      },
+      "subtitle": {
+        "$ref": "#/messages/wizard.deploymentStrategy.warning.subtitle"
+      },
+      "showInAdvancedMode": true,
+      "advancedModePosition": "bottom"
+    },
+    "visible": true
+  },
+  {
     "type": "tilegroup",
     "key": "deployment-strategy",
     "display": {
