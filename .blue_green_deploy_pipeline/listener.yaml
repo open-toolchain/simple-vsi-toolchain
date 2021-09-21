@@ -79,7 +79,9 @@ spec:
     - name: pool-ssh-keys
       description: Blue and Green Pool base64 encoded private SSH key 
     - name: pool-user-name   
-      description: Blue and Green Pool User Name 
+      description: Blue and Green Pool User Name
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"       
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -169,7 +171,9 @@ spec:
           - name: pool-ssh-keys
             value: $(params.pool-ssh-keys)         
           - name: pool-user-name   
-            value: $(params.pool-user-name)                                                                               
+            value: $(params.pool-user-name)
+          - name: commons-hosted-region
+            value: $(params.commons-hosted-region)                                                                                           
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
@@ -205,7 +209,9 @@ spec:
     - name: green-pool
       description: Green Pool for Blue Green Deployemnt
     - name: loadbalancer
-      description: Load Balancer Name 
+      description: Load Balancer Name
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"       
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -247,7 +253,9 @@ spec:
           - name: loadbalancer
             value: $(params.loadbalancer) 
           - name: scripts-subpath
-            value: $(params.scripts-subpath)                                                                                                           
+            value: $(params.scripts-subpath)
+          - name: commons-hosted-region
+            value: $(params.commons-hosted-region)                                                                                                                       
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

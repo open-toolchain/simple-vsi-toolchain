@@ -72,7 +72,9 @@ spec:
     - name: pool-ssh-keys
       description: Blue and Green Pool base64 encoded private SSH key 
     - name: pool-user-name   
-      description: Blue and Green Pool User Name         
+      description: Blue and Green Pool User Name
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"               
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -185,7 +187,9 @@ spec:
         - name: pool-ssh-keys
           value: $(params.pool-ssh-keys)         
         - name: pool-user-name   
-          value: $(params.pool-user-name)                     
+          value: $(params.pool-user-name)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)                               
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -245,7 +249,9 @@ spec:
         - name: loadbalancer
           value: $(params.loadbalancer)
         - name: deployment-strategy
-          value: $(params.deployment-strategy)                                        
+          value: $(params.deployment-strategy)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)                                                  
       workspaces:
         - name: output
           workspace: pipeline-ws                    
@@ -300,7 +306,9 @@ spec:
     - name: green-pool
       description: Green Pool for Blue Green Deployemnt
     - name: loadbalancer
-      description: Load Balancer Name        
+      description: Load Balancer Name
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"               
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -323,7 +331,9 @@ spec:
         - name: loadbalancer
           value: $(params.loadbalancer)
         - name: deployment-strategy
-          value: $(params.deployment-strategy)                                         
+          value: $(params.deployment-strategy)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)                                                   
       workspaces:
         - name: output
           workspace: pipeline-ws

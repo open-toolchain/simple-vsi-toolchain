@@ -163,7 +163,9 @@ spec:
     - name: pool-ssh-keys
       description: Blue and Green Pool base64 encoded private SSH key 
     - name: pool-user-name   
-      description: Blue and Green Pool User Name            
+      description: Blue and Green Pool User Name
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"                  
   workspaces:
     - name: output
       description: A workspace
@@ -212,7 +214,9 @@ spec:
         - name: POOL_SSH_KEYS
           value: $(params.pool-ssh-keys)         
         - name: POOL_USER_NAME
-          value: $(params.pool-user-name)           
+          value: $(params.pool-user-name)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)                     
       script: |
         #!/bin/bash
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -231,7 +235,7 @@ spec:
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
         REGION=$(echo ${REGION::-2});
-        source ./scripts-repo/${subpath}/setup-remote-deploy-blue-green.sh      
+        source <(curl -sSL "$(params.commons-hosted-region)/scripts/deployment_strategies/blue_green/vsi/setup-remote-deploy-blue-green.sh")
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -334,7 +338,9 @@ spec:
     - name: loadbalancer
       description: Load Balancer Name
     - name: deployment-strategy
-      description: Deployment Strategy             
+      description: Deployment Strategy
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"                   
   workspaces:
     - name: output
       description: A workspace
@@ -359,42 +365,12 @@ spec:
         - name: LOAD_BALANCER_NAME
           value: $(params.loadbalancer)
         - name: DEPLLOYMENT_STRATEGY
-          value: $(params.deployment-strategy)                                          
+          value: $(params.deployment-strategy)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)                                                    
       script: |
         #!/bin/bash
-
-        ibmcloud plugin install infrastructure-service -v 1.1.0
-        REGION=$(echo ${REGION::-2});
-        ibmcloud login -a $API -r $REGION --apikey $APIKEY;
-
-        LOAD_BALANCER_ID=$(ibmcloud is load-balancers -json | jq -r ".[] | select(.name==\"$LOAD_BALANCER_NAME\") | .id" )
-        ACTIVE_LISTNER_ID=( $(ibmcloud is load-balancer-listeners $LOAD_BALANCER_ID -json |jq -r '.[].default_pool.id' | sort -u) )
-        count=0
-        for i in "${ACTIVE_LISTNER_ID[@]}"
-        do
-          ACTIVE_LISTNER_NAME=$(ibmcloud is load-balancer-pools $LOAD_BALANCER_ID -json | jq -r ".[] | select(.id==\"$i\") | .name")
-          if [[ $count -ge 1  && ( "$ACTIVE_LISTNER_NAME" == "$BLUE_POOL" || "$ACTIVE_LISTNER_NAME" == "$GREEN_POOL" ) ]]
-          then
-            echo "Both the pools are present in the listner. Please update the listner to one pool and re run the pipeline."
-          elif [ "$ACTIVE_LISTNER_NAME" == "$BLUE_POOL" ]
-          then
-            OLD_POOL_NAME=$BLUE_POOL
-            NEW_POOL_NAME=$GREEN_POOL
-          elif [ "$ACTIVE_LISTNER_NAME" == "$GREEN_POOL" ]
-          then
-            OLD_POOL_NAME=$GREEN_POOL
-            NEW_POOL_NAME=$BLUE_POOL
-          fi
-        done
-
-        POOL_ID=$(ibmcloud is load-balancer-pools $LOAD_BALANCER_ID -json | jq -r ".[] | select(.name==\"${NEW_POOL_NAME}\") |  .id")
-        LOAD_BALANCER_LISTNER_ID=( $(ibmcloud is load-balancer-listeners $LOAD_BALANCER_ID -json | jq -r ".[] | select(.default_pool.name==\"$OLD_POOL_NAME\") |.id") )
-        echo "Load Balancer Listner id: $LOAD_BALANCER_LISTNER_ID "
-        echo "pool id : $POOL_ID "
-        for i in "${LOAD_BALANCER_LISTNER_ID[@]}"
-        do
-          ibmcloud is load-balancer-listener-update $LOAD_BALANCER_ID $i  --default-pool $POOL_ID
-        done
+        source <(curl -sSL "$(params.commons-hosted-region)/scripts/deployment_strategies/blue_green/vsi/switch-blue-green.sh")
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task

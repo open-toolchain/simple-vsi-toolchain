@@ -111,4 +111,7 @@ properties:
     value: "master"
   - name: scripts-subpath
     type: text
-    value: 'scripts'      
+    value: 'scripts'
+  - name: commons-hosted-region
+    value: ${COMMONS_HOSTED_REGION}
+    type: text     

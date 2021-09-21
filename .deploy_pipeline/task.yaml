@@ -148,7 +148,9 @@ spec:
     - name: objectname
       description: The name of the build artifact
     - name: scripts-subpath
-      description: The application lanugage scripts-subpath       
+      description: The application lanugage scripts-subpath
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"              
   workspaces:
     - name: output
       description: A workspace
@@ -192,6 +194,8 @@ spec:
           value: $(params.scripts-subpath)
         - name: FILE
           value: inventory.json
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)          
       script: |
         #!/bin/bash
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -208,7 +212,7 @@ spec:
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
-        source ./scripts-repo/${subpath}/setup-remote-deploy.sh
+        source <(curl -ssL "$(params.commons-hosted-region)/scripts/deployment_strategies/basic/vsi/setup-remote-deploy.sh")
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -297,7 +301,9 @@ spec:
     - name: acceptanceCheckStatus
       description: The acceptance check status whether Failed|Passed
     - name: scripts-subpath
-      description: The subpath to the script repo from root      
+      description: The subpath to the script repo from root
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"             
   workspaces:
     - name: output
       description: A workspace
@@ -328,7 +334,9 @@ spec:
         - name: ACCEPTANCE_TEST_STATUS
           value: $(params.acceptanceCheckStatus)
         - name: scripts-subpath
-          value: $(params.scripts-subpath) 
+          value: $(params.scripts-subpath)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)           
       script: |
         #!/bin/bash
         echo "DEPLOY_STATUS=$DEPLOY_STATUS"
@@ -336,9 +344,9 @@ spec:
         echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
         subpath="$(params.scripts-subpath)"
         if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
-          source ./scripts-repo/${subpath}/rollback-deploy.sh
+          source <(curl -ssL "$(params.commons-hosted-region)/scripts/deployment_strategies/basic/vsi/rollback-deploy.sh")
         else
-          source ./scripts-repo/${subpath}/perform-cleanup.sh
+          source <(curl -ssL "$(params.commons-hosted-region)/scripts/deployment_strategies/basic/vsi/perform-cleanup.sh")
           echo "All Checks Passed. Roll Back Not required."
         fi
 ---

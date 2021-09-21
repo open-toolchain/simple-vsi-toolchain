@@ -63,13 +63,27 @@
       }
     },
     "items": [{
-        "type": "section",
-        "items": ["repo_name"]
-      },
-      {
-        "type": "section",
-        "items": ["repo_url"]
-      }
+      "type": "section",
+      "items": [{
+        "placeholder": {
+          "$ref": "#/messages/wizard.app.repoNamePlaceholder"
+        },
+        "key": "repo_name"
+      }]
+    },
+    {
+      "type": "section",
+      "items": [{
+        "type": "select",
+        "display": {
+          "mirrorAdvancedEnum": true
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.app.repoURLPlaceholder"
+        },
+        "key": "repo_url"
+      }]
+    }    
     ]
   }]
 }

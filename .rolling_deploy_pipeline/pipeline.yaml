@@ -70,7 +70,9 @@ spec:
     - name: pool-ssh-keys
       description: Blue and Green Pool base64 encoded private SSH key 
     - name: pool-user-name   
-      description: Blue and Green Pool User Name         
+      description: Blue and Green Pool User Name
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"               
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -181,7 +183,9 @@ spec:
         - name: pool-ssh-keys
           value: $(params.pool-ssh-keys)         
         - name: pool-user-name   
-          value: $(params.pool-user-name)                     
+          value: $(params.pool-user-name)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)                               
       workspaces:
         - name: output
           workspace: pipeline-ws

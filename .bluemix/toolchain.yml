@@ -53,8 +53,18 @@ services:
       }
     parameters:
       repo_name: "java-spring-app-{{timestamp}}"
-      repo_url: "https://github.ibm.com/open-toolchain/java-spring-app"
-      source_repo_url: "https://github.ibm.com/open-toolchain/java-spring-app"
+      repo_url: >
+        if ( $env.template.info.hosted_region !== "" ) {
+          "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/java-spring-app"
+        } else {
+          "https://github.com/open-toolchain/java-spring-app"
+        }      
+      source_repo_url: >
+        if ( $env.template.info.hosted_region !== "" ) {
+          "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/java-spring-app"
+        } else {
+          "https://github.com/open-toolchain/java-spring-app"
+        }
       type: $env.type || 'clone'
       has_issues: true
       enable_traceability: true
@@ -69,8 +79,18 @@ services:
       }
     parameters:
       repo_name: "simple-vsi-app-pipeline-{{timestamp}}"
-      repo_url: "https://github.ibm.com/open-toolchain/simple-vsi-toolchain"
-      source_repo_url: "https://github.ibm.com/open-toolchain/simple-vsi-toolchain"
+      repo_url: >
+        if ( $env.template.info.hosted_region !== "" ) {
+          "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/simple-vsi-toolchain"
+        } else {
+          "https://github.com/open-toolchain/simple-vsi-toolchain"
+        }      
+      source_repo_url: >
+        if ( $env.template.info.hosted_region !== "" ) {
+          "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/simple-vsi-toolchain"
+        } else {
+          "https://github.com/open-toolchain/simple-vsi-toolchain"
+        }      
       type: 'clone'
       has_issues: false
       enable_traceability: false
@@ -298,6 +318,9 @@ services:
           IG2: "{{form.pipeline_canary.parameters.instancegroup2}}"
           STEP_SIZE: "{{form.pipeline_canary.parameters.canary-step-size}}"
           STEP_INTERVAL: "{{form.pipeline_canary.parameters.canary-step-interval}}"
+          COMMONS_HOSTED_REGION: >
+            $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/commons/-/raw/main':
+            'https://raw.githubusercontent.com/open-toolchain/commons/master'
         execute: false
 
   webide:
