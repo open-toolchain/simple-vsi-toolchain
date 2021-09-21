@@ -51,8 +51,8 @@ properties:
     value: ${INSIGHTS}
     type: integration
     path: service_id
-  - name: toolchain-region
-    value: ${TOOLCHAIN_REGION}
+  - name: region
+    value: ${REGION}
     type: text  
   - name: scripts-repo
     value: ${APP_REPO}

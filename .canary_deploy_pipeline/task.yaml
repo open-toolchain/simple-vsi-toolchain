@@ -49,6 +49,7 @@ spec:
           value: inventory.json  
       script: |
           #!/bin/bash
+
           # Code here fetches the artifact metadata as present in the inventory.json.
           # The task assumes the file /output/inventory-repo/inventory.json is already present as a result of the cloning of the 
           # by the upstream git-clone-inventory-repo task. The JSON file contains the metadata like the name of the name of the artifact (artifact)
@@ -61,6 +62,7 @@ spec:
             echo -n "${BUILD}" > $(results.build_number.path)
             echo -n "${OBJECTNAME}" > $(results.objectname.path)
           fi
+
           # Code here downloads the artifact after processing the information present in the inventory.json.
           # The downloaded artifacts will be stored in /output directory which can then be utilized by downstream
           # task to carry out deployment steps on the target Virtual Server instance.
@@ -69,6 +71,7 @@ spec:
           if [ -z ${COSAPIKEY} ]; then echo "COSAPIKEY is not set"; COSAPIKEY=$APIKEY; fi;
           ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
           ibmcloud plugin install cloud-object-storage;
+
           #
           # Function to download the binary artifact from IBM Cloud Object Store
           # 
@@ -83,6 +86,7 @@ spec:
                 exit 1;
             fi
           }
+
           #
           # Function to download the binary artifact from Artifactory
           # 
@@ -94,6 +98,7 @@ spec:
             curl -u $USERID:$TOKEN "$REPO/$OBJECTNAME" --output $OBJECTNAME
             echo "Finished downloading of artifacts from Artifactory"
           }
+
           #
           # Driver Function to download the binary artifact
           # The function:
@@ -131,14 +136,6 @@ spec:
       description: The variable storing artifactory integration with the toolchain
     - name: appname
       description: The name of the application passed as environment variable
-    - name: virtualserverinstance
-      description: The IP Address of the Virtual Server Instance
-    - name: hostsshkeys
-      description: The private SSH Key required to login to the Virtual Server Instance
-    - name: hostusername
-      description: The username required to login to the Virtual Server Instance
-    - name: hostpassword
-      description: The password required to login to the Virtual Server Instance
     - name: cos-region
       description: The Region where Cloud Object Storage Instance is created
     - name: cos-bucket-name
@@ -149,8 +146,30 @@ spec:
       description: The name of the build artifact
     - name: scripts-subpath
       description: The application lanugage scripts-subpath
+    - name: bastion-host
+      description: Bastion Host virtual-server-instance
+    - name: bastion-host-user-name
+      description: Bastion Host User Name
+    - name: bastion-host-ssh-keys
+      description: Bastion host 
+    - name: lb-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: pool-ssh-keys
+      description: Blue and Green Pool base64 encoded private SSH key 
+    - name: pool-user-name   
+      description: Blue and Green Pool User Name
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval
     - name: commons-hosted-region
-      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"              
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"                       
   workspaces:
     - name: output
       description: A workspace
@@ -170,18 +189,6 @@ spec:
           value: $(params.artifactory)
         - name: APPNAME
           value: $(params.appname)
-        - name: VIRTUAL_SERVER_INSTANCE
-          value: $(params.virtualserverinstance)
-        - name: HOST_SSH_KEYS
-          value: $(params.hostsshkeys)
-        - name: HOST_USER_NAME
-          value: $(params.hostusername)
-        - name: HOST_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: secure-properties
-              key: host-password
-              optional: true
         - name: COSBUCKETNAME
           value: $(params.cos-bucket-name)
         - name: COSREGION
@@ -194,8 +201,34 @@ spec:
           value: $(params.scripts-subpath)
         - name: FILE
           value: inventory.json
+        - name: BASTION_HOST
+          value: $(params.bastion-host)
+        - name: BASTION_HOST_USER_NAME
+          value: $(params.bastion-host-user-name)        
+        - name: BASTION_HOST_SSH_KEYS
+          value: $(params.bastion-host-ssh-keys)      
+        - name: LB_POOL
+          value: $(params.lb-pool)                          
+        - name: LOAD_BALANCER_NAME
+          value: $(params.loadbalancer)                   
+        - name: DEPLLOYMENT_STRATEGY
+          value: $(params.deployment-strategy)                
+        - name: POOL_SSH_KEYS
+          value: $(params.pool-ssh-keys)         
+        - name: POOL_USER_NAME
+          value: $(params.pool-user-name) 
+        - name: instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)
         - name: commons-hosted-region
-          value: $(params.commons-hosted-region)          
+          value: $(params.commons-hosted-region)                               
       script: |
         #!/bin/bash
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -208,147 +241,82 @@ spec:
         if [[ -f "$FILE" ]]; then
           PIPELINERUNID=$(cat $FILE |jq -r '.pipeline_run_id')
         fi
+
         cd /output
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
-        source <(curl -ssL "$(params.commons-hosted-region)/scripts/deployment_strategies/basic/vsi/setup-remote-deploy.sh")
+        REGION=$(echo ${REGION::-2});
+        source <(curl -sSL "$(params.commons-hosted-region)/scripts/deployment_strategies/canary/vsi/setup-remote-deploy-canary.sh")
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: health-check-task
+  name: canary-release
 spec:
   params:
-    - name: virtualserverinstance
-      description: The IP Address of the Virtual Server Instance
-    - name: inventory-repo
-      description: The variable storing git integration for the repository storing build inventory with the toolchain
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
+    - name: api
+      description: the IBM Cloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: apikey
+      description: The IBM Cloud API Key  
     - name: scripts-subpath
-      description: The subpath to the scripts 
-  workspaces:
-    - name: output
-      description: A workspace
-      mountPath: /output
-  steps:
-    - name: check-application-health
-      image: ibmcom/pipeline-base-image:2.11
-      workingDir: /output
-      env:
-        - name: VIRTUAL_SERVER_INSTANCE
-          value: $(params.virtualserverinstance)
-        - name: INVENTORY_REPO
-          value: $(params.inventory-repo)
-        - name: scripts-subpath
-          value: $(params.scripts-subpath)            
-      script: |
-        #!/bin/bash
-        subpath="$(params.scripts-subpath)"
-        source ./scripts-repo/${subpath}/health-check.sh
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
-  name: acceptance-test
-spec:
-  params:
-    - name: virtualserverinstance
-      description: The IP Address of the Virtual Server Instance
-    - name: inventory-repo
-      description: The variable storing git integration for the repository storing build inventory with the toolchain
-    - name: scripts-subpath
-      description: The subpath to the script repo from root    
+      description: The subpath to the script repo from root
+    - name: lb-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: deployment-strategy
+      description: Deployment Strategy
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"                        
   workspaces:
     - name: output
       description: A workspace
       mountPath: /output  
   steps:
-    - name: check-application-health
+    - name: canary-release
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
       env:
-        - name: VIRTUAL_SERVER_INSTANCE
-          value: $(params.virtualserverinstance)
-        - name: INVENTORY_REPO
-          value: $(params.inventory-repo)
+        - name: REGION
+          value: $(params.region)
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)      
         - name: scripts-subpath
-          value: $(params.scripts-subpath)            
-      script: |
-        #!/bin/bash
-        subpath="$(params.scripts-subpath)"
-        source ./scripts-repo/${subpath}/acceptance-tests.sh
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
-  name: roll-back-deployment-task
-spec:
-  params:
-    - name: appname
-      description: The name of the application passed as environment variable
-    - name: virtualserverinstance
-      description: The IP Address of the Virtual Server Instance
-    - name: hostsshkeys
-      description: The private SSH Key required to login to the Virtual Server Instance
-    - name: hostusername
-      description: The username required to login to the Virtual Server Instance
-    - name: hostpassword
-      description: The password required to login to the Virtual Server Instance
-    - name: deployStatus
-      description: The deployment status whether Failed|Passed
-    - name: healthCheckStatus
-      description: The health check status whether Failed|Passed
-    - name: acceptanceCheckStatus
-      description: The acceptance check status whether Failed|Passed
-    - name: scripts-subpath
-      description: The subpath to the script repo from root
-    - name: commons-hosted-region
-      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"             
-  workspaces:
-    - name: output
-      description: A workspace
-      mountPath: /output
-  steps:
-    - name: roll-back-deployment
-      image: ibmcom/pipeline-base-image:2.11
-      workingDir: /output
-      env:
-        - name: APPNAME
-          value: $(params.appname)
-        - name: VIRTUAL_SERVER_INSTANCE
-          value: $(params.virtualserverinstance)
-        - name: HOST_SSH_KEYS
-          value: $(params.hostsshkeys)
-        - name: HOST_USER_NAME
-          value: $(params.hostusername)
-        - name: HOST_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: secure-properties
-              key: host-password
-              optional: true
-        - name: DEPLOY_STATUS
-          value: $(params.deployStatus)
-        - name: HEALTH_CHECK_STATUS
-          value: $(params.healthCheckStatus)
-        - name: ACCEPTANCE_TEST_STATUS
-          value: $(params.acceptanceCheckStatus)
-        - name: scripts-subpath
-          value: $(params.scripts-subpath)
+          value: $(params.scripts-subpath)      
+        - name: LB_POOL
+          value: $(params.lb-pool)                         
+        - name: LOAD_BALANCER_NAME
+          value: $(params.loadbalancer)
+        - name: DEPLLOYMENT_STRATEGY
+          value: $(params.deployment-strategy)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)
         - name: commons-hosted-region
-          value: $(params.commons-hosted-region)           
+          value: $(params.commons-hosted-region)                                                               
       script: |
         #!/bin/bash
-        echo "DEPLOY_STATUS=$DEPLOY_STATUS"
-        echo "HEALTH_CHECK_STATUS=$HEALTH_CHECK_STATUS"
-        echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
-        subpath="$(params.scripts-subpath)"
-        if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
-          source <(curl -ssL "$(params.commons-hosted-region)/scripts/deployment_strategies/basic/vsi/rollback-deploy.sh")
-        else
-          source <(curl -ssL "$(params.commons-hosted-region)/scripts/deployment_strategies/basic/vsi/perform-cleanup.sh")
-          echo "All Checks Passed. Roll Back Not required."
-        fi
+        exit 0
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -415,3 +383,72 @@ spec:
         ibmcloud login -a $API --apikey $APIKEY --no-region
         ibmcloud doi publishdeployrecord --env "${TARGET}" --status=${DEPLOY_STATUS} --joburl="${JOB_URL}" \
           --buildnumber="${BUILD_NUMBER}" --logicalappname="${APP_NAME}" ${INVENTORY_REPO}
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: abort-canary
+spec:
+  params:
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
+    - name: api
+      description: the IBM Cloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: apikey
+      description: The IBM Cloud API Key  
+    - name: scripts-subpath
+      description: The subpath to the script repo from root
+    - name: lb-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: deployment-strategy
+      description: Deployment Strategy
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"                        
+  workspaces:
+    - name: output
+      description: A workspace
+      mountPath: /output  
+  steps:
+    - name: abort-canary
+      image: ibmcom/pipeline-base-image:2.11
+      workingDir: /output
+      env:
+        - name: REGION
+          value: $(params.region)
+        - name: API
+          value: $(params.api)
+        - name: APIKEY
+          value: $(params.apikey)      
+        - name: scripts-subpath
+          value: $(params.scripts-subpath)      
+        - name: LB_POOL
+          value: $(params.lb-pool)                         
+        - name: LOAD_BALANCER_NAME
+          value: $(params.loadbalancer)
+        - name: DEPLLOYMENT_STRATEGY
+          value: $(params.deployment-strategy)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)                                                               
+      script: |
+        #!/bin/bash
+        exit 0

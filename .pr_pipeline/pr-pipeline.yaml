@@ -21,7 +21,7 @@ spec:
     - name: scm-type
     - name: project-id
       default: ""
-    - name: toolchain-region 
+    - name: region 
     - name: scripts-subpath
       description: The subpath to the script repo from root
     - name: scripts-repo

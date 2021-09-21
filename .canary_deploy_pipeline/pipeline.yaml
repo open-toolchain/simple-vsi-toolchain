@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: simple-vsi-app-pipeline
+  name: canary-simple-vsi-app-pipeline
 spec:
   params:
     - name: repository
@@ -33,14 +33,6 @@ spec:
       description: The Source Code Management Type as set by the Trigger Binding based on the Event Listener invoked. 
     - name: artifactory
       description: The variable storing artifactory integration with the toolchain
-    - name: virtual-server-instance
-      description: The IP Address of the Virtual Server Instance
-    - name: host-ssh-keys
-      description: The private SSH Key required to login to the Virtual Server Instance
-    - name: host-user-name
-      description: The username required to login to the Virtual Server Instance
-    - name: host-password
-      description: The password required to login to the Virtual Server Instance
     - name: project-id
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
@@ -63,8 +55,30 @@ spec:
       description: The branch of the scripts-repo
     - name: inventory-repo-branch
       description: The branch of the inventory-repo
+    - name: bastion-host
+      description: Bastion Host virtual-server-instance
+    - name: bastion-host-user-name
+      description: Bastion Host User Name
+    - name: bastion-host-ssh-keys
+      description: Bastion host 
+    - name: lb-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: pool-ssh-keys
+      description: Blue and Green Pool base64 encoded private SSH key 
+    - name: pool-user-name   
+      description: Blue and Green Pool User Name 
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval
     - name: commons-hosted-region
-      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"      
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"                  
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -150,14 +164,6 @@ spec:
           value: $(params.app-name)
         - name: artifactory
           value: $(params.artifactory)
-        - name: virtualserverinstance
-          value: $(params.virtual-server-instance)
-        - name: hostsshkeys
-          value: $(params.host-ssh-keys)
-        - name: hostusername
-          value: $(params.host-user-name)
-        - name: hostpassword
-          value: $(params.host-password)
         - name: cos-bucket-name
           value: $(params.cos-bucket-name)
         - name: cos-region
@@ -168,43 +174,76 @@ spec:
           value: $(tasks.download-artifacts.results.objectname)
         - name: scripts-subpath
           value: $(params.scripts-subpath)
+        - name: bastion-host
+          value: $(params.bastion-host)
+        - name: bastion-host-user-name
+          value: $(params.bastion-host-user-name)        
+        - name: bastion-host-ssh-keys
+          value: $(params.bastion-host-ssh-keys)      
+        - name: lb-pool
+          value: $(params.lb-pool)          
+        - name: deployment-strategy
+          value: $(params.deployment-strategy)              
+        - name: loadbalancer
+          value: $(params.loadbalancer)         
+        - name: pool-ssh-keys
+          value: $(params.pool-ssh-keys)         
+        - name: pool-user-name   
+          value: $(params.pool-user-name)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)
         - name: commons-hosted-region
-          value: $(params.commons-hosted-region)                    
+          value: $(params.commons-hosted-region)                                         
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: health-check
+
+    - name: canary-release
       taskRef:
-        name: health-check-task
-      runAfter: [ deploy ]
+        name: canary-release
+      runAfter: [ deploy ]     
       params:
-        - name: virtualserverinstance
-          value: $(params.virtual-server-instance)
-        - name: inventory-repo
-          value: $(params.inventory-repo)
+        - name: region
+          value: $(params.region)
+        - name: api
+          value: $(params.api)
+        - name: apikey
+          value: $(params.apikey)      
         - name: scripts-subpath
-          value: $(params.scripts-subpath)             
+          value: $(params.scripts-subpath)     
+        - name: lb-pool
+          value: $(params.lb-pool)                          
+        - name: loadbalancer
+          value: $(params.loadbalancer)
+        - name: deployment-strategy
+          value: $(params.deployment-strategy)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)                                                             
       workspaces:
         - name: output
-          workspace: pipeline-ws
-    - name: acceptance-test
-      taskRef:
-        name: acceptance-test
-      runAfter: [ health-check ]
-      params:
-        - name: virtualserverinstance
-          value: $(params.virtual-server-instance)
-        - name: inventory-repo
-          value: $(params.inventory-repo)
-        - name: scripts-subpath
-          value: $(params.scripts-subpath)             
-      workspaces:
-        - name: output
-          workspace: pipeline-ws          
+          workspace: pipeline-ws                    
     - name: publish-doi-deployrecord
       taskRef:
         name: publish-doi-deployrecord
-      runAfter: [deploy]
+      runAfter: [canary-release]
       when:
         - input: $(params.insights)
           operator: in
@@ -225,31 +264,73 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-  finally:
-    - name: check-if-roll-back-required
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: canary-switch-pipeline
+spec:
+  params:
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+    - name: api
+      description: The IBM Cloud API Endpoint
+    - name: apikey
+      description: The IBM Cloud API Key  
+    - name: scripts-subpath
+      description: The variable storing language scripts-subpath 
+    - name: fail-on-scanned-issues
+      description: Force failure of task when vulnerability advisor scan issues are found
+      default: "true"
+    - name: pipeline-debug
+      default: "0"
+    - name: lb-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"                   
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: abort-canary
       taskRef:
-        name: roll-back-deployment-task
+        name: abort-canary
       params:
-        - name: appname
-          value: $(params.app-name)
-        - name: virtualserverinstance
-          value: $(params.virtual-server-instance)
-        - name: hostsshkeys
-          value: $(params.host-ssh-keys)
-        - name: hostusername
-          value: $(params.host-user-name)
-        - name: hostpassword
-          value: $(params.host-password)
-        - name: deployStatus
-          value: "$(tasks.deploy.status)"
-        - name: healthCheckStatus
-          value: "$(tasks.health-check.status)"
-        - name: acceptanceCheckStatus
-          value: "$(tasks.acceptance-test.status)"
+        - name: region
+          value: $(params.region)
+        - name: api
+          value: $(params.api)
+        - name: apikey
+          value: $(params.apikey)      
         - name: scripts-subpath
-          value: $(params.scripts-subpath)
+          value: $(params.scripts-subpath)     
+        - name: lb-pool
+          value: $(params.lb-pool)                           
+        - name: loadbalancer
+          value: $(params.loadbalancer)
+        - name: deployment-strategy
+          value: $(params.deployment-strategy)
+        - name:  instance-group-region
+          value: $(params.instance-group-region) 
+        - name: instance-group-1
+          value: $(params.instance-group-1)
+        - name: instance-group-2
+          value: $(params.instance-group-2)
+        - name: canary-step-size
+          value: $(params.canary-step-size)
+        - name: canary-step-interval
+          value: $(params.canary-step-interval)
         - name: commons-hosted-region
-          value: $(params.commons-hosted-region)                       
+          value: $(params.commons-hosted-region)                                                              
       workspaces:
         - name: output
           workspace: pipeline-ws

@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: trigger-template-simple-vsi-app
+  name: canary-trigger-template-simple-vsi-app
 spec:
   params:
     - name: repository
@@ -41,14 +41,6 @@ spec:
       default: ""
     - name: artifactory
       description: The variable storing artifactory integration with the toolchain
-    - name: virtual-server-instance
-      description: The IP Address of the Virtual Server Instance
-    - name: host-ssh-keys
-      description: The private SSH Key required to login to the Virtual Server Instance
-    - name: host-user-name
-      description: The username required to login to the Virtual Server Instance
-    - name: host-password
-      description: The password required to login to the Virtual Server Instance
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-repo
@@ -70,8 +62,30 @@ spec:
       description: The branch of the scripts-repo
     - name: inventory-repo-branch
       description: The branch of the inventory-repo
+    - name: bastion-host
+      description: Bastion Host virtual-server-instance
+    - name: bastion-host-user-name
+      description: Bastion Host User Name
+    - name: bastion-host-ssh-keys
+      description: Bastion host 
+    - name: lb-pool
+      description: Load Balancer Pool for the Deployemnt
+    - name: deployment-strategy
+      description: Deployment Strategy
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: pool-ssh-keys
+      description: Blue and Green Pool base64 encoded private SSH key 
+    - name: pool-user-name   
+      description: Blue and Green Pool User Name 
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval
     - name: commons-hosted-region
-      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"      
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"    
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -90,7 +104,7 @@ spec:
         name: simple-vsi-app-$(uid)
       spec:
         pipelineRef:
-          name: simple-vsi-app-pipeline
+          name: canary-simple-vsi-app-pipeline
         params:
           - name: repository
             value: $(params.repository)
@@ -121,15 +135,7 @@ spec:
           - name: project-id
             value: $(params.project-id) 
           - name: artifactory
-            value: $(params.artifactory)
-          - name: virtual-server-instance
-            value: $(params.virtual-server-instance)
-          - name: host-ssh-keys
-            value: $(params.host-ssh-keys)
-          - name: host-user-name
-            value: $(params.host-user-name)   
-          - name: host-password
-            value: $(params.host-password) 
+            value: $(params.artifactory) 
           - name: region
             value: $(params.region)
           - name: cos-bucket-name
@@ -151,9 +157,129 @@ spec:
           - name: scripts-repo-branch
             value: $(params.scripts-repo-branch) 
           - name: inventory-repo-branch
-            value: $(params.inventory-repo-branch)
+            value: $(params.inventory-repo-branch) 
+          - name: bastion-host
+            value: $(params.bastion-host)
+          - name: bastion-host-user-name
+            value: $(params.bastion-host-user-name)        
+          - name: bastion-host-ssh-keys
+            value: $(params.bastion-host-ssh-keys)      
+          - name: lb-pool
+            value: $(params.lb-pool)          
+          - name: deployment-strategy
+            value: $(params.deployment-strategy)                 
+          - name: loadbalancer
+            value: $(params.loadbalancer)         
+          - name: pool-ssh-keys
+            value: $(params.pool-ssh-keys)         
+          - name: pool-user-name   
+            value: $(params.pool-user-name) 
+          - name:  instance-group-region
+            value: $(params.instance-group-region) 
+          - name: instance-group-1
+            value: $(params.instance-group-1)
+          - name: instance-group-2
+            value: $(params.instance-group-2)
+          - name: canary-step-size
+            value: $(params.canary-step-size)
+          - name: canary-step-interval
+            value: $(params.canary-step-interval)
           - name: commons-hosted-region
-            value: $(params.commons-hosted-region)                                                                        
+            value: $(params.commons-hosted-region)                                                                                          
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: simple-vsi-app-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: canary-switch-trigger-template
+spec:
+  params:
+    - name: apikey
+      description: The IBM Cloud API Key   
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+    - name: api
+      description: the IBM Cloud api endpoint
+      default: "https://cloud.ibm.com" 
+    - name: scripts-subpath
+      description: TThe subpath to the script repo from root        
+    - name: fail-on-lint-errors
+      description: Force failure of task when docker lint errors are found
+      default: "true"
+    - name: fail-on-scanned-issues
+      description: Force failure of task when vulnerability advisor scan issues are found
+      default: "false"
+    - name: pipeline-debug
+      default: "0"
+    - name: lb-pool
+      description: Blue Pool for Blue Green Deployemnt
+    - name: deployment-strategy
+      description: Green Pool for Blue Green Deployemnt
+    - name: loadbalancer
+      description: Load Balancer Name 
+    - name:  instance-group-region
+      description : VPC region
+    - name: instance-group-1
+    - name: instance-group-2
+    - name: canary-step-size
+    - name: canary-step-interval
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"          
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: simple-vsi-app-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: simple-vsi-app-$(uid)
+      spec:
+        pipelineRef:
+          name: canary-switch-pipeline
+        params:
+          - name: api
+            value: $(params.api)
+          - name: region
+            value: $(params.region) 
+          - name: apikey
+            value: $(params.apikey)                   
+          - name: fail-on-lint-errors
+            value: $(params.fail-on-lint-errors)
+          - name: fail-on-scanned-issues
+            value: $(params.fail-on-scanned-issues)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)    
+          - name: lb-pool
+            value: $(params.lb-pool)          
+          - name: deployment-strategy
+            value: $(params.deployment-strategy)               
+          - name: loadbalancer
+            value: $(params.loadbalancer) 
+          - name: scripts-subpath
+            value: $(params.scripts-subpath)
+          - name:  instance-group-region
+            value: $(params.instance-group-region) 
+          - name: instance-group-1
+            value: $(params.instance-group-1)
+          - name: instance-group-2
+            value: $(params.instance-group-2)
+          - name: canary-step-size
+            value: $(params.canary-step-size)
+          - name: canary-step-interval
+            value: $(params.canary-step-interval)
+          - name: commons-hosted-region
+            value: $(params.commons-hosted-region)                                                                                                                      
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
@@ -162,25 +288,43 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: trigger-binding-manual
+  name: canary-trigger-binding-manual
+spec:
+  params:
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: canary-switch-trigger-binding-manual
 spec:
   params:
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: manual-run
+  name: canary-manual-run
 spec:
   triggers:
     - binding:
-        name: trigger-binding-manual
+        name: canary-trigger-binding-manual
       template:
-        name: trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app
 ---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: abort-canary
+spec:
+  triggers:
+    - binding:
+        name: canary-switch-trigger-binding-manual
+      template:
+        name: canary-switch-trigger-template
+---        
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: github-ent-commit
+  name: canary-github-ent-commit
 spec:
   params:
     - name: branch
@@ -197,18 +341,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: github-ent-commit
+  name: canary-github-ent-commit
 spec:
   triggers:
     - bindings: 
-        - name: github-ent-commit   
+        - name: canary-github-ent-commit   
       template:
-        name: trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: github-commit
+  name: canary-github-commit
 spec:
   params:
     - name: branch
@@ -225,18 +369,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: github-commit
+  name: canary-github-commit
 spec:
   triggers:
     - bindings:  
-        - name: github-commit   
+        - name: canary-github-commit   
       template:
-        name: trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: grit-or-gitlab-commit
+  name: canary-grit-or-gitlab-commit
 spec:
   params:
     - name: branch
@@ -253,18 +397,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: grit-or-gitlab-commit
+  name: canary-grit-or-gitlab-commit
 spec:
   triggers:
     - bindings:   
-        - name: grit-or-gitlab-commit
+        - name: canary-grit-or-gitlab-commit
       template:
-        name: trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: bitbucket-commit
+  name: canary-bitbucket-commit
 spec:
   params:
     - name: repository
@@ -283,10 +427,10 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: bitbucket-commit
+  name: canary-bitbucket-commit
 spec:
   triggers:
     - binding:
-        name: bitbucket-commit
+        name: canary-bitbucket-commit
       template:
-        name: trigger-template-simple-vsi-app
+        name: canary-trigger-template-simple-vsi-app

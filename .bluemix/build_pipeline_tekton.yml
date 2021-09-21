@@ -52,9 +52,9 @@ properties:
   - name: artifactory
     value: ${ARTIFACTORY}
     type: Integration     
-  - name : region
+  - name: region
     value: ${REGION}
-    type: text
+    type: text  
   - name: revision
     value: 'master'
     type: text
@@ -92,3 +92,6 @@ properties:
   - name: scripts-subpath
     type: text
     value: 'scripts'  
+  - name: deployment-strategy
+    value: ${DEPLOYMENT_STRATEGY}
+    type: text    

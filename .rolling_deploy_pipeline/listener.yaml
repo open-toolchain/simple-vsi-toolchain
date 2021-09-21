@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: trigger-template-simple-vsi-app
+  name: rolling-trigger-template-simple-vsi-app
 spec:
   params:
     - name: repository
@@ -41,14 +41,6 @@ spec:
       default: ""
     - name: artifactory
       description: The variable storing artifactory integration with the toolchain
-    - name: virtual-server-instance
-      description: The IP Address of the Virtual Server Instance
-    - name: host-ssh-keys
-      description: The private SSH Key required to login to the Virtual Server Instance
-    - name: host-user-name
-      description: The username required to login to the Virtual Server Instance
-    - name: host-password
-      description: The password required to login to the Virtual Server Instance
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-repo
@@ -70,8 +62,24 @@ spec:
       description: The branch of the scripts-repo
     - name: inventory-repo-branch
       description: The branch of the inventory-repo
+    - name: bastion-host
+      description: Bastion Host virtual-server-instance
+    - name: bastion-host-user-name
+      description: Bastion Host User Name
+    - name: bastion-host-ssh-keys
+      description: Bastion host 
+    - name: lb-pool
+      description: Load Balancer Pool for the Deployemnt
+    - name: deployment-strategy
+      description: Deployemnt Stratergy 
+    - name: loadbalancer
+      description: Load Balancer Name
+    - name: pool-ssh-keys
+      description: Blue and Green Pool base64 encoded private SSH key 
+    - name: pool-user-name   
+      description: Blue and Green Pool User Name
     - name: commons-hosted-region
-      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"      
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"       
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -90,7 +98,7 @@ spec:
         name: simple-vsi-app-$(uid)
       spec:
         pipelineRef:
-          name: simple-vsi-app-pipeline
+          name: rolling-simple-vsi-app-pipeline
         params:
           - name: repository
             value: $(params.repository)
@@ -122,14 +130,6 @@ spec:
             value: $(params.project-id) 
           - name: artifactory
             value: $(params.artifactory)
-          - name: virtual-server-instance
-            value: $(params.virtual-server-instance)
-          - name: host-ssh-keys
-            value: $(params.host-ssh-keys)
-          - name: host-user-name
-            value: $(params.host-user-name)   
-          - name: host-password
-            value: $(params.host-password) 
           - name: region
             value: $(params.region)
           - name: cos-bucket-name
@@ -151,9 +151,25 @@ spec:
           - name: scripts-repo-branch
             value: $(params.scripts-repo-branch) 
           - name: inventory-repo-branch
-            value: $(params.inventory-repo-branch)
+            value: $(params.inventory-repo-branch) 
+          - name: bastion-host
+            value: $(params.bastion-host)
+          - name: bastion-host-user-name
+            value: $(params.bastion-host-user-name)        
+          - name: bastion-host-ssh-keys
+            value: $(params.bastion-host-ssh-keys)      
+          - name: lb-pool
+            value: $(params.lb-pool)          
+          - name: deployment-strategy
+            value: $(params.deployment-strategy)                
+          - name: loadbalancer
+            value: $(params.loadbalancer)         
+          - name: pool-ssh-keys
+            value: $(params.pool-ssh-keys)         
+          - name: pool-user-name   
+            value: $(params.pool-user-name)
           - name: commons-hosted-region
-            value: $(params.commons-hosted-region)                                                                        
+            value: $(params.commons-hosted-region)                                                                                           
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
@@ -162,25 +178,25 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: trigger-binding-manual
+  name: rolling-trigger-binding-manual
 spec:
   params:
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: manual-run
+  name: rolling-manual-run
 spec:
   triggers:
     - binding:
-        name: trigger-binding-manual
+        name: rolling-trigger-binding-manual
       template:
-        name: trigger-template-simple-vsi-app
----
+        name: rolling-trigger-template-simple-vsi-app
+---        
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: github-ent-commit
+  name: rolling-github-ent-commit
 spec:
   params:
     - name: branch
@@ -197,18 +213,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: github-ent-commit
+  name: rolling-github-ent-commit
 spec:
   triggers:
     - bindings: 
-        - name: github-ent-commit   
+        - name: rolling-github-ent-commit   
       template:
-        name: trigger-template-simple-vsi-app
+        name: rolling-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: github-commit
+  name: rolling-github-commit
 spec:
   params:
     - name: branch
@@ -225,18 +241,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: github-commit
+  name: rolling-github-commit
 spec:
   triggers:
     - bindings:  
-        - name: github-commit   
+        - name: rolling-github-commit   
       template:
-        name: trigger-template-simple-vsi-app
+        name: rolling-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: grit-or-gitlab-commit
+  name: rolling-grit-or-gitlab-commit
 spec:
   params:
     - name: branch
@@ -253,18 +269,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: grit-or-gitlab-commit
+  name: rolling-grit-or-gitlab-commit
 spec:
   triggers:
     - bindings:   
-        - name: grit-or-gitlab-commit
+        - name: rolling-grit-or-gitlab-commit
       template:
-        name: trigger-template-simple-vsi-app
+        name: rolling-trigger-template-simple-vsi-app
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: bitbucket-commit
+  name: rolling-bitbucket-commit
 spec:
   params:
     - name: repository
@@ -283,10 +299,10 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: bitbucket-commit
+  name: rolling-bitbucket-commit
 spec:
   triggers:
     - binding:
-        name: bitbucket-commit
+        name: rolling-bitbucket-commit
       template:
-        name: trigger-template-simple-vsi-app
+        name: rolling-trigger-template-simple-vsi-app

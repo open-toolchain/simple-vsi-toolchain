@@ -29,7 +29,7 @@ spec:
       default: ""
     - name: repository
     - name: insights
-    - name: toolchain-region 
+    - name: region 
     - name: scripts-repo
       description: The variable storing git integration for the repository storing build and deploying source code
     - name: scripts-subpath
@@ -82,8 +82,8 @@ spec:
             value: $(params.repository)
           - name: insights
             value: $(params.insights) 
-          - name: toolchain-region
-            value: $(params.toolchain-region) 
+          - name: region
+            value: $(params.region) 
           - name: scripts-repo
             value: $(params.scripts-repo)
           - name: scripts-subpath
