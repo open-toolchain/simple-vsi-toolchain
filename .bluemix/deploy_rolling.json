@@ -153,6 +153,12 @@
       {
          "type": "info",
          "text": {
+            "$ref": "#/messages/deploy.vpc"
+         }
+      },
+      {
+         "type": "info",
+         "text": {
             "$ref": "#/messages/deploy.bastionHost"
          }
       },
