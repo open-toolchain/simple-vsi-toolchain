@@ -69,8 +69,8 @@
          "validator": {
             "v-type": "alb-pools",
             "params": [
-               "vpcRegion",
-               "loadbalancer"
+               "loadbalancer",
+               "api-key"
             ]
          }
       },

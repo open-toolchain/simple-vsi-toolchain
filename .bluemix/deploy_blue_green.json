@@ -355,6 +355,9 @@
                "title":{
                   "$ref":"#/messages/deploy.loadBalancerName"
                },
+               "placeholder": {
+                  "$ref": "#/messages/deploy.loadBalancerPlaceHolder"
+               },
                "key":"loadbalancer"
             },
             {
@@ -367,6 +370,9 @@
                "title":{
                   "$ref":"#/messages/deploy.bluePoolName"
                },
+               "placeholder": {
+                  "$ref": "#/messages/deploy.bluePoolNamePlaceHolder"
+               },
                "key":"loadbalancerpoolsblue"
             },
             {
@@ -378,6 +384,9 @@
                "readonly":true,
                "title":{
                   "$ref":"#/messages/deploy.greenPoolName"
+               },
+               "placeholder": {
+                  "$ref": "#/messages/deploy.greenPoolNamePlaceHolder"
                },
                "key":"loadbalancerpoolsgreen"
             }
