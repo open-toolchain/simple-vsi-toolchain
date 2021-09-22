@@ -206,13 +206,15 @@ spec:
           # 
           UploadToCOStorage() {
             RESOURCEGROUP=$(cat /cd-config/toolchain.json | jq -r '.container.guid');
-            REGION=$(echo ${COSREGION##*:});
+            ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
+            ibmcloud plugin install cloud-object-storage;
+            REGION=$(ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
+            if [ -z ${REGION} ]; then 
+              REGION=${COSREGION##*:}
+            fi
             COSENDPOINT="s3.${REGION}.cloud-object-storage.appdomain.cloud";
             COSAPIKEYFLAG=${COSAPIKEY};
             if [ -z ${COSAPIKEY} ]; then echo "COSAPIKEY is not given, Using default APIKEY"; COSAPIKEY=$APIKEY; fi;
-
-            ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
-            ibmcloud plugin install cloud-object-storage;
             if [ -z ${COSAPIKEYFLAG} ]; then
             echo "Target the resource group with ID ${RESOURCEGROUP}"
             ibmcloud target -g ${RESOURCEGROUP}
