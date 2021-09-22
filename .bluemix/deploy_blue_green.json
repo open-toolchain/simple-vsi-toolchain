@@ -131,9 +131,6 @@
       "virtual-server-instance",
       "bastion-host-ssh-keys",
       "bastion-host-user-name",
-      "loadbalancer",
-      "loadbalancerpoolsgreen",
-      "loadbalancerpoolsblue",
       "vpcName"
    ],
    "form": [
