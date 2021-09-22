@@ -391,6 +391,21 @@
                "key":"loadbalancerpoolsgreen"
             }
          ]
-      }
+      },
+      {
+         "type": "notification",
+         "display": {
+           "style": "warning",
+           "title": {
+             "$ref": "#/messages/wizard.fetcher.warning.title"
+           },
+           "subtitle": {
+             "$ref": "#/messages/wizard.fetcher.warning.subtitle"
+           },
+           "showInAdvancedMode": true,
+           "advancedModePosition": "bottom"
+         },
+         "visible": true
+       }
    ]
 }

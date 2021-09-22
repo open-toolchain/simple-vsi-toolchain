@@ -45,8 +45,7 @@ spec:
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-repo
       description: The variable storing git integration for the repository storing build pipeline code for the toolchain        
-    - name: cos-region
-      description: The Region where Cloud Object Storage Instance is created
+
     - name: cos-api-key
       description: The API Key to interact with the Cloud Object Storage Instance
     - name: target
@@ -78,8 +77,6 @@ spec:
       description: Blue and Green Pool base64 encoded private SSH key 
     - name: pool-user-name   
       description: Blue and Green Pool User Name 
-    - name:  instance-group-region
-      description : VPC region
     - name: instance-group-1
     - name: instance-group-2
     - name: canary-step-size
@@ -140,8 +137,6 @@ spec:
             value: $(params.region)
           - name: cos-bucket-name
             value: $(params.cos-bucket-name)
-          - name: cos-region
-            value: $(params.cos-region)
           - name: cos-api-key
             value: $(params.cos-api-key)
           - name: inventory-repo
@@ -174,8 +169,6 @@ spec:
             value: $(params.pool-ssh-keys)         
           - name: pool-user-name   
             value: $(params.pool-user-name) 
-          - name:  instance-group-region
-            value: $(params.instance-group-region) 
           - name: instance-group-1
             value: $(params.instance-group-1)
           - name: instance-group-2
@@ -185,7 +178,7 @@ spec:
           - name: canary-step-interval
             value: $(params.canary-step-interval)
           - name: commons-hosted-region
-            value: $(params.commons-hosted-region)                                                                                          
+            value: $COMMON_HOSTED_REGION                                                                                          
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
@@ -220,8 +213,6 @@ spec:
       description: Green Pool for Blue Green Deployemnt
     - name: loadbalancer
       description: Load Balancer Name 
-    - name:  instance-group-region
-      description : VPC region
     - name: instance-group-1
     - name: instance-group-2
     - name: canary-step-size
@@ -268,8 +259,6 @@ spec:
             value: $(params.loadbalancer) 
           - name: scripts-subpath
             value: $(params.scripts-subpath)
-          - name:  instance-group-region
-            value: $(params.instance-group-region) 
           - name: instance-group-1
             value: $(params.instance-group-1)
           - name: instance-group-2
@@ -279,7 +268,7 @@ spec:
           - name: canary-step-interval
             value: $(params.canary-step-interval)
           - name: commons-hosted-region
-            value: $(params.commons-hosted-region)                                                                                                                      
+            value: $COMMON_HOSTED_REGION                                                                                                                      
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

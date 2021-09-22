@@ -57,10 +57,7 @@ properties:
     type: text
   - name: host-user-name
     value: ${HOST_USER_NAME}
-    type: text
-  - name: host-password
-    value: ${HOST_USER_PASSWORD}
-    type: secure    
+    type: text   
   - name: host-ssh-keys
     value: ${HOST_SSH_KEYS}
     type: secure

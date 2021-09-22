@@ -74,9 +74,6 @@ properties:
   - name: loadbalancer
     value: ${LOADBALANCER}
     type: text
-  - name: instance-group-region
-    value: ${IG_REGION}  
-    type: text
   - name: instance-group-1
     value: ${IG1}
     type: text
