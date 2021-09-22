@@ -375,6 +375,10 @@ spec:
       runAfter: 
         - publish-doi-code-tests
         - publish-doi-code-coverage-tests
+      when:
+        - input: $(params.insights)
+          operator: in
+          values: ["draservicebroker"]        
       taskRef:
         name: doi-evaluate-gate
       params:
@@ -390,8 +394,8 @@ spec:
           value: $(params.pipeline-debug)
     - name: upload-artifacts
       runAfter: 
-        - package-build-artifacts
-        - evaluate-gate-task
+        - build-artifacts-info
+        - unit-tests
       taskRef:
         name: upload-artifacts
       params:
@@ -416,8 +420,8 @@ spec:
           workspace: pipeline-ws
     - name: git-clone-inventory-repo
       runAfter: 
-        - package-build-artifacts
-        - evaluate-gate-task
+        - build-artifacts-info
+        - unit-tests
       taskRef:
         name: git-clone-repo
       params:
