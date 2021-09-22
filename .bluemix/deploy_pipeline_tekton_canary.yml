@@ -62,9 +62,6 @@ properties:
   - name: cos-api-key
     value: ${COS_API_KEY}
     type: SECURE
-  - name: cos-region
-    value: ${COS_REGION}
-    type: text
   - name: target
     value: ${TARGET}
     type: text
@@ -105,10 +102,10 @@ properties:
     value: ${BASTION_HOST_SSH_KEYS}
     type: SECURE    
   - name: pool-user-name
-    value: ${HOST_USER_NAME}
+    value: ${BASTION_HOST_USER_NAME}
     type: text 
   - name: pool-ssh-keys
-    value: ${HOST_SSH_KEYS}
+    value: ${BASTION_HOST_SSH_KEYS}
     type: SECURE
   - name: inventory-repo
     value: ${INVENTORY_REPO}

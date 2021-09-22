@@ -271,9 +271,9 @@ services:
           INSIGHTS: devops-insights
           RESOURCE_GROUP: "{{form.pipeline_rolling.parameters.resource-group}}"
           VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_rolling.parameters.virtual-server-instance}}" 
-          HOST_SSH_KEYS: '{{form.pipeline_rolling.parameters.host-ssh-keys}}'
-          HOST_USER_NAME: '{{form.pipeline_rolling.parameters.host-user-name}}'
-          HOST_USER_PASSWORD: '{{form.pipeline_rolling.parameters.host-user-password}}'   
+          HOST_SSH_KEYS: '{{form.pipeline.parameters.host-ssh-keys}}'
+          HOST_USER_NAME: '{{form.pipeline.parameters.host-user-name}}'
+          HOST_USER_PASSWORD: '{{form.pipeline.parameters.host-user-password}}'   
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           TARGET: "prod"
@@ -322,7 +322,6 @@ services:
             $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/commons/-/raw/main':
             'https://raw.githubusercontent.com/open-toolchain/commons/master'
         execute: false
-
   webide:
     service_id: orion 
   devops-insights:
@@ -374,12 +373,6 @@ form:
         $env.vpcRegion ? '{{vpcRegion}}' : ''
       virtual-server-instance: >
         $env.virtualServerInstance ? '{{virtualServerInstance}}' : ''
-      host-ssh-keys: >
-        $env.hostSshKeys ?
-          '{{hostSshKeys}}' : ''
-      host-user-name: >
-        $env.hostUserName ?
-          '{{hostUserName}}' : ''
       bastion-host-ssh-keys: >
         $env.bastioHostSshKeys ?
           '{{bastioHostSshKeys}}' : ''
@@ -409,12 +402,6 @@ form:
         $env.vpcRegion ? '{{vpcRegion}}' : ''
       virtual-server-instance: >
         $env.virtualServerInstance ? '{{virtualServerInstance}}' : ''
-      host-ssh-keys: >
-        $env.hostSshKeys ?
-          '{{hostSshKeys}}' : ''
-      host-user-name: >
-        $env.hostUserName ?
-          '{{hostUserName}}' : ''
       bastion-host-ssh-keys: >
         $env.bastioHostSshKeys ?
           '{{bastioHostSshKeys}}' : ''
@@ -455,12 +442,6 @@ form:
         $env.vpcRegion ? '{{vpcRegion}}' : ''
       virtual-server-instance: >
         $env.virtualServerInstance ? '{{virtualServerInstance}}' : ''
-      host-ssh-keys: >
-        $env.hostSshKeys ?
-          '{{hostSshKeys}}' : ''
-      host-user-name: >
-        $env.hostUserName ?
-          '{{hostUserName}}' : ''
       bastion-host-ssh-keys: >
         $env.bastioHostSshKeys ?
           '{{bastioHostSshKeys}}' : ''

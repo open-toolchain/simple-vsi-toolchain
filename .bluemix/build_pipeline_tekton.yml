@@ -64,9 +64,6 @@ properties:
   - name: cos-api-key
     value: ${COS_API_KEY}
     type: SECURE
-  - name: cos-region
-    value: ${COS_REGION}
-    type: text
   - name: inventory-repo
     value: ${INVENTORY_REPO}
     type: integration

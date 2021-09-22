@@ -30,7 +30,7 @@
             },
             "type": "string",
             "validator": {
-                "v-type": "vsi-region",
+                "v-type": "vpc-region",
                 "params": [
                     "api-key"
                 ]

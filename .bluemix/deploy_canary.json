@@ -24,6 +24,18 @@
             "v-type": "api-key"
          }
       },
+      "loadbalancer":{
+         "description":{
+            "$ref":"#/messages/deploy.vpcRegionLabel"
+         },
+         "type":"string",
+         "validator":{
+            "v-type":"alb-instances",
+            "params":[
+                "vpcRegion"
+            ]
+         }
+      },      
       "canary-step-size": {
          "description": {
             "$ref": "#/messages/deploy.canaryStepSize"
@@ -44,45 +56,34 @@
          },
          "type": "string",
          "validator": {
-            "v-type": "vsi-region",
+            "v-type": "vpc-region",
             "params": [
                "api-key"
             ]
          }
       },
-      "loadbalancer": {
+      "vpcName": {
          "description": {
-            "$ref": "#/messages/deploy.vpcRegionLabel"
+            "$ref": "#/messages/deploy.vpcNameLabel"
          },
          "type": "string",
          "validator": {
-            "v-type": "alb-instances",
+            "v-type": "vpc-name",
             "params": [
+               "vpcRegion",
                "api-key"
             ]
          }
       },
-      "loadbalancerpool": {
-         "description": {
-            "$ref": "#/messages/deploy.vpcRegionLabel"
+      "loadbalancerpool":{
+         "description":{
+            "$ref":"#/messages/deploy.vpcRegionLabel"
          },
-         "type": "string",
-         "validator": {
-            "v-type": "alb-pools",
-            "params": [
+         "type":"string",
+         "validator":{
+            "v-type":"alb-pools",
+            "params":[
                "loadbalancer"
-            ]
-         }
-      },
-      "instancegroupsRegion": {
-         "description": {
-            "$ref": "#/messages/deploy.vpcRegionLabel"
-         },
-         "type": "string",
-         "validator": {
-            "v-type": "vpc-instance-group-region",
-            "params": [
-               "api-key"
             ]
          }
       },
@@ -94,8 +95,7 @@
          "validator": {
             "v-type": "vpc-instance-group",
             "params": [
-               "api-key",
-               "instancegroupsRegion"
+               "vpcName"
             ]
          }
       },
@@ -107,28 +107,9 @@
          "validator": {
             "v-type": "vpc-instance-group",
             "params": [
-               "api-key",
-               "instancegroupsRegion"
+               "vpcName"
             ]
          }
-      },
-      "host-user-name": {
-         "description": {
-            "$ref": "#/messages/deploy.poolUsernameVirtualServer"
-         },
-         "title": {
-            "$ref": "#/messages/deploy.poolUsernameVirtualServer"
-         },
-         "type": "string"
-      },
-      "host-ssh-keys": {
-         "description": {
-            "$ref": "#/messages/deploy.poolSshVirtualServer"
-         },
-         "title": {
-            "$ref": "#/messages/deploy.poolSshVirtualServer"
-         },
-         "type": "password"
       },
       "bastion-host-user-name": {
          "description": {
@@ -162,7 +143,7 @@
          "validator": {
             "v-type": "vsi-instances",
             "params": [
-               "vpcRegion"
+               "vpcName"
             ]
          },
          "type": "string",
@@ -176,11 +157,10 @@
       "virtual-server-instance",
       "bastion-host-ssh-keys",
       "bastion-host-user-name",
-      "host-ssh-keys",
-      "host-user-name",
-      "instancegroupsRegion",
       "loadbalancer",
       "loadbalancerpool",
+      "instancegroup1",
+      "instancegroup2",
       "canary-step-interval",
       "canary-step-size"
    ],
@@ -208,25 +188,25 @@
       {
          "type": "info",
          "text": {
-            "$ref": "#/messages/deploy.bastionHost"
+            "$ref": "#/messages/deploy.vpc"
          }
       },
       {
          "type": "table",
          "columnCount": 3,
          "widths": [
-            "47%",
+            "37%",
             "3%",
-            "50%"
+            "60%"
          ],
          "items": [
             {
                "type": "label",
                "description": {
-                  "$ref": "#/messages/deploy.vpcRegionTitle"
+                  "$ref": "#/messages/deploy.vsiRegionTitle"
                },
                "title": {
-                  "$ref": "#/messages/deploy.vpcRegionTitle"
+                  "$ref": "#/messages/deploy.vsiRegionTitle"
                }
             },
             {
@@ -236,19 +216,19 @@
             {
                "type": "label",
                "description": {
-                  "$ref": "#/messages/deploy.bastion"
+                  "$ref": "#/messages/deploy.vsiNameTitle"
                },
                "title": {
-                  "$ref": "#/messages/deploy.bastion"
+                  "$ref": "#/messages/deploy.vsiNameTitle"
                }
             },
             {
-               "type": "select",
+               "type": "text",
                "title": {
-                  "$ref": "#/messages/deploy.vpcRegionTitle"
+                  "$ref": "#/messages/deploy.vsiRegionTitle"
                },
                "placeholder": {
-                  "$ref": "#/messages/deploy.regionPlaceHolder"
+                  "$ref": "#/messages/deploy.vsiRegionPlaceHolder"
                },
                "key": "vpcRegion"
             },
@@ -257,14 +237,14 @@
                "title": ""
             },
             {
-               "type": "select",
+               "type": "text",
                "title": {
-                  "$ref": "#/messages/deploy.bastion"
+                  "$ref": "#/messages/deploy.deploy.vsiNameTitle"
                },
                "placeholder": {
-                  "$ref": "#/messages/deploy.vsiPlaceHolder"
+                  "$ref": "#/messages/deploy.vsiNamePlaceHolder"
                },
-               "key": "virtual-server-instance"
+               "key": "vpcName"
             }
          ]
       },
@@ -272,9 +252,9 @@
          "type": "table",
          "columnCount": 3,
          "widths": [
-            "47%",
+            "37%",
             "3%",
-            "50%"
+            "60%"
          ],
          "items": [
             {
@@ -318,15 +298,31 @@
                "description": {
                   "$ref": "#/messages/deploy.bastionSshVirtualServer"
                },
-               "placeholder": {
-                  "$ref": "#/messages/deploy.bastionSshVirtualServerPlaceHolder"
-               },
                "title": {
                   "$ref": "#/messages/deploy.bastionSshVirtualServer"
+               },
+               "placeholder": {
+                  "$ref": "#/messages/deploy.bastionSshVirtualServerPlaceHolder"
                },
                "key": "bastion-host-ssh-keys"
             }
          ]
+      },
+      {
+         "type": "info",
+         "text": {
+            "$ref": "#/messages/deploy.bastionHost"
+         }
+      },
+      {
+         "type": "select",
+         "title": {
+            "$ref": "#/messages/deploy.bastion"
+         },
+         "placeholder": {
+            "$ref": "#/messages/deploy.vsiPlaceHolder"
+         },
+         "key": "virtual-server-instance"
       },
       {
          "type": "info",
@@ -394,63 +390,6 @@
          ]
       },
       {
-         "type": "table",
-         "columnCount": 3,
-         "widths": [
-            "47%",
-            "3%",
-            "50%"
-         ],
-         "items": [
-            {
-               "type": "label",
-               "description": {
-                  "$ref": "#/messages/deploy.poolUsernameVirtualServerr"
-               },
-               "title": {
-                  "$ref": "#/messages/deploy.poolUsernameVirtualServer"
-               }
-            },
-            {
-               "type": "label",
-               "title": ""
-            },
-            {
-               "type": "label",
-               "description": {
-                  "$ref": "#/messages/deploy.poolSshVirtualServer"
-               },
-               "title": {
-                  "$ref": "#/messages/deploy.poolSshVirtualServer"
-               }
-            },
-            {
-               "type": "text",
-               "title": {
-                  "$ref": "#/messages/deploy.poolUsernameVirtualServer"
-               },
-               "placeholder": {
-                  "$ref": "#/messages/deploy.bastionUsernamePlaceHolder"
-               },
-               "key": "host-user-name"
-            },
-            {
-               "type": "label",
-               "title": ""
-            },
-            {
-               "type": "password",
-               "description": {
-                  "$ref": "#/messages/deploy.poolSshVirtualServer"
-               },
-               "title": {
-                  "$ref": "#/messages/deploy.poolSshVirtualServer"
-               },
-               "key": "host-ssh-keys"
-            }
-         ]
-      },
-      {
          "type": "info",
          "text": {
             "$ref": "#/messages/deploy.instanceGroups"
@@ -458,28 +397,13 @@
       },
       {
          "type": "table",
-         "columnCount": 5,
+         "columnCount": 3,
          "widths": [
-            "30%",
-            "3%",
-            "30%",
-            "3%",
-            "31%"
+            "48%",
+            "4%",
+            "48%"
          ],
          "items": [
-            {
-               "type": "label",
-               "description": {
-                  "$ref": "#/messages/deploy.instanceGroupRegion"
-               },
-               "title": {
-                  "$ref": "#/messages/deploy.instanceGroupRegion.title"
-               }
-            },
-            {
-               "type": "label",
-               "title": ""
-            },
             {
                "type": "label",
                "description": {
@@ -501,20 +425,6 @@
                "title": {
                   "$ref": "#/messages/deploy.instanceGroup2.title"
                }
-            },
-            {
-               "type": "select",
-               "title": {
-                  "$ref": "#/messages/deploy.instanceGroupRegion.title"
-               },
-               "placeholder": {
-                  "$ref": "#/messages/deploy.instanceGroupRegionPlaceHolder"
-               },
-               "key": "instancegroupsRegion"
-            },
-            {
-               "type": "label",
-               "title": ""
             },
             {
                "type": "select",

@@ -67,7 +67,10 @@ spec:
           # The downloaded artifacts will be stored in /output directory which can then be utilized by downstream
           # task to carry out deployment steps on the target Virtual Server instance.
           cd /output 
-          REGION=$(echo ${COSREGION##*:})
+          REGION=$(ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
+          if [ -z ${REGION} ]; then 
+            REGION=${COSREGION##*:}
+          fi
           if [ -z ${COSAPIKEY} ]; then echo "COSAPIKEY is not set"; COSAPIKEY=$APIKEY; fi;
           ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
           ibmcloud plugin install cloud-object-storage;
