@@ -83,7 +83,8 @@
          "validator":{
             "v-type":"alb-pools",
             "params":[
-               "loadbalancer"
+               "loadbalancer",
+               "api-key"
             ]
          }
       },
