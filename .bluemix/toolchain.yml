@@ -8,7 +8,7 @@ template:
   description:
     $ref: "#/messages/template.description"
   header: "![](images/toolchain.svg?localize)"
-  icon: ./images/vsi.svg
+  icon: ./images/vpc.svg
   required:
     - deploy
     - build
