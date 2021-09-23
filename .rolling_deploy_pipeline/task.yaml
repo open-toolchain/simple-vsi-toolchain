@@ -225,7 +225,7 @@ spec:
         fi
 
         cd /output
-        WORKDIR=/home/${HOST_USER_NAME}/app
+        WORKDIR=/home/${BASTION_HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
         source <(curl -sSL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/rolling/vsi/setup-remote-rolling.sh")
