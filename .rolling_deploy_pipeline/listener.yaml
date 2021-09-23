@@ -166,7 +166,7 @@ spec:
           - name: pool-user-name   
             value: $(params.pool-user-name)
           - name: commons-hosted-region
-            value: $COMMON_HOSTED_REGION                                                                                           
+            value: $(params.commons-hosted-region)                                                                                           
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

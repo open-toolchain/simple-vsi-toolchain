@@ -178,7 +178,7 @@ spec:
           - name: canary-step-interval
             value: $(params.canary-step-interval)
           - name: commons-hosted-region
-            value: $COMMON_HOSTED_REGION                                                                                          
+            value: $(params.commons-hosted-region)                                                                                           
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
@@ -268,7 +268,7 @@ spec:
           - name: canary-step-interval
             value: $(params.canary-step-interval)
           - name: commons-hosted-region
-            value: $COMMON_HOSTED_REGION                                                                                                                      
+            value: $(params.commons-hosted-region)                                                                                                                       
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

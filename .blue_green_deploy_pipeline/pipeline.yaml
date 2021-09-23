@@ -185,7 +185,7 @@ spec:
         - name: pool-user-name   
           value: $(params.pool-user-name)
         - name: commons-hosted-region
-          value: $COMMON_HOSTED_REGION                               
+          value: $(params.commons-hosted-region)                                
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -247,7 +247,7 @@ spec:
         - name: deployment-strategy
           value: $(params.deployment-strategy)
         - name: commons-hosted-region
-          value: $COMMON_HOSTED_REGION                                                  
+          value: $(params.commons-hosted-region)                                                   
       workspaces:
         - name: output
           workspace: pipeline-ws                    
@@ -329,7 +329,7 @@ spec:
         - name: deployment-strategy
           value: $(params.deployment-strategy)
         - name: commons-hosted-region
-          value: $COMMON_HOSTED_REGION                                                   
+          value: $(params.commons-hosted-region)                                                    
       workspaces:
         - name: output
           workspace: pipeline-ws
