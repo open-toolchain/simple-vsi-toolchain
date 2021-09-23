@@ -9,8 +9,9 @@ spec:
       default: "https://cloud.ibm.com"
     - name: apikey
       description: The IBM Cloud API Key
-    - name: cos-region
-      description: The Region where Cloud Object Storage Instance is created
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
     - name: artifactory
       description: The variable storing artifactory integration with the toolchain
     - name: cos-api-key
@@ -41,12 +42,12 @@ spec:
           value: $(params.artifactory)
         - name: COSBUCKETNAME
           value: $(params.cos-bucket-name)
-        - name: COSREGION
-          value: $(params.cos-region)
         - name: COSAPIKEY
           value: $(params.cos-api-key)
         - name: FILE
-          value: inventory.json  
+          value: inventory.json
+        - name: REGION
+          value: $(params.region)            
       script: |
           #!/bin/bash
 
@@ -66,29 +67,27 @@ spec:
           # Code here downloads the artifact after processing the information present in the inventory.json.
           # The downloaded artifacts will be stored in /output directory which can then be utilized by downstream
           # task to carry out deployment steps on the target Virtual Server instance.
-          cd /output 
-          REGION=$(ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
-          if [ -z ${REGION} ]; then 
-            REGION=${COSREGION##*:}
-          fi
+          cd /output
           if [ -z ${COSAPIKEY} ]; then echo "COSAPIKEY is not set"; COSAPIKEY=$APIKEY; fi;
-          ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
-          ibmcloud plugin install cloud-object-storage;
-
           #
           # Function to download the binary artifact from IBM Cloud Object Store
           # 
           DownloadFromCOS() {
             echo "Check if the Bucket with name $COSBUCKETNAME exists"
-            if [ "$(ibmcloud cos bucket-head --bucket "$COSBUCKETNAME" --region $REGION | awk {'print $1'} |head -n 1)" == "OK" ]; then
-                echo "Started downloading of artifacts from IBM Cloud Object Storage"
-                ibmcloud cos object-get --bucket "$COSBUCKETNAME" --key ${OBJECTNAME} ${OBJECTNAME}
-                echo "Finished downloading of artifacts from IBM Cloud Object Storage"
+            ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
+            ibmcloud plugin install cloud-object-storage;           
+            if ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME 2>/dev/null ; then
+              REGION=$(ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
+              ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
+              echo "Started downloading of artifacts from IBM Cloud Object Storage"
+              ibmcloud cos object-get --bucket "$COSBUCKETNAME" --key ${OBJECTNAME} ${OBJECTNAME}
+              echo "Finished downloading of artifacts from IBM Cloud Object Storage"
             else
-                echo "Invalid cos-bucket-name for retreving artifacts"
-                exit 1;
+              echo "Invalid cos-bucket-name for retreving artifacts"
+              exit 1;
             fi
           }
+
 
           #
           # Function to download the binary artifact from Artifactory
@@ -139,8 +138,6 @@ spec:
       description: The variable storing artifactory integration with the toolchain
     - name: appname
       description: The name of the application passed as environment variable
-    - name: cos-region
-      description: The Region where Cloud Object Storage Instance is created
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored.
     - name: inventory-repo
@@ -188,8 +185,6 @@ spec:
           value: $(params.appname)
         - name: COSBUCKETNAME
           value: $(params.cos-bucket-name)
-        - name: COSREGION
-          value: $(params.cos-region)
         - name: INVENTORY_REPO
           value: $(params.inventory-repo)
         - name: OBJECTNAME
@@ -214,8 +209,8 @@ spec:
           value: $(params.pool-ssh-keys)         
         - name: POOL_USER_NAME
           value: $(params.pool-user-name)
-        - name: commons-hosted-region
-          value: $(params.commons-hosted-region)                     
+        - name: COMMON_HOSTED_REGION
+          value: $(params.commons-hosted-region)                
       script: |
         #!/bin/bash
         # This step logs into the Virtual Server Instance based on the credentials provided during the Toolchain creation.
@@ -233,8 +228,7 @@ spec:
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
-        REGION=$(echo ${REGION::-2});
-        source <(curl -sSL "$(params.commons-hosted-region)/scripts/deployment_strategies/rolling/vsi/setup-remote-rolling.sh")
+        source <(curl -sSL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/rolling/vsi/setup-remote-rolling.sh")
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task

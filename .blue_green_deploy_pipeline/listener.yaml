@@ -45,8 +45,6 @@ spec:
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-repo
       description: The variable storing git integration for the repository storing build pipeline code for the toolchain        
-    - name: cos-region
-      description: The Region where Cloud Object Storage Instance is created
     - name: cos-api-key
       description: The API Key to interact with the Cloud Object Storage Instance
     - name: target
@@ -136,8 +134,6 @@ spec:
             value: $(params.region)
           - name: cos-bucket-name
             value: $(params.cos-bucket-name)
-          - name: cos-region
-            value: $(params.cos-region)
           - name: cos-api-key
             value: $(params.cos-api-key)
           - name: inventory-repo
@@ -173,7 +169,7 @@ spec:
           - name: pool-user-name   
             value: $(params.pool-user-name)
           - name: commons-hosted-region
-            value: $(params.commons-hosted-region)                                                                                           
+            value: $COMMON_HOSTED_REGION                                                                                           
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
@@ -255,7 +251,7 @@ spec:
           - name: scripts-subpath
             value: $(params.scripts-subpath)
           - name: commons-hosted-region
-            value: $(params.commons-hosted-region)                                                                                                                       
+            value: $COMMON_HOSTED_REGION                                                                                                                       
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

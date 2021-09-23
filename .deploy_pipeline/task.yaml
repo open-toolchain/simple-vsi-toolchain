@@ -9,8 +9,9 @@ spec:
       default: "https://cloud.ibm.com"
     - name: apikey
       description: The IBM Cloud API Key
-    - name: cos-region
-      description: The Region where Cloud Object Storage Instance is created
+    - name: region
+      description: The IBM Cloud Region in which Virtual Server Instance is running
+      default: region
     - name: artifactory
       description: The variable storing artifactory integration with the toolchain
     - name: cos-api-key
@@ -41,14 +42,15 @@ spec:
           value: $(params.artifactory)
         - name: COSBUCKETNAME
           value: $(params.cos-bucket-name)
-        - name: COSREGION
-          value: $(params.cos-region)
         - name: COSAPIKEY
           value: $(params.cos-api-key)
         - name: FILE
-          value: inventory.json  
+          value: inventory.json
+        - name: REGION
+          value: $(params.region)            
       script: |
           #!/bin/bash
+
           # Code here fetches the artifact metadata as present in the inventory.json.
           # The task assumes the file /output/inventory-repo/inventory.json is already present as a result of the cloning of the 
           # by the upstream git-clone-inventory-repo task. The JSON file contains the metadata like the name of the name of the artifact (artifact)
@@ -61,31 +63,32 @@ spec:
             echo -n "${BUILD}" > $(results.build_number.path)
             echo -n "${OBJECTNAME}" > $(results.objectname.path)
           fi
+
           # Code here downloads the artifact after processing the information present in the inventory.json.
           # The downloaded artifacts will be stored in /output directory which can then be utilized by downstream
           # task to carry out deployment steps on the target Virtual Server instance.
           cd /output
-          ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
-          ibmcloud plugin install cloud-object-storage;           
-          REGION=$(ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
-          if [ -z ${REGION} ]; then 
-            REGION=${COSREGION##*:}
-          fi
           if [ -z ${COSAPIKEY} ]; then echo "COSAPIKEY is not set"; COSAPIKEY=$APIKEY; fi;
           #
           # Function to download the binary artifact from IBM Cloud Object Store
           # 
           DownloadFromCOS() {
             echo "Check if the Bucket with name $COSBUCKETNAME exists"
-            if [ "$(ibmcloud cos bucket-head --bucket "$COSBUCKETNAME" --region $REGION | awk {'print $1'} |head -n 1)" == "OK" ]; then
-                echo "Started downloading of artifacts from IBM Cloud Object Storage"
-                ibmcloud cos object-get --bucket "$COSBUCKETNAME" --key ${OBJECTNAME} ${OBJECTNAME}
-                echo "Finished downloading of artifacts from IBM Cloud Object Storage"
+            ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
+            ibmcloud plugin install cloud-object-storage;           
+            if ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME 2>/dev/null ; then
+              REGION=$(ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
+              ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
+              echo "Started downloading of artifacts from IBM Cloud Object Storage"
+              ibmcloud cos object-get --bucket "$COSBUCKETNAME" --key ${OBJECTNAME} ${OBJECTNAME}
+              echo "Finished downloading of artifacts from IBM Cloud Object Storage"
             else
-                echo "Invalid cos-bucket-name for retreving artifacts"
-                exit 1;
+              echo "Invalid cos-bucket-name for retreving artifacts"
+              exit 1;
             fi
           }
+
+
           #
           # Function to download the binary artifact from Artifactory
           # 
@@ -97,6 +100,7 @@ spec:
             curl -u $USERID:$TOKEN "$REPO/$OBJECTNAME" --output $OBJECTNAME
             echo "Finished downloading of artifacts from Artifactory"
           }
+
           #
           # Driver Function to download the binary artifact
           # The function:
@@ -140,10 +144,6 @@ spec:
       description: The private SSH Key required to login to the Virtual Server Instance
     - name: hostusername
       description: The username required to login to the Virtual Server Instance
-    - name: hostpassword
-      description: The password required to login to the Virtual Server Instance
-    - name: cos-region
-      description: The Region where Cloud Object Storage Instance is created
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored.
     - name: inventory-repo
@@ -179,16 +179,8 @@ spec:
           value: $(params.hostsshkeys)
         - name: HOST_USER_NAME
           value: $(params.hostusername)
-        - name: HOST_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: secure-properties
-              key: host-password
-              optional: true
         - name: COSBUCKETNAME
           value: $(params.cos-bucket-name)
-        - name: COSREGION
-          value: $(params.cos-region)
         - name: INVENTORY_REPO
           value: $(params.inventory-repo)
         - name: OBJECTNAME
@@ -197,7 +189,7 @@ spec:
           value: $(params.scripts-subpath)
         - name: FILE
           value: inventory.json
-        - name: commons-hosted-region
+        - name: COMMON_HOSTED_REGION
           value: $(params.commons-hosted-region)          
       script: |
         #!/bin/bash
@@ -215,7 +207,7 @@ spec:
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
-        source <(curl -ssL "$(params.commons-hosted-region)/scripts/deployment_strategies/basic/vsi/setup-remote-deploy.sh")
+        source <(curl -ssL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/basic/vsi/setup-remote-deploy.sh")
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -295,8 +287,6 @@ spec:
       description: The private SSH Key required to login to the Virtual Server Instance
     - name: hostusername
       description: The username required to login to the Virtual Server Instance
-    - name: hostpassword
-      description: The password required to login to the Virtual Server Instance
     - name: deployStatus
       description: The deployment status whether Failed|Passed
     - name: healthCheckStatus
@@ -324,12 +314,6 @@ spec:
           value: $(params.hostsshkeys)
         - name: HOST_USER_NAME
           value: $(params.hostusername)
-        - name: HOST_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: secure-properties
-              key: host-password
-              optional: true
         - name: DEPLOY_STATUS
           value: $(params.deployStatus)
         - name: HEALTH_CHECK_STATUS
@@ -338,7 +322,7 @@ spec:
           value: $(params.acceptanceCheckStatus)
         - name: scripts-subpath
           value: $(params.scripts-subpath)
-        - name: commons-hosted-region
+        - name: COMMON_HOSTED_REGION
           value: $(params.commons-hosted-region)           
       script: |
         #!/bin/bash
@@ -347,9 +331,9 @@ spec:
         echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
         subpath="$(params.scripts-subpath)"
         if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
-          source <(curl -ssL "$(params.commons-hosted-region)/scripts/deployment_strategies/basic/vsi/rollback-deploy.sh")
+          source <(curl -ssL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/basic/vsi/rollback-deploy.sh")
         else
-          source <(curl -ssL "$(params.commons-hosted-region)/scripts/deployment_strategies/basic/vsi/perform-cleanup.sh")
+          source <(curl -ssL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/basic/vsi/perform-cleanup.sh")
           echo "All Checks Passed. Roll Back Not required."
         fi
 ---

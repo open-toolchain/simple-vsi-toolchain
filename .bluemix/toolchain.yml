@@ -219,7 +219,6 @@ services:
           VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_rolling.parameters.virtual-server-instance}}"
           ARTIFACTORY: artifactory
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
-          COS_REGION: $env.env_id
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           PIPELINE_REPO: pipeline-repo
           INVENTORY_REPO: inventory-repo
@@ -272,8 +271,7 @@ services:
           RESOURCE_GROUP: "{{form.pipeline_rolling.parameters.resource-group}}"
           VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_rolling.parameters.virtual-server-instance}}" 
           HOST_SSH_KEYS: '{{form.pipeline.parameters.host-ssh-keys}}'
-          HOST_USER_NAME: '{{form.pipeline.parameters.host-user-name}}'
-          HOST_USER_PASSWORD: '{{form.pipeline.parameters.host-user-password}}'   
+          HOST_USER_NAME: '{{form.pipeline.parameters.host-user-name}}'   
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           TARGET: "prod"
@@ -313,7 +311,6 @@ services:
           BLUE_POOL: "{{form.pipeline_blue_green.parameters.loadbalancerpoolsblue}}"
           CANARY_POOL: "{{form.pipeline_canary.parameters.loadbalancerpool}}"
           ROLLING_POOL: "{{form.pipeline_rolling.parameters.loadbalancerpool}}"
-          IG_REGION: "{{form.pipeline_canary.parameters.instancegroupsRegion}}"
           IG1: "{{form.pipeline_canary.parameters.instancegroup1}}"
           IG2: "{{form.pipeline_canary.parameters.instancegroup2}}"
           STEP_SIZE: "{{form.pipeline_canary.parameters.canary-step-size}}"
@@ -355,10 +352,7 @@ form:
           '{{hostSshKeys}}' : ''
       host-user-name: >
         $env.hostUserName ?
-          '{{hostUserName}}' : '' 
-      host-user-password: >
-        $env.hostUserPassword ?
-          '{{hostUserPassword}}' : '' 
+          '{{hostUserName}}' : ''
     schema:
       $ref: deploy.json
 
@@ -413,10 +407,7 @@ form:
           '{{loadBalancerName}}' : '' 
       loadbalancerpool: >
         $env.poolName ?
-          '{{poolName}}' : ''   
-      instancegroupsRegion: > 
-        $env.instancegroupsRegion ?
-          '{{instancegroupsRegion}}' : '' 
+          '{{poolName}}' : ''
       instancegroup1: > 
         $env.instancegroup1 ?
           '{{instancegroup1}}' : '' 

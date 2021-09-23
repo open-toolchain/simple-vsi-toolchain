@@ -39,8 +39,6 @@ spec:
       description: The private SSH Key required to login to the Virtual Server Instance
     - name: host-user-name
       description: The username required to login to the Virtual Server Instance
-    - name: host-password
-      description: The password required to login to the Virtual Server Instance
     - name: project-id
       default: ""
     - name: cos-bucket-name
@@ -49,8 +47,7 @@ spec:
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-repo
       description: The variable storing git integration for the repository storing build application code for the toolchain      
-    - name: cos-region
-      description: The Region where Cloud Object Storage Instance is created
+
     - name: cos-api-key
       description: The API Key to interact with the Cloud Object Storage Instance
     - name: insights
@@ -407,8 +404,6 @@ spec:
           value: $(params.apikey)
         - name: cos-bucket-name
           value: $(params.cos-bucket-name)
-        - name: cos-region
-          value: $(params.cos-region)
         - name: artifactory
           value: $(params.artifactory)
         - name: objectname
