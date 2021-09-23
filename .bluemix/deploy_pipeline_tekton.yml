@@ -96,4 +96,7 @@ properties:
     value: 'scripts'  
   - name: deployment-strategy
     value: ${DEPLOYMENT_STRATEGY}
-    type: text    
+    type: text
+  - name: commons-hosted-region
+    value: ${COMMONS_HOSTED_REGION}
+    type: text        
