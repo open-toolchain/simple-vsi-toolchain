@@ -229,7 +229,7 @@ spec:
         fi
 
         cd /output
-        WORKDIR=/home/${HOST_USER_NAME}/app
+        WORKDIR=/home/${BASTION_HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
         source <(curl -sSL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/blue_green/vsi/setup-remote-deploy-blue-green.sh")
@@ -367,6 +367,10 @@ spec:
           value: $(params.commons-hosted-region)
       script: |
         #!/bin/bash
+        cd /output
+        WORKDIR=/home/${BASTION_HOST_USER_NAME}/app
+        BACKUPDIR=${WORKDIR}_backup
+        subpath="$(params.scripts-subpath)"
         source <(curl -sSL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/blue_green/vsi/switch-blue-green.sh")
 ---
 apiVersion: tekton.dev/v1beta1

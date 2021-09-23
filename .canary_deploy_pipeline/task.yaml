@@ -234,9 +234,8 @@ spec:
         if [[ -f "$FILE" ]]; then
           PIPELINERUNID=$(cat $FILE |jq -r '.pipeline_run_id')
         fi
-
         cd /output
-        WORKDIR=/home/${HOST_USER_NAME}/app
+        WORKDIR=/home/${BASTION_HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
         source <(curl -sSL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/canary/vsi/setup-remote-deploy-canary.sh")
@@ -304,7 +303,11 @@ spec:
           value: $(params.commons-hosted-region)                                                              
       script: |
         #!/bin/bash
-        exit 0
+        cd /output
+        WORKDIR=/home/${BASTION_HOST_USER_NAME}/app
+        BACKUPDIR=${WORKDIR}_backup
+        subpath="$(params.scripts-subpath)"
+        source <(curl -sSL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/canary/vsi/canary-test.sh")
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -435,4 +438,8 @@ spec:
           value: $(params.commons-hosted-region)                                                               
       script: |
         #!/bin/bash
-        exit 0
+        cd /output
+        WORKDIR=/home/${BASTION_HOST_USER_NAME}/app
+        BACKUPDIR=${WORKDIR}_backup
+        subpath="$(params.scripts-subpath)"
+        source <(curl -sSL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/canary/vsi/abort-canary.sh")
