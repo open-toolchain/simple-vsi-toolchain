@@ -473,8 +473,8 @@ vault_conditions:
         service_label: hc-vault
         parameters:
           name: 'hc-compliance-secrets'
-          server_url: 'https://vserv.sos.ibm.com:8200'
-          dashboard_url: 'https://vserv.sos.ibm.com:8200/ui'
+          server_url: ''
+          dashboard_url: ''
           authentication_method: 'approle'
   - condition:
       any:
