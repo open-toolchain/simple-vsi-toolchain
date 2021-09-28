@@ -315,7 +315,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: prod-release
+  name: release
 spec:
   params:
     - name: region
@@ -343,7 +343,7 @@ spec:
       description: A workspace
       mountPath: /output
   steps:
-    - name: prod-release
+    - name: release
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
       env:

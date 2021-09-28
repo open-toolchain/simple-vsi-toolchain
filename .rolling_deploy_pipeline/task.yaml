@@ -155,7 +155,7 @@ spec:
     - name: lb-pool
       description: Load Balancer Pool for the Deployemnt
     - name: deployment-strategy
-      description: Green Pool for Blue Green Deployemnt
+      description: Deployemnt Strategy
     - name: loadbalancer
       description: Load Balancer Name
     - name: pool-ssh-keys

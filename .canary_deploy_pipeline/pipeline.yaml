@@ -60,9 +60,9 @@ spec:
     - name: bastion-host-ssh-keys
       description: Bastion host 
     - name: lb-pool
-      description: Blue Pool for Blue Green Deployemnt
+      description: Load Balancer Pool
     - name: deployment-strategy
-      description: Green Pool for Blue Green Deployemnt
+      description: Deployemnt Strategy
     - name: loadbalancer
       description: Load Balancer Name
     - name: pool-ssh-keys
@@ -198,9 +198,9 @@ spec:
         - name: output
           workspace: pipeline-ws
 
-    - name: canary-release
+    - name: release
       taskRef:
-        name: canary-release
+        name: release
       runAfter: [ deploy ]     
       params:
         - name: region
@@ -233,7 +233,7 @@ spec:
     - name: publish-doi-deployrecord
       taskRef:
         name: publish-doi-deployrecord
-      runAfter: [canary-release]
+      runAfter: [release]
       when:
         - input: $(params.insights)
           operator: in
@@ -258,7 +258,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: canary-switch-pipeline
+  name: abort-canary-pipeline
 spec:
   params:
     - name: region
@@ -275,9 +275,9 @@ spec:
     - name: pipeline-debug
       default: "0"
     - name: lb-pool
-      description: Blue Pool for Blue Green Deployemnt
+      description: Load Balancer Pool
     - name: deployment-strategy
-      description: Green Pool for Blue Green Deployemnt
+      description: Deployemnt Strategy
     - name: loadbalancer
       description: Load Balancer Name
     - name: instance-group-1

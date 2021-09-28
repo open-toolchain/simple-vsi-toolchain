@@ -212,38 +212,6 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: health-check-task
-spec:
-  params:
-    - name: virtualserverinstance
-      description: The IP Address of the Virtual Server Instance
-    - name: inventory-repo
-      description: The variable storing git integration for the repository storing build inventory with the toolchain
-    - name: scripts-subpath
-      description: The subpath to the scripts 
-  workspaces:
-    - name: output
-      description: A workspace
-      mountPath: /output
-  steps:
-    - name: check-application-health
-      image: ibmcom/pipeline-base-image:2.11
-      workingDir: /output
-      env:
-        - name: VIRTUAL_SERVER_INSTANCE
-          value: $(params.virtualserverinstance)
-        - name: INVENTORY_REPO
-          value: $(params.inventory-repo)
-        - name: scripts-subpath
-          value: $(params.scripts-subpath)            
-      script: |
-        #!/bin/bash
-        subpath="$(params.scripts-subpath)"
-        source ./scripts-repo/${subpath}/health-check.sh
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
   name: acceptance-test
 spec:
   params:

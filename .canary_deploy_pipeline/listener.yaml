@@ -187,7 +187,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: canary-switch-trigger-template
+  name: abort-canary-trigger-template
 spec:
   params:
     - name: apikey
@@ -208,9 +208,9 @@ spec:
     - name: pipeline-debug
       default: "0"
     - name: lb-pool
-      description: Blue Pool for Blue Green Deployemnt
+      description: Load Balancer pool
     - name: deployment-strategy
-      description: Green Pool for Blue Green Deployemnt
+      description: Deployemnt Strategy
     - name: loadbalancer
       description: Load Balancer Name 
     - name: instance-group-1
@@ -237,7 +237,7 @@ spec:
         name: simple-vsi-app-$(uid)
       spec:
         pipelineRef:
-          name: canary-switch-pipeline
+          name: abort-canary-pipeline
         params:
           - name: api
             value: $(params.api)
@@ -284,7 +284,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: canary-switch-trigger-binding-manual
+  name: abort-canary-trigger-binding-manual
 spec:
   params:
 ---
@@ -306,9 +306,9 @@ metadata:
 spec:
   triggers:
     - binding:
-        name: canary-switch-trigger-binding-manual
+        name: abort-canary-trigger-binding-manual
       template:
-        name: canary-switch-trigger-template
+        name: abort-canary-trigger-template
 ---        
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding

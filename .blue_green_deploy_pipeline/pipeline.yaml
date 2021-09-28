@@ -225,9 +225,9 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: prod-release
+    - name: release
       taskRef:
-        name: prod-release
+        name: release
       runAfter: [ acceptance-test ]     
       params:
         - name: region
@@ -310,7 +310,7 @@ spec:
   tasks:
     - name: blue-green-switch
       taskRef:
-        name: prod-release     
+        name: release     
       params:
         - name: region
           value: $(params.region)

@@ -152,9 +152,9 @@ spec:
     - name: bastion-host-ssh-keys
       description: Bastion host 
     - name: lb-pool
-      description: Blue Pool for Blue Green Deployemnt
+      description: Load Balancer Pool
     - name: deployment-strategy
-      description: Green Pool for Blue Green Deployemnt
+      description: Deployemnt Strategy
     - name: loadbalancer
       description: Load Balancer Name
     - name: pool-ssh-keys
@@ -243,7 +243,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: canary-release
+  name: release
 spec:
   params:
     - name: region
@@ -273,7 +273,7 @@ spec:
       description: A workspace
       mountPath: /output  
   steps:
-    - name: canary-release
+    - name: release
       image: ibmcom/pipeline-base-image:2.11
       workingDir: /output
       env:

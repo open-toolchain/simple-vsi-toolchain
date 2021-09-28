@@ -165,24 +165,10 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: health-check
-      taskRef:
-        name: health-check-task
-      runAfter: [ deploy ]
-      params:
-        - name: virtualserverinstance
-          value: $(params.virtual-server-instance)
-        - name: inventory-repo
-          value: $(params.inventory-repo)
-        - name: scripts-subpath
-          value: $(params.scripts-subpath)             
-      workspaces:
-        - name: output
-          workspace: pipeline-ws
     - name: acceptance-test
       taskRef:
         name: acceptance-test
-      runAfter: [ health-check ]
+      runAfter: [ deploy ]
       params:
         - name: virtualserverinstance
           value: $(params.virtual-server-instance)
