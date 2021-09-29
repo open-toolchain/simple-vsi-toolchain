@@ -291,16 +291,22 @@ spec:
         - name: scripts-subpath
           value: $(params.scripts-subpath)
         - name: COMMON_HOSTED_REGION
-          value: $(params.commons-hosted-region)           
+          value: $(params.commons-hosted-region)
+        - name: FILE
+          value: inventory.json                     
       script: |
         #!/bin/bash
         echo "DEPLOY_STATUS=$DEPLOY_STATUS"
         echo "HEALTH_CHECK_STATUS=$HEALTH_CHECK_STATUS"
         echo "ACCEPTANCE_TEST_STATUS=$ACCEPTANCE_TEST_STATUS"
-        cd /output
         WORKDIR=/home/${HOST_USER_NAME}/app
         BACKUPDIR=${WORKDIR}_backup
         subpath="$(params.scripts-subpath)"
+        cd /output/inventory-repo;          
+        if [[ -f "$FILE" ]]; then
+          PIPELINERUNID=$(cat $FILE |jq -r '.pipeline_run_id')
+        fi
+        cd /output
         if [ $DEPLOY_STATUS == "Failed" ] || [ $HEALTH_CHECK_STATUS == "Failed"  ] || [ $ACCEPTANCE_TEST_STATUS == "Failed"  ]; then
           source <(curl -ssL "$COMMON_HOSTED_REGION/scripts/deployment_strategies/basic/vsi/rollback-deploy.sh")
         else
