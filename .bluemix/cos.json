@@ -24,10 +24,7 @@
         "title": {
           "$ref": "#/messages/cos.apiKeyTitle"
         },
-        "type": "password",
-        "validator": {
-          "v-type": "service-id-api-key"
-        }
+        "type": "password"
       }
     },
     "required": ["cos-bucket-name", "cos-api-key"],
