@@ -131,8 +131,13 @@ wizard.deploymentStrategy.longDescription: "The toolchain creates continuous dep
 wizard.deploymentStrategy.text: "Select an appropriate deployment strategy for your application"
 wizard.deploymentStrategy.warning.title: "VPC Infrastructure"
 wizard.deploymentStrategy.warning.subtitle: "For the Basic deployment strategy, you can use any VPC instance. For more information, see this [link](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies#setup-deployment-target-for-basic). For the other deployment strategies, follow the corresponding links to set up the required instances by using IBM Cloud Schematics."
-wizard.deploymentStrategy.rolling.title: "**Rolling**\n\nDeploy a new release with no downtime by incrementally updating all the instances in a sequential manner.\n\n[Create VPC Infrastructure](https://cloud.ibm.com/schematics/workspaces/create?repository=https://{{template.info.hosted_region}}/open-toolchain/vpc-bastion-rolling-deploy) for Rolling deployments."
-wizard.deploymentStrategy.blueGreen.title: "**Blue-Green**\n\nDeploy a new release to an environment identical and isolated from current production for quicker rollbacks and ease of testing.\n\n[Create VPC Infrastructure](https://cloud.ibm.com/schematics/workspaces/create?repository=https://github.com/open-toolchain/vpc-bastion-bluegreen-deploy) for Blue-Green deployments."
+wizard.deploymentStrategy.rolling.title: >
+  if ( $env.template.info.hosted_region !== "" ) {
+    "**Rolling**\n\nDeploy a new release with no downtime by incrementally updating all the instances in a sequential manner.\n\n[Create VPC Infrastructure](https://cloud.ibm.com/schematics/workspaces/create?repository=https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/vpc-bastion-rolling-deploy) for Rolling deployments."
+  } else {
+    "**Rolling**\n\nDeploy a new release with no downtime by incrementally updating all the instances in a sequential manner.\n\n[Create VPC Infrastructure](https://cloud.ibm.com/schematics/workspaces/create?repository=https://github.com/open-toolchain/vpc-bastion-rolling-deploy) for Rolling deployments."
+  }  
+wizard.deploymentStrategy.blueGreen.title: "**Blue-Green**\n\nDeploy a new release to an environment identical and isolated from current production for quicker rollbacks and ease of testing.\n\n[Create VPC Infrastructure](https://cloud.ibm.com/schematics/workspaces/create?repository=${GIT_OR_GRIT}/open-toolchain/vpc-bastion-bluegreen-deploy) for Blue-Green deployments."
 wizard.deploymentStrategy.canary.title: "**Canary**\n\nDeploy a new release incrementally to the production environment gradually replacing the older version of the application with the newer one thereby reducing risks.\n\n[Create VPC Infrastructure](https://cloud.ibm.com/schematics/workspaces/create?repository=https://github.com/open-toolchain/vpc-bastion-canary-deploy) for Canary deployments."
 wizard.deploymentStrategy.basic.title: "**Basic**\n\nDeploy a new release by stopping and updating the running instance."
 wizard.step.deploymentStrategy.title: "Deployment Strategy"
