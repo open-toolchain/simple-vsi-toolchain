@@ -65,8 +65,7 @@
             "validator": {
                "v-type": "vpc-name",
                "params": [
-                  "vpcRegion",
-                  "api-key"
+                  "vpcRegion"
                ]
             }
          },        

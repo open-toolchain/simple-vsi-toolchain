@@ -56,8 +56,7 @@
          "validator": {
             "v-type": "vpc-name",
             "params": [
-               "vpcRegion",
-               "api-key"
+               "vpcRegion"
             ]
          }
       },
@@ -69,8 +68,7 @@
          "validator":{
             "v-type":"alb-pool",
             "params":[
-               "loadbalancer",
-               "api-key"
+               "loadbalancer"
             ]
          }
       }, 
@@ -82,8 +80,7 @@
          "validator":{
             "v-type":"alb-pool",
             "params":[
-               "loadbalancer",
-               "api-key"
+               "loadbalancer"
             ]
          }
       },
