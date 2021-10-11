@@ -42,7 +42,7 @@
         },
         "type":"string",
         "validator":{
-           "v-type":"alb-instances",
+           "v-type":"alb-instance",
            "params":[
               "api-key"
            ]
@@ -54,7 +54,7 @@
         },
         "type":"string",
         "validator":{
-           "v-type":"alb-pools",
+           "v-type":"alb-pool",
            "params":[
               "loadbalancer"
            ]
@@ -66,7 +66,7 @@
         },
         "type":"string",
         "validator":{
-           "v-type":"alb-pools",
+           "v-type":"alb-pool",
            "params":[
               "loadbalancer"
            ]
@@ -120,7 +120,7 @@
             "$ref":"#/messages/deploy.bastionLabel"
          },
          "validator":{
-            "v-type":"vsi-instances",
+            "v-type":"vsi-instance",
             "params":[
                "vpcRegion"
             ]

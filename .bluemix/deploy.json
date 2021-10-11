@@ -75,7 +75,7 @@
                 "$ref": "#/messages/deploy.vsiLabel"
             },
             "validator": {
-                "v-type": "vsi-instances",
+                "v-type": "vsi-instance",
                 "params": [
                     "vpcName"
                 ]
