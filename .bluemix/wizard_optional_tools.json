@@ -38,7 +38,7 @@
       "description": {
         "$ref": "#/messages/wizard.optional.tools.doi.description"
       }
-    },
+    }
   },
   "form": [
     "webide",
