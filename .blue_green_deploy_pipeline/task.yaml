@@ -31,7 +31,7 @@ spec:
       description: The name of the build artifact as retrieved from the build metadata
   steps:
     - name: download-artifacts
-      image: ibmcom/pipeline-base-image:2.11
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.15
       workingDir: /output
       env:
         - name: API
@@ -76,8 +76,8 @@ spec:
             echo "Check if the Bucket with name $COSBUCKETNAME exists"
             ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
             ibmcloud plugin install cloud-object-storage;           
-            if ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME 2>/dev/null ; then
-              REGION=$(ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
+            if ibmcloud cos bucket-location-get --bucket $COSBUCKETNAME 2>/dev/null ; then
+              REGION=$(ibmcloud cos bucket-location-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
               ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
               echo "Started downloading of artifacts from IBM Cloud Object Storage"
               ibmcloud cos object-get --bucket "$COSBUCKETNAME" --key ${OBJECTNAME} ${OBJECTNAME}
@@ -172,7 +172,7 @@ spec:
       mountPath: /output
   steps:
     - name: deploy
-      image: ibmcom/pipeline-base-image:2.11
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.15
       workingDir: /output
       env:
         - name: REGION
@@ -276,7 +276,7 @@ spec:
       mountPath: /output
   steps:
     - name: acceptance-test
-      image: ibmcom/pipeline-base-image:2.11
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.15
       workingDir: /output
       env:
         - name: REGION
@@ -344,7 +344,7 @@ spec:
       mountPath: /output
   steps:
     - name: release
-      image: ibmcom/pipeline-base-image:2.11
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.15
       workingDir: /output
       env:
         - name: REGION
@@ -401,7 +401,7 @@ spec:
         name: toolchain
   steps:
     - name: publish-doi-deployrecord
-      image: ibmcom/pipeline-base-image:2.11
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.15
       volumeMounts:
         - name: cd-config
           mountPath: /cd-config
