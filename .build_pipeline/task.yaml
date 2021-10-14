@@ -22,7 +22,7 @@ spec:
       description: The checksum of the artifact to be passed to the downstream tasks for further processing
   steps:
     - name: build-artifacts-info
-      image: ibmcom/pipeline-base-image:2.11
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.15
       workingDir: /artifacts
       env: 
         - name: APPNAME
@@ -77,7 +77,7 @@ spec:
         name: toolchain
   steps:
     - name: upload-artifacts
-      image: ibmcom/pipeline-base-image:2.11
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.15
       volumeMounts:
         - name: cd-config
           mountPath: /cd-config
@@ -202,8 +202,8 @@ spec:
             RESOURCEGROUP=$(cat /cd-config/toolchain.json | jq -r '.container.guid');
             ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY;
             ibmcloud plugin install cloud-object-storage;
-            if ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME 2>/dev/null ; then
-              REGION=$(ibmcloud cos bucket-class-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
+            if ibmcloud cos bucket-location-get --bucket $COSBUCKETNAME 2>/dev/null ; then
+              REGION=$(ibmcloud cos bucket-location-get --bucket $COSBUCKETNAME | grep -i REGION | awk {'print $2'})
               ibmcloud login -a $API -r $REGION --apikey $COSAPIKEY; 
             else  
               COSENDPOINT="s3.${REGION}.cloud-object-storage.appdomain.cloud";
@@ -278,7 +278,7 @@ spec:
       mountPath: /output
   steps:
     - name: commit-build-metadata
-      image: ibmcom/pipeline-base-image:2.11
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.15
       workingDir: /artifacts
       env:
         - name: REPOSITORY
