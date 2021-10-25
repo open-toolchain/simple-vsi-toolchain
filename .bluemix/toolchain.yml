@@ -467,7 +467,25 @@ form:
     parameters:
       deployment-strategy:  >
         $env.deploymentStrategy ?
-          '{{deploymentStrategy}}' : 'rolling' 
+          '{{deploymentStrategy}}' : 'rolling'
+      rolling_terraform: > 
+        if ( $env.template.info.hosted_region !== "" ) {
+          "https://cloud.ibm.com/schematics/workspaces/create?repository=https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/vpc-bastion-rolling-deploy"
+        } else {
+          "https://cloud.ibm.com/schematics/workspaces/create?repository=https://github.com/open-toolchain/vpc-bastion-rolling-deploy"
+        }
+      blue_green_terraform: > 
+        if ( $env.template.info.hosted_region !== "" ) {
+          "https://cloud.ibm.com/schematics/workspaces/create?repository=https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/vpc-bastion-bluegreen-deploy"
+        } else {
+          "https://cloud.ibm.com/schematics/workspaces/create?repository=https://github.com/open-toolchain/vpc-bastion-bluegreen-deploy"
+        } 
+      canary_terraform: > 
+        if ( $env.template.info.hosted_region !== "" ) {
+          "https://cloud.ibm.com/schematics/workspaces/create?repository=https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/vpc-bastion-canary-deploy"
+        } else {
+          "https://cloud.ibm.com/schematics/workspaces/create?repository=https://github.com/open-toolchain/vpc-bastion-canary-deploy"
+        }                             
     schema:
       $ref: wizard_strategy.json
 
