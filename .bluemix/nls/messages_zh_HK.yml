@@ -2,7 +2,7 @@
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "使用部署策略來開發及部署應用程式至 VPC"
 template.description: '使用此工具鏈，您可以在由 IBM Cloud 管理的 VPC 內開發應用程式並部署至虛擬伺服器實例（虛擬機器）。 此範本為您提供了數個進階部署策略選項，例如 Blue-Green、Rolling，以滿足您的需要。  依預設，此工具鏈會使用範例 Maven 型 Java "Hello World" 應用程式，但是您也可以改為將自己的 Maven 型 Java 應用程式和鏈結帶入其中。 此工具鏈已針對具有[程式碼風險分析器](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-cd-configure-cra-repos)、來源控制、問題追蹤及線上編輯功能的持續整合、Continuous Delivery 和拉取要求的管線進行配置。\n\n此工具鏈使用的工具是 Continuous Delivery 服務的一部分。 當您按一下**建立**時，如果選取的資源群組或組織中尚未具有該服務的實例，則會自動新增已搭配選取免費 [Lite](/catalog/services/continuous-delivery/) 方案的實例。\n\n若要開始，請按一下**建立**。\n\n如需逐步指示，請遵循 [指導教學](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies)。'
-template.gettingStarted: " **您的工具鏈已備妥！**\n\n**快速入門：** 確定對 Git 儲存庫的變更，以觸發新的建置管線，將掃描此管線以尋找漏洞，並將其部署在「虛擬伺服器」中。 如需逐步指示，請參閱此工具鏈的 [指導教學](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi)。"
+template.gettingStarted: " **您的工具鏈已備妥！**\n\n**快速入門：** 確定對 Git 儲存庫的變更，以觸發新的建置管線，將掃描此管線以尋找漏洞，並將其部署在「虛擬伺服器」中。 如需逐步指示，請參閱此工具鏈的 [教學課程](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies)。"
 deploy.title: "部署範例 Java 型應用程式的階段"
 deploy.description: "建置及部署簡式 Maven 型 Java hello-world 應用程式的工具鏈"
 deploy.basic.longDescription: "**基本策略** 會使用最小基礎架構元件，並在單一「虛擬伺服器實例」上部署應用程式，並連接「浮動 IP」以用於使用者存取。\n輸入您要部署之應用程式的名稱。 建立新的 IBM Cloud API 金鑰，或使用現有的 IBM Cloud API 金鑰來擷取 Continuous Delivery Pipeline 的  IBM Cloud VPC 基礎架構，以將建置的應用程式二進位檔自動部署至 VPC 內的「虛擬機器」。"
