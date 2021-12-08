@@ -42,7 +42,9 @@
   {
     "type": "notification",
     "display": {
-      "title": "Note: ",
+      "title": {
+        "$ref": "#/messages/wizard.storage.note.title"
+      },
       "subtitle": {
         "$ref": "#/messages/wizard.storage.note"
       },

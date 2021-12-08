@@ -172,4 +172,5 @@ deploy.instanceGroup2PlaceHolder: "instance-group-2"
 wizard.fetcher.warning.title: "Hinweis "
 wizard.fetcher.warning.subtitle: "Wählen Sie die Infrastrukturelemente wie Load Balancer, Instanzgruppe, Bastionshost aus, die zu demselben zuvor ausgewählten VPC gehören."
 deploy.vsiText: "**Details der Instanz des virtuellen Servers**\n Wählen Sie die Instanz des virtuellen Servers aus dem zuvor ausgewählten VPC aus, wo Sie die Anwendung bereitstellen und ausführen möchten."
+wizard.storage.note.title: "Note: "
 ...

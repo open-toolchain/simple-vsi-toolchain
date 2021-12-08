@@ -172,4 +172,5 @@ deploy.instanceGroup2PlaceHolder: "instance-group-2"
 wizard.fetcher.warning.title: "Nota "
 wizard.fetcher.warning.subtitle: "Seleccione los elementos de infraestructura como el equilibrador de carga, el grupo de instancias o el host de bastión que pertenecen a la misma VPC que se ha seleccionado anteriormente."
 deploy.vsiText: "**Detalles de instancia de servidor virtual**\n Seleccione la instancia de servidor virtual de la VPC seleccionada anteriormente donde tiene previsto desplegar y ejecutar la aplicación."
+wizard.storage.note.title: "Note: "
 ...
