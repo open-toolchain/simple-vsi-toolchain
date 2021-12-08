@@ -172,4 +172,5 @@ deploy.instanceGroup2PlaceHolder: "instance-group-2"
 wizard.fetcher.warning.title: "注 "
 wizard.fetcher.warning.subtitle: "请选择属于先前选择的相同 VPC 的基础结构元素，如负载均衡器、实例组和堡垒主机。"
 deploy.vsiText: "**虚拟服务器实例详细信息**\n 从先前选择的计划部署并运行应用程序的 VPC 中选择虚拟服务器实例。"
+wizard.storage.note.title: "Note: "
 ...

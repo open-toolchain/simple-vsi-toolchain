@@ -172,4 +172,5 @@ deploy.instanceGroup2PlaceHolder: "instance-group-2"
 wizard.fetcher.warning.title: "注 "
 wizard.fetcher.warning.subtitle: "以前に選択したのと同じ VPC に属するロード・バランサー、インスタンス・グループ、要塞ホストなどのインフラストラクチャー・エレメントを選択してください。"
 deploy.vsiText: "**仮想サーバー・インスタンスの詳細**\n アプリケーションのデプロイと実行を計画している、以前に選択した VPC から仮想サーバー・インスタンスを選択します。"
+wizard.storage.note.title: "Note: "
 ...
