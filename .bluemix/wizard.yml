@@ -32,6 +32,8 @@ steps:
       $ref: "#/messages/wizard.step.inventory.title"
     form: wizard_inventory
     advanced_form: inventory-repo
+    conditions:
+      $ref: conditions.yml#/inv_repo_conditions    
 
   - name: vault
     title:
