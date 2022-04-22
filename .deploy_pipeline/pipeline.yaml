@@ -218,8 +218,6 @@ spec:
           value: $(params.host-user-name)
         - name: deployStatus
           value: "$(tasks.deploy.status)"
-        - name: healthCheckStatus
-          value: "$(tasks.health-check.status)"
         - name: acceptanceCheckStatus
           value: "$(tasks.acceptance-test.status)"
         - name: scripts-subpath

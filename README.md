@@ -254,7 +254,6 @@ The CD Pipeline is responsible for copying the application artifact ( .jar/.zip/
 | deploy-script | Task to create script to run on target environment to perform deployment | task.yaml |
 | backup-script | Task to create script to run on target environment to backup last deployment| task.yaml |
 | deploy | Task to connect to remote target environment and run the deployment script | task.yaml | 
-| health-check-task | Task to perform health check on deployed application | task.yaml |
 | acceptance-test | Task to run the acceptance tests on the deployed application | task.yaml |
 |roll-back-deployment| Task to rollback deployment to last state incase of failures| task.yaml |
 
