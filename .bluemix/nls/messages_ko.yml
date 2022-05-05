@@ -1,7 +1,17 @@
 ---
+###############################################################################
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corporation 2016, 2022. All Rights Reserved.
+#
+# Note to U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+###############################################################################
+#NLS_MESSAGEFORMAT_NONE
+#NLS_ENCODING=UTF-8
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "애플리케이션을 개발하고 배치 전략을 사용하여 이를 VPC에 배치"
-template.description: "이 도구 체인을 사용하여 애플리케이션을 개발하고 IBM Cloud에서 관리하는 VPC 내의 가상 서버 인스턴스(가상 머신)에 이를 배치할 수 있습니다. 이 템플리트는 요구사항의 충족을 위해 Blue-Green, Rolling 등의 선택 가능한 고급 배치 전략을 제공합니다.  기본적으로, 도구 체인은 Java 기반의 샘플 Maven \"Hello World\" 앱을 사용하지만, Java 기반의 고유 Maven 앱을 가져와서 대신 연결할 수도 있습니다. 이 도구 체인은 [Code Risk Analyzer](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-cd-configure-cra-repos), 소스 제어, 문제 추적 및 온라인 편집 기능을 사용하여 지속적 통합, 지속적 딜리버리 및 가져오기 요청을 위한 파이프라인으로 구성되어 있습니다.\n\n이 도구 체인은 지속적 딜리버리 서비스의 일부인 도구를 사용합니다. 해당 서비스의 인스턴스가 선택된 리소스 그룹이나 조직에 아직 없는 경우, **작성**을 클릭하면 무료 [Lite](/catalog/services/continuous-delivery/) 플랜이 선택된 상태로 인스턴스가 자동으로 추가됩니다.\n\n시작하려면 **작성**을 클릭하십시오.\n\n단계별 지시사항은 [튜토리얼](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies)을 따르십시오."
+template.description: "이 도구 체인을 사용하여 애플리케이션을 개발하고 IBM Cloud에서 관리하는 VPC 내의 가상 서버 인스턴스(가상 머신)에 이를 배치할 수 있습니다. 이 템플리트는 요구사항의 충족을 위해 Blue-Green, Rolling 등의 선택 가능한 고급 배치 전략을 제공합니다.  기본적으로, 도구 체인은 Java 기반의 샘플 Maven \"Hello World\" 앱을 사용하지만, Java 기반의 고유 Maven 앱을 가져와서 대신 연결할 수도 있습니다. 이 도구 체인은 [Code Risk Analyzer](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-cd-configure-cra-repos), 소스 제어, 문제 추적 및 온라인 편집 기능을 사용하여 지속적 통합, 지속적 딜리버리 및 가져오기 요청을 위한 파이프라인으로 구성되어 있습니다.\n\n\\n\\n이 도구 체인은 지속적 딜리버리 서비스의 일부인 도구를 사용합니다. 해당 서비스의 인스턴스가 선택된 리소스 그룹이나 조직에 아직 없는 경우, **작성**을 클릭하면 무료 [Lite](/catalog/services/continuous-delivery/) 플랜이 선택된 상태로 인스턴스가 자동으로 추가됩니다.\n\n\\n\\n시작하려면 **작성**을 클릭하십시오.\n\n단계별 지시사항은 [학습서](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vpc)의 내용을 참고하십시오."
 template.gettingStarted: " **도구 체인이 준비되었습니다.**\n\n**빠른 시작:** 취약성이 스캔되고 가상 서버에 배치될 새 빌드 파이프라인을 트리거할 수 있도록 Git 저장소에 대해 변경사항을 커미트하십시오. 단계별 지시사항은 이 도구 체인에 대한 [튜토리얼](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies)을 참조하십시오."
 deploy.title: "샘플 Java 기반 애플리케이션을 위한 배치 단계"
 deploy.description: "간단한 Java 기반 Maven Hello-world 애플리케이션을 빌드하고 배치하는 도구 체인"
