@@ -1,7 +1,17 @@
 ---
+###############################################################################
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corporation 2016, 2022. All Rights Reserved.
+#
+# Note to U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+###############################################################################
+#NLS_MESSAGEFORMAT_NONE
+#NLS_ENCODING=UTF-8
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "Anwendung auf VPC mithilfe von Bereitsstellungsstrategien entwickeln und bereitstellen"
-template.description: "Mit dieser Toolchain können Sie eine Anwendung entwickeln und in Virtual Server-Instanzen (Virtual Machine) in Ihrem VPC bereitstellen, der von der IBM Cloudverwaltet wird. Diese Vorlage bietet Ihnen Optionen für erweiterte Bereitstellungsstrategien wie \"Blue-Green\", \"Rolling\", um Ihren Anforderungen gerecht zu werden. Standardmäßig verwendet die Toolchain eine Maven-basierte Java-Beispiel-App 'Hello World', aber Sie können stattdessen auch eine eigene Maven-basierte Java-App bereitstellen und eine Verknüpfung zu dieser App herstellen. Diese Toolchain ist mit Pipelines für die kontinuierliche Integration, für Continuous Delivery und für Pull-Anforderungen mit [Code Risk Analyzer](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-cd-configure-cra-repos), Quellcodeverwaltung, Problemverfolgung und Onlinebearbeitung konfiguriert.\n\nDiese Toolchain verwendet Tools, die Teil des Continuous Delivery-Service sind. Wenn sich noch keine Instanz dieses Service in der ausgewählten Ressourcengruppe oder Organisation befindet, wird sie automatisch hinzugefügt, wenn Sie auf **Erstellen** klicken. Dabei ist der kostenlose Plan [Lite](/catalog/services/continuous-delivery/) ausgewählt. \n\nKlicken Sie auf **Erstellen**, um zu beginnen. \n\nSchrittweise Anweisungen finden Sie in diesem Lernprogramm: [tutorial](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies)."
+template.description: "Mit dieser Toolchain können Sie eine Anwendung entwickeln und in Virtual Server-Instanzen (Virtual Machine) in Ihrem VPC bereitstellen, der von der IBM Cloudverwaltet wird. Diese Vorlage bietet Ihnen Optionen für erweiterte Bereitstellungsstrategien wie \"Blue-Green\", \"Rolling\", um Ihren Anforderungen gerecht zu werden.  Standardmäßig verwendet die Toolchain eine Maven-basierte Java-Beispiel-App 'Hello World', aber Sie können stattdessen auch eine eigene Maven-basierte Java-App bereitstellen und eine Verknüpfung zu dieser App herstellen. Diese Toolchain ist mit Pipelines für die kontinuierliche Integration, für Continuous Delivery und für Pull-Anforderungen mit [Code Risk Analyzer](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-cd-configure-cra-repos), Quellcodeverwaltung, Issue-Verfolgung und Onlinebearbeitung konfiguriert.\n\nDiese Toolchain verwendet Tools, die Teil des Continuous Delivery-Service sind. Wenn sich noch keine Instanz dieses Service in der ausgewählten Ressourcengruppe oder Organisation befindet, wird sie automatisch hinzugefügt, wenn Sie auf **Erstellen** klicken. Dabei ist der kostenlose Plan [Lite](/catalog/services/continuous-delivery/) ausgewählt.\n\nKlicken Sie auf **Erstellen**, um zu beginnen.\n\nSchrittweise Anweisungen enthält das [Lernprogramm](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vpc)."
 template.gettingStarted: " **Ihre Toolchain ist bereit!**\n\n**Schnellstart:** Führen Sie ein Commit für die Änderung am Git-Repository durch, um eine neue Build-Pipeline auszulösen, die auf Sicherheitslücken überprüft und in Ihrem virtuellen Server bereitgestellt wird. Schrittweise Anleitungen finden Sie im [tutorial](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies) für diese Toolchain."
 deploy.title: "Bereitstellungsphase für Java-basierte Beispielanwendung"
 deploy.description: "Toolchain zum Erstellen und Bereitstellen einfacher Maven-basierter Java-Anwendung 'Hello World'"
@@ -68,26 +78,10 @@ headerSVG.appRepo: "Anwendungsrepository"
 headerSVG.ciPipeline: "CI-Pipeline"
 headerSVG.inventoryRepo: "Bestandsrepository"
 headerSVG.cdPipeline: "CD-Pipeline"
-headerSVG.inventory: "Inventory"
-headerSVG.issue: "Issue"
-headerSVG.tracker: "Tracker"
-headerSVG.app: "Application"
-headerSVG.repo: "Repo"
-headerSVG.cloud2: "Cloud"
-headerSVG.object: "Object"
-headerSVG.storage: "Storage"
-headerSVG.coderisk: "Code Risk"
-headerSVG.analyzer: "Analyzer"
-headerSVG.devops: "DevOps"
-headerSVG.insights: "Insights"
 headerSVG.vsi: "VSI"
 headerSVG.keyProtect: "Key Protect"
 headerSVG.artifactory: "Artifactory"
 headerSVG.cos: "COS"
-headerSVG.virtual: "Virtual"
-headerSVG.private: "Private"
-headerSVG.cloud: "Cloud"
-headerSVG.cloudobjectstorage: "Cloud Object Storage"
 wizard.welcome.description: "Mit dieser Toolchain können Sie eine Anwendung sicher für virtuelle Serverinstanzen (Virtual Machine) in Ihrem VPC entwickeln und bereitsstellen, die von der IBM Cloud verwaltet wird. Standardmäßig verwendet die Toolchain die Beispiel-Java-App \"Hello World\". Sie können stattdessen aber auch Ihre eigene App mitbringen und diese mit ihr verknüpfen."
 wizard.sourceHost: "Quellenprovider"
 wizard.step.application.title: "Anwendung"
