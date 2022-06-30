@@ -11,7 +11,9 @@ spec:
       default: "master"
     - name: revision
       description: The Revision for the Application Source Code
-      default: ""    
+      default: ""
+    - name: git-token
+      description: access token for the git repo
     - name: region
       description: The IBM Cloud Region in which Virtual Server Instance is running
     - name: api
@@ -69,6 +71,8 @@ spec:
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
+        - name: git-access-token
+          value: $(params.git-token)
         - name: repository
           value: $(params.repository)
         - name: branch

@@ -50,6 +50,8 @@ properties:
   - name: apikey
     value: ${API_KEY}
     type: SECURE
+  - name: git-token
+    type: secure
   - name: app-name
     value: ${APP_NAME}
     type: text
