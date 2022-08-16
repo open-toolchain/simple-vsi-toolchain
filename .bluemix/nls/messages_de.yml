@@ -140,8 +140,6 @@ wizard.vault.hashicorp.description: "HashiCorp Vault ist eine Lösung zur Verwal
 wizard.vault.info: "Geben Sie die Provider geheimer Schlüssel an, die Ihre geheimen Schlüssel enthalten:"
 wizard.optional.tools.title: "Andere Tools"
 wizard.optional.tools.longDescription: "Dies sind optionale Tools, die in Ihre Toolchain eingeschlossen werden können."
-wizard.optional.tools.webide.title: "Orion WebIDE (keine Konfiguration erforderlich)"
-wizard.optional.tools.webide.description: "Entwickeln Sie für das Web und die Cloud in dieser browserbasierten integrierte Entwicklungsumgebung (IDE)."
 wizard.optional.tools.doi.title: "DevOps Insights (keine Konfiguration erforderlich)"
 wizard.optional.tools.doi.description: "DevOps Insights stellt umfassende Einblicke aus gängigen Tools für kontinuierliche Integration und Continuous Delivery bereit, um die Geschwindigkeit und Steuerung der Bereitstellung Ihrer Anwendung zu erhöhen."
 wizard.optional.tools.cos.title: "Cloud Object Storage"
@@ -196,4 +194,3 @@ wizard.fetcher.warning.title: "Hinweis "
 wizard.fetcher.warning.subtitle: "Wählen Sie die Infrastrukturelemente wie Load Balancer, Instanzgruppe, Bastionshost aus, die zu demselben zuvor ausgewählten VPC gehören."
 deploy.vsiText: "**Details der Instanz des virtuellen Servers**\n\n Wählen Sie die Instanz des virtuellen Servers aus dem zuvor ausgewählten VPC aus, wo Sie die Anwendung bereitstellen und ausführen möchten."
 wizard.storage.note.title: "Hinweis: "
-...

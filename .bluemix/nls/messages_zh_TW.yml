@@ -140,8 +140,6 @@ wizard.vault.hashicorp.description: "「HashiCorp 加密配置檔」是一個密
 wizard.vault.info: "請識別包含您密鑰的密鑰提供者："
 wizard.optional.tools.title: "其他工具"
 wizard.optional.tools.longDescription: "這些是可包括在您的工具鏈中的選用工具。"
-wizard.optional.tools.webide.title: "Orion WebIDE（不需要配置）"
-wizard.optional.tools.webide.description: "在此瀏覽器型的整合開發環境 (IDE) 中開發 Web 及雲端。"
 wizard.optional.tools.doi.title: "DevOps Insights（不需要配置）"
 wizard.optional.tools.doi.description: "DevOps Insights 可以從熱門的連續整合及 Continuous Delivery 工具中，提供全方位的洞察以提升應用程式交付的速度及控制。"
 wizard.optional.tools.cos.title: "Cloud Object Storage"
@@ -196,4 +194,3 @@ wizard.fetcher.warning.title: "附註 "
 wizard.fetcher.warning.subtitle: "請選取屬於稍早所選同一個 VPC 的基礎架構元素，例如負載平衡器、實例群組、防禦主機。"
 deploy.vsiText: "**虛擬伺服器實例詳細資料**\n\n從稍早選取的 VPC 中選取虛擬伺服器實例，您計劃在其中部署及執行應用程式。"
 wizard.storage.note.title: "附註： "
-...
