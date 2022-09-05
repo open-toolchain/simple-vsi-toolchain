@@ -1,24 +1,14 @@
 ---
-###############################################################################
-# Licensed Materials - Property of IBM
-# (c) Copyright IBM Corporation 2016, 2022. All Rights Reserved.
-#
-# Note to U.S. Government Users Restricted Rights:
-# Use, duplication or disclosure restricted by GSA ADP Schedule
-# Contract with IBM Corp.
-###############################################################################
-#NLS_MESSAGEFORMAT_NONE
-#NLS_ENCODING=UTF-8
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "开发应用程序并使用部署策略将其部署到 VPC"
 template.description: "通过此工具链，您可以开发应用程序并将其安全部署到由 IBM Cloud 管理的 VPC 中的虚拟服务器实例（虚拟机）。 此模板为您提供 Blue-Green 或 Rolling 等高级部署策略的选项，以满足您的需求。  缺省情况下，此工具链使用基于 Maven 的 Java“Hello World”样本应用程序，但您也可以使用自己的基于 Maven 的 Java 应用程序并与其链接。 为实现持续集成、持续交付和拉取请求，对此工具链配置了管道，包括 [Code Risk Analyzer](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-cd-configure-cra-repos) 、源代码控制、问题跟踪和联机编辑。\n\n此工具链使用的工具属于 Continuous Delivery 服务的一部分。 如果所选资源组或组织中没有该服务的实例，那么当您单击**创建**时，会自动添加该服务实例并选择免费[轻量](/catalog/services/continuous-delivery/)套餐。\n\n单击**创建**以开始。\n\n有关逐步指示信息，请遵循[教程](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vpc)。"
-template.gettingStarted: " **您的工具链已就绪！**\n\n**快速启动：**落实对 Git 存储库的更改以触发新的构建管道，将进行漏洞扫描并将其部署在虚拟服务器中。 有关分步骤指示信息，请按[教程](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies)操作。"
+template.gettingStarted: " **工具链已就绪！**\n\n**快速启动：**落实对 Git 存储库的更改以触发新的构建管道，将对该管道进行扫描以查找漏洞并将其部署到虚拟服务器中。 有关逐步指示信息，请参阅此工具链的[教程](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vpc)。"
 deploy.title: "基于 Java 的样本应用程序的部署阶段"
 deploy.description: "用于构建和部署基于 Maven 的 Java hello-world 样本应用程序的工具链"
 deploy.basic.longDescription: "**Basic 策略**使用最少的基础架构组件，并在单个虚拟服务器实例上部署应用程序，而且连接浮动 IP 以供用户访问。\n\n输入要部署的应用程序的名称。 创建新的 IBM Cloud API 密钥或使用现有 IBM Cloud API 密钥来检索 IBM Cloud VPC Infrastructure for Continuous Delivery Pipeline，以自动将构建的应用程序二进制文件部署到 VPC 中的虚拟机。"
-deploy.blueGreen.longDescription: "**Blue-Green 策略**使用两个永久生产环境（蓝色和绿色），任何时候都只有一个接收流量。 将新发行版部署到空闲环境中，然后将所有流量切换到该环境，没有任何停机时间。 对于快速回滚，只需将所有流量切换回另一个保持不变的环境即可。[了解更多信息](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies#setup-deployment-target-for-blue-green)。\n\n输入要部署的应用程序的名称。 创建新的 IBM Cloud API 密钥或使用现有 IBM Cloud API 密钥来检索 IBM Cloud VPC Infrastructure for Continuous Delivery Pipeline，以自动将构建的应用程序二进制文件部署到 VPC 中的虚拟机。"
-deploy.rolling.longDescription: "**Rolling 策略**通过以快速方式增量更新所有实例来部署新发行版，没有任何停机时间。 回滚需要重新部署先前的发行版，可能无法立即完成。[了解更多信息](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies#setup-deployment-target-for-rolling)。\n\n输入要部署的应用程序的名称。 创建新的 IBM Cloud API 密钥或使用现有 IBM Cloud API 密钥来检索 IBM Cloud VPC Infrastructure for Continuous Delivery Pipeline，以自动将构建的应用程序二进制文件部署到 VPC 中的虚拟机。"
-deploy.canary.longDescription: "**Canary 策略**与原始生产环境并行部署新的发行版，没有停机时间，然后以递增方式将更多流量路由至其中，直到它替换掉可拆掉的原始环境为止。 对于渐进部署期间的快速回滚，所有流量都可以路由回原始生产环境。[了解更多信息](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies#setup-deployment-target-for-canary)。\n\n输入要部署的应用程序的名称。 创建新的 IBM Cloud API 密钥或使用现有 IBM Cloud API 密钥来检索 IBM Cloud VPC Infrastructure for Continuous Delivery Pipeline，以自动将构建的应用程序二进制文件部署到 VPC 中的虚拟机。"
+deploy.blueGreen.longDescription: "**Blue-Green 策略**使用两个永久生产环境（蓝色和绿色），任何时候都只有一个接收流量。 将新发行版部署到空闲环境中，然后将所有流量切换到该环境，没有任何停机时间。 为了快速回滚，只需将所有流量切换回至保持不变的其他环境 [了解更多信息](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vpc)。\n\n输入要部署的应用程序的名称。 创建新的 IBM Cloud API 密钥或使用现有 IBM Cloud API 密钥来检索 IBM Cloud VPC Infrastructure for Continuous Delivery Pipeline，以自动将构建的应用程序二进制文件部署到 VPC 中的虚拟机。"
+deploy.rolling.longDescription: "**Rolling 策略**通过以快速方式增量更新所有实例来部署新发行版，没有任何停机时间。 回滚需要重新部署前发行版，这可能不是即时的 [了解更多信息](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vpc)。\n\n输入要部署的应用程序的名称。 创建新的 IBM Cloud API 密钥或使用现有 IBM Cloud API 密钥来检索 IBM Cloud VPC Infrastructure for Continuous Delivery Pipeline，以自动将构建的应用程序二进制文件部署到 VPC 中的虚拟机。"
+deploy.canary.longDescription: "**Canary 策略**与原始生产环境并行部署新的发行版，没有停机时间，然后以递增方式将更多流量路由至其中，直到它替换掉可拆掉的原始环境为止。 为了在渐进式推广期间快速回滚，可以将所有流量路由回原始生产环境[了解更多信息](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vpc)。\n\n输入要部署的应用程序的名称。 创建新的 IBM Cloud API 密钥或使用现有 IBM Cloud API 密钥来检索 IBM Cloud VPC Infrastructure for Continuous Delivery Pipeline，以自动将构建的应用程序二进制文件部署到 VPC 中的虚拟机。"
 deploy.appDescription: "输入要部署的应用程序的名称。"
 deploy.appName: "应用程序名称"
 deploy.apikeyDescription: "IBM Cloud API 密钥用于访问 IBM Cloud Kubernetes Service API，并与集群进行交互。 您可以使用 [IBM Cloud 控制台](https://cloud.ibm.com/iam/apikeys) 或使用 ibmcloud [iam api-key-create](https://cloud.ibm.com/docs/cli?topic=cli-ibmcloud_commands_iam#ibmcloud_iam_api_key_create) 命令创建 API。 "
@@ -38,7 +28,7 @@ deploy.vpc: "**VPC 详细信息**\n\n虚拟专用云 (VPC) 是一个安全、隔
 deploy.bastionHost: "**堡垒主机详细信息**\n\n堡垒主机是工作程序虚拟服务器实例，用于在 VPC 中的虚拟服务器实例上执行应用程序部署。 选择 IBM Cloud Schematics Terraform 模板作为堡垒主机供应的虚拟服务器实例。 [了解更多信息](https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-vpc-secure-management-bastion-server)\n\n"
 deploy.loadBalancer: "**负载均衡器详细信息**\n\n负载均衡器允许在 VPC 的同一区域内的多个虚拟服务器实例之间分配流量。 选择 IBM Cloud Schematics Terraform 模板提供的负载均衡器和后端池。 [了解更多信息](https://cloud.ibm.com/docs/vpc?topic=vpc-load-balancers)\n\n"
 deploy.instanceGroups: "**实例组详细信息**\n\n实例组是虚拟服务器实例的集合。 Canary 部署需要 2 个实例组，请选择 IBM Cloud Schematics Terraform 模板提供的实例组。 [了解更多信息](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-auto-scale-instance-group&interface=ui#creating-instance-group)\n\n"
-deploy.canary: "**Canary 详细信息**\n\nCanary 部署会逐步将用户请求转移到部署在虚拟服务器实例上的新版应用程序。 为每个增量选择流量增量大小和时间间隔。 [了解更多信息](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies#setup-deployment-target-for-canary)\n\n"
+deploy.canary: "**Canary 详细信息**\n\nCanary 推广逐渐将用户请求转移到在虚拟服务器实例上部署的新版本应用程序。 为每个增量选择流量增量大小和时间间隔。 [了解更多信息](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vpc)\n\n"
 deploy.vsiLabel: "从列表中选择堡垒服务器实例。 如果看到空白文本框，请创建[虚拟服务器实例](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console)并刷新页面。"
 deploy.vsiRegionLabel: "选择供应虚拟服务器实例的 IBM Cloud 区域。 如果看到空白文本框，请创建[虚拟服务器实例](https://cloud.ibm.com/docs/vpc?topic=vpc-creating-a-vpc-using-the-ibm-cloud-console)并刷新页面。"
 deploy.vsiUserName: "提供用于登录到 VSI 实例的用户名。"
@@ -149,7 +139,7 @@ wizard.deployment_strategy.title: "部署策略"
 wizard.deploymentStrategy.longDescription: "工具链将创建持续部署管道以将构建的应用程序工件部署到由 IBM Cloud 管理的 VPC 中的虚拟服务器实例（虚拟机）。 从 Basic、Rolling、Blue-Green 或 Canary 部署策略中选择一个。"
 wizard.deploymentStrategy.text: "选择适合您应用程序的部署策略"
 wizard.deploymentStrategy.warning.title: "VPC 基础架构"
-wizard.deploymentStrategy.warning.subtitle: "对于 Basic 部署策略，您可以使用任何 VPC 实例。 有关更多信息，请参阅以下[链接](https://github.com/open-toolchain/sdk/wiki/Develop-and-deploy-an-application-on-IBM-Cloud-VPC-using-deployment-strategies#setup-deployment-target-for-basic)。 对于其他部署策略，请按照相应的链接来使用 IBM Cloud Schematics 设置所需的实例。"
+wizard.deploymentStrategy.warning.subtitle: "对于 Basic 部署策略，您可以使用任何 VPC 实例。 有关更多信息，请参阅此[链接](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vpc)。 对于其他部署策略，请按照相应的链接来使用 IBM Cloud Schematics 设置所需的实例。"
 wizard.deploymentStrategy.rolling.title: "**Rolling**\n\n通过按顺序增量更新所有实例，实现无停机时间部署新发行版。\n\n为 Rolling 部署[创建 VPC 基础架构]({{form.deployment_strategy.parameters.rolling_terraform}})。"
 wizard.deploymentStrategy.blueGreen.title: "**Blue-Green**\n\n将新发行版部署到与当前生产完全相同但相互隔离的环境中，以便更快地回滚和轻松测试。\n\n为 Blue-Green 部署[创建 VPC 基础架构]({{form.deployment_strategy.parameters.blue_green_terraform}})。"
 wizard.deploymentStrategy.canary.title: "**Canary**\n\n以递增方式将新发行版部署到生产环境，逐步将应用程序的较旧版本替换为较新版本，从而降低风险。\n\n为 Canary 部署[创建 VPC 基础架构]({{form.deployment_strategy.parameters.canary_terraform}})。"
