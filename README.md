@@ -11,8 +11,8 @@
     - [RollBack to an older version of deployed application](#rollback-to-an-older-version-of-deployed-application)
     - [GitOps Flow](#gitops-flow)
     - [Customise the build and deploy script](#customise-the-build-and-deploy-script)
-        - [Modify the Continous Integration Pipeline task](#modify-the-continous-integration-pipeline-task)
-        - [Modify the Continuous Deployment Pipeline task](#modify-the-continous-deployment-pipeline-task)
+        - [Modify the Continuous Integration Pipeline task](#modify-the-continuous-integration-pipeline-task)
+        - [Modify the Continuous Deployment Pipeline task](#modify-the-continuous-deployment-pipeline-task)
 + [Learn more](#learn-more)
 
 ### Continuously Deliver a Java Application to the Virtual Server Instance.
@@ -145,7 +145,7 @@ Please note: Based on existing COS Instances and Buckets in your account, toolch
 
 1. Cloud Object Storage (Advanced User Scenarios) - For users with an existing Cloud Object Store Instance, navigate to the "More Tools" Tab and add details about your Cloud Object Store Instance.
 
-- Bucket Name in your Cloud Object Storage Instance - Provide the name of the bucket to store the intermediate build artifacts. If you are provide the bucket name, ensure that you create the bucket in the same region where the toolchain is created. This is to ensure that pipeline can access the bucket.
+- Bucket Name in your Cloud Object Storage Instance - Provide the name of the bucket to store the intermediate build artifacts. If you provide the bucket name, ensure that you create the bucket in the same region where the toolchain is created. This is to ensure that pipeline can access the bucket.
 
 ![Cloud Object Storage Integration Details](hhttps://github.com/open-toolchain/simple-vsi-toolchain/blob/mmaster/.bluemix/docs-images/COS-conf.png)
 
@@ -202,7 +202,7 @@ git push origin master --force
 
 This Toolchain follows the GitOps Workflow model. The model stores build metadata from each successful build in a separate repository (Inventory Repository). The default configuration of Continuous Deployment Pipeline triggers a pipeline run whenever a successful build metadata is pushed to the master branch. 
 
-As a best practice, user's can create a branch in the Inventory repository for each deployment environment. The latest commit to the branch contains metadata of the artifact version deployed in the corresponding environment. The steps below guide a user on how to follow this workflow
+As a best practice, users can create a branch in the Inventory repository for each deployment environment. The latest commit to the branch contains metadata of the artifact version deployed in the corresponding environment. The steps below guide a user on how to follow this workflow
 
 1. Create the toolchain instance by following the steps mentioned above. 
 
@@ -234,7 +234,7 @@ As a best practice, user's can create a branch in the Inventory repository for e
 
 This toolchain leverages Tekton to perform the pipeline tasks for the build and deploy pipelines. Users can configure the build and deploy steps by making changes to the pipeline code which is maintained in the pipeline repository.
 
-##### Modify the Continous Integration Pipeline task
+##### Modify the Continuous Integration Pipeline task
 
 The CI Pipeline is responsible for compiling the application source code, running unit test and other tools. Users can modify the existing tasks for the changing needs of their application. The source code for CI Pipeline is present in **simple-vsi-app-toolchain-\* > .build_pipeline** folder.
 
@@ -246,7 +246,7 @@ The CI Pipeline is responsible for compiling the application source code, runnin
 | package-build-artifacts | Task to package the artifact as (.jar/.zip/.tar.gz) | pipeline.yaml |
 | build-artifacts-info | Task to build the artifact metadata information | task.yaml |
 
-##### Modify the Continous Deployment Pipeline task
+##### Modify the Continuous Deployment Pipeline task
 The CD Pipeline is responsible for copying the application artifact ( .jar/.zip/.tar.gz) format to the deployment environment. Users can modify the existing tasks for deploying, restarting the applications based on the system/application environments. The source code for CD Pipeline is present in **simple-vsi-app-toolchain-\* > .deploy_pipeline** folder.
 
 | Task Name | Description |  Location |
