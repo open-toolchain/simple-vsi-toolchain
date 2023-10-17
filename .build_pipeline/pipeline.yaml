@@ -20,29 +20,15 @@ spec:
       description: The IBM Cloud API Endpoint
     - name: apikey
       description: The IBM Cloud API Key
-    - name: fail-on-scanned-issues
-      description: Force failure of task when vulnerability advisor scan issues are found
-      default: "true"
+    - name: strict
+      description: (Optional) Enables strict mode for scanning
+      default: "false"
     - name: app-name
       description: The name of the application passed as environment variable
     - name: pipeline-debug
       default: "0"
-    - name: pr-url
-      description: The Pull Request URL
-    - name: commit-timestamp
-      description: The Commit Timestamp as set by the Trigger Binding based on the Event Listener invoked
-    - name: scm-type
-      description: The Source Code Management Type as set by the Trigger Binding based on the Event Listener invoked
     - name: artifactory
       description: The variable storing artifactory integration with the toolchain
-    - name: virtual-server-instance
-      description: The IP Address of the Virtual Server Instance
-    - name: host-ssh-keys
-      description: The private SSH Key required to login to the Virtual Server Instance
-    - name: host-user-name
-      description: The username required to login to the Virtual Server Instance
-    - name: project-id
-      default: ""
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored
     - name: inventory-repo
@@ -60,6 +46,17 @@ spec:
       description: The branch of the scripts-repo
     - name: inventory-repo-branch
       description: The branch of the inventory-repo   
+
+    - name: toolchain-build-image
+      description: Image to use for `build` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+    - name: tester-unit-tests-image
+      description: Image to use for `unit-test` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+    - name: tester-code-coverage-image
+      description: Image to use for `code-coverage` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -116,6 +113,8 @@ spec:
       taskRef:
         name: toolchain-build
       params:
+        - name: run-build-image
+          value: $(params.toolchain-build-image)
         - name: custom-script
           value: |
             #!/bin/bash
@@ -139,6 +138,8 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
       params:
+        - name: strict
+          value: $(params.strict)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: unit-tests
@@ -147,6 +148,8 @@ spec:
       runAfter: 
         - build-source
       params: 
+        - name: tests-image
+          value: $(params.tester-unit-tests-image)
         - name: tests-script
           value: |
             #!/bin/bash            
@@ -168,6 +171,8 @@ spec:
       taskRef:
         name: tester-run-tests
       params:
+        - name: tests-image
+          value: $(params.tester-code-coverage-image)
         - name: tests-script
           value: |
             #!/bin/bash            

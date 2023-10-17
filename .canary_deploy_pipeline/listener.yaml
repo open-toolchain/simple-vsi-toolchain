@@ -116,8 +116,6 @@ spec:
             value: $(params.git-token)
           - name: api
             value: $(params.api)
-          - name: region
-            value: $(params.region)
           - name: app-name
             value: $(params.app-name)
           - name: fail-on-lint-errors

@@ -21,17 +21,14 @@ spec:
     - name: branch
       description: The git branch
     - name: commit-id
-      description: commit id
+      description: the git revision/commit for the git repo source
+      default: "" 
     - name: pr-branch
       description: The branch in the forked git repo from where the PR is made
     - name: pr-repository
       description: The forked git repo from where the PR is made
     - name: repository
       description: The git repo
-    - name: region
-    - name: revision
-      description: the git revision/commit for the git repo
-      default: "" 
     - name: scripts-subpath
       description: The subpath to the script repo from root
     - name: scripts-repo
@@ -92,7 +89,14 @@ spec:
 
     # User control params
     - name: cra-scan-image
-      description: Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
+      description: Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29`
+    - name: toolchain-build-image
+      description: Image to use for `build` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+    - name: tester-tests-image
+      description: Image to use for `unit-test` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+
   workspaces:
     - name: pipeline-ws  
   tasks:
@@ -106,12 +110,16 @@ spec:
           value: "apikey"
         - name: git-access-token
           value: $(params.git-token)
+        - name: pr-branch
+          value: $(params.pr-branch)
+        - name: pr-repository
+          value: $(params.pr-repository)
         - name: repository
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
         - name: revision
-          value: $(params.revision)
+          value: $(params.commit-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -141,11 +149,36 @@ spec:
         - name: output
           workspace: pipeline-ws
           subpath: scripts-repo    
-    - name: unit-tests
+    - name: build
       runAfter: [git-clone-scripts-repo]
+      taskRef:
+        name: toolchain-build
+      params:
+        - name: run-build-image
+          value: $(params.toolchain-build-image)
+        - name: custom-script
+          value: |
+            #!/bin/bash
+            # Your build script should go here.
+            # Existing template utilizes a Maven Based Java Application and hence the build steps utilizes maven mvn wrapper to build the Java Archive
+            # In case your application is Java/Go based where the deployment unit comprises of a binary you may need to modify the lines below to cater
+            # to the needs of your build system. For interpreter based project (Python/JS), where the application needs only the source code, you may
+            # skip this step or comment out the existing lines and move over to copy the contents to /artifacts/binaries folder.            
+            echo "Running Application Source Code Build Script"
+            subpath="$(params.scripts-subpath)"
+            source ./scripts-repo/${subpath}/build.sh
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: unit-tests
+      runAfter: [build]
       taskRef:
         name: tester-run-tests
       params: 
+        - name: tests-image
+          value: $(params.tester-tests-image)
         - name: tests-script
           value: |
             #!/bin/bash            

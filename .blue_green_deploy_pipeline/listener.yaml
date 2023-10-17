@@ -135,8 +135,6 @@ spec:
             value: $(params.project-id) 
           - name: artifactory
             value: $(params.artifactory) 
-          - name: region
-            value: $(params.region)
           - name: cos-bucket-name
             value: $(params.cos-bucket-name)
           - name: cos-api-key

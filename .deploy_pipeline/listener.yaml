@@ -129,8 +129,6 @@ spec:
             value: $(params.host-ssh-keys)
           - name: host-user-name
             value: $(params.host-user-name)   
-          - name: region
-            value: $(params.region)
           - name: cos-bucket-name
             value: $(params.cos-bucket-name)
           - name: cos-api-key

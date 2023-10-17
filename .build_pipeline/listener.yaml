@@ -23,33 +23,20 @@ spec:
       default: "https://cloud.ibm.com"      
     - name: app-name
       description: The name of the application passed as environment variable
-    - name: fail-on-lint-errors
-      description: Force failure of task when vulnerability advisor scan issues are found
-      default: "true"
-    - name: fail-on-scanned-issues
-      description: Force failure of task when vulnerability advisor scan issues are found
+    - name: strict
+      description: (Optional) Enables strict mode for scanning
       default: "false"
     - name: pipeline-debug
       default: "0"
-    - name: pr-url
-      description: The Pull Request URL
+    - name: custom-image-registry-dockerconfigjson
+      description: |
+        dockerconfigjson for custom images used in pipeline tasks.
+        See https://cloud.ibm.com/docs/devsecops?topic=devsecops-troubleshoot-devsecops#troubleshoot-pipe-abort-early
+      default: "eyJhdXRocyI6e319" # ie. {"auths":{}} base64 encoded
     - name: apikey
       description: The IBM Cloud API Key
-    - name: commit-timestamp
-      description: The Commit Timestamp as set by the Trigger Binding based on the Event Listener invoked
-    - name: scm-type
-      description: The Source Code Management Type as set by the Trigger Binding based on the Event Listener invoked
-    - name: project-id
-      description: project id
-      default: ""
     - name: artifactory
       description: The variable storing artifactory integration with the toolchain
-    - name: virtual-server-instance
-      description: The IP Address of the Virtual Server Instance
-    - name: host-ssh-keys
-      description: The private SSH Key required to login to the Virtual Server Instance
-    - name: host-user-name
-      description: The username required to login to the Virtual Server Instance 
     - name: inventory-repo
       description: The variable storing git integration for the repository storing build inventory with the toolchain
     - name: scripts-repo
@@ -59,6 +46,15 @@ spec:
 
     - name: insights
       description: The variable storing DevOps Insight integration with the toolchain
+    - name: toolchain-build-image
+      description: Image to use for `build` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+    - name: tester-unit-tests-image
+      description: Image to use for `unit-test` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+    - name: tester-code-coverage-image
+      description: Image to use for `code-coverage` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
     - name: cos-api-key
       description: The API Key to interact with the Cloud Object Storage Instance
     - name: scripts-subpath
@@ -79,6 +75,13 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
+    - apiVersion: v1
+      kind: Secret
+      data:
+        .dockerconfigjson: $(params.custom-image-registry-dockerconfigjson)
+      metadata:
+        name: custom-image-registry-pull-secret
+      type: kubernetes.io/dockerconfigjson
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
@@ -97,34 +100,16 @@ spec:
             value: $(params.git-token)
           - name: api
             value: $(params.api)
-          - name: region
-            value: $(params.region)
           - name: app-name
             value: $(params.app-name)
-          - name: fail-on-lint-errors
-            value: $(params.fail-on-lint-errors)
-          - name: fail-on-scanned-issues
-            value: $(params.fail-on-scanned-issues)
+          - name: strict
+            value: $(params.strict)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
           - name: apikey
             value: $(params.apikey)
-          - name: pr-url
-            value: $(params.pr-url)
-          - name: commit-timestamp
-            value: $(params.commit-timestamp)
-          - name: scm-type
-            value: $(params.scm-type)
-          - name: project-id
-            value: $(params.project-id) 
           - name: artifactory
             value: $(params.artifactory)
-          - name: virtual-server-instance
-            value: $(params.virtual-server-instance)
-          - name: host-ssh-keys
-            value: $(params.host-ssh-keys)
-          - name: host-user-name
-            value: $(params.host-user-name)
           - name: region
             value: $(params.region)   
           - name: cos-bucket-name
@@ -142,11 +127,20 @@ spec:
           - name: scripts-repo-branch
             value: $(params.scripts-repo-branch) 
           - name: inventory-repo-branch
-            value: $(params.inventory-repo-branch)                                                        
+            value: $(params.inventory-repo-branch)        
+          - name: toolchain-build-image
+            value: $(params.toolchain-build-image)
+          - name: tester-unit-tests-image
+            value: $(params.tester-unit-tests-image)
+          - name: tester-code-coverage-image
+            value: $(params.tester-code-coverage-image)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
               claimName: simple-vsi-app-$(uid)-pvc
+        podTemplate:
+          imagePullSecrets:
+            - name: custom-image-registry-pull-secret
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
