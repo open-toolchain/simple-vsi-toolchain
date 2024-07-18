@@ -22,7 +22,7 @@ spec:
       description: The checksum of the artifact to be passed to the downstream tasks for further processing
   steps:
     - name: build-artifacts-info
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
       workingDir: /artifacts
       env: 
         - name: APPNAME
@@ -77,7 +77,7 @@ spec:
         name: toolchain
   steps:
     - name: upload-artifacts
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
       volumeMounts:
         - name: cd-config
           mountPath: /cd-config
@@ -278,7 +278,7 @@ spec:
       mountPath: /output
   steps:
     - name: commit-build-metadata
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
       workingDir: /artifacts
       env:
         - name: REPOSITORY

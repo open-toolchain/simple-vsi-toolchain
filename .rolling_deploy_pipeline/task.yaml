@@ -31,7 +31,7 @@ spec:
       description: The name of the build artifact as retrieved from the build metadata
   steps:
     - name: download-artifacts
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
       workingDir: /output
       env:
         - name: API
@@ -170,7 +170,7 @@ spec:
       mountPath: /output
   steps:
     - name: deploy
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
       workingDir: /output
       env:
         - name: REGION
@@ -270,7 +270,7 @@ spec:
       mountPath: /output  
   steps:
     - name: acceptance-test
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
       workingDir: /output
       env:
         - name: REGION
@@ -332,7 +332,7 @@ spec:
         name: toolchain
   steps:
     - name: publish-doi-deployrecord
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
       volumeMounts:
         - name: cd-config
           mountPath: /cd-config

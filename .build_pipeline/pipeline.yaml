@@ -49,13 +49,13 @@ spec:
 
     - name: toolchain-build-image
       description: Image to use for `build` task
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
     - name: tester-unit-tests-image
       description: Image to use for `unit-test` task
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
     - name: tester-code-coverage-image
       description: Image to use for `code-coverage` task
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
 
   workspaces:
     - name: pipeline-ws
