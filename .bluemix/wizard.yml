@@ -157,13 +157,6 @@ steps:
           - form: storage
             parameter: storage
             value: cos
-
-  - name: optionaltools
-    title:
-      $ref: "#/messages/wizard.step.optionaltools.title"
-    form: wizard_optional_tools
-    conditions:
-      $ref: conditions.yml#/tools_conditions
  
   - name: summary
     title:
@@ -188,12 +181,6 @@ form:
       hashicorp-vault: false
     schema:
       $ref: wizard_vault.json
-
-  wizard_optional_tools:
-    parameters:
-      doi: true
-    schema:
-      $ref: wizard_optional_tools.json
 
   wizard_summary:
     schema:

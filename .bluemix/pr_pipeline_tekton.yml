@@ -15,10 +15,6 @@ inputs:
   - type: git
     branch: ${DEFINITIONS_BRANCH}
     service: ${TEKTON_CATALOG_REPO}
-    path: cra
-  - type: git
-    branch: ${DEFINITIONS_BRANCH}
-    service: ${TEKTON_CATALOG_REPO}
     path: linter
   - type: git
     branch: ${DEFINITIONS_BRANCH}
@@ -49,10 +45,6 @@ properties:
     value: ${APP_REPO}
     type: Integration
     path: parameters.repo_url
-  - name: insights
-    value: ${INSIGHTS}
-    type: integration
-    path: service_id
   - name: region
     value: ${REGION}
     type: text  

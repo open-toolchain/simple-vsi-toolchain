@@ -45,8 +45,6 @@ spec:
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored.
       default: ""
-    - name: insights
-      description: The variable storing DevOps Insight integration with the toolchain
     - name: scripts-subpath
       description: The variable storing language scripts-subpath 
     - name: scripts-repo-branch
@@ -218,28 +216,4 @@ spec:
           value: $(params.pool-user-name)                       
       workspaces:
         - name: output
-          workspace: pipeline-ws                  
-    - name: publish-doi-deployrecord
-      taskRef:
-        name: publish-doi-deployrecord
-      runAfter: [acceptance-test]
-      when:
-        - input: $(params.insights)
-          operator: in
-          values: ["draservicebroker"]
-      params:
-        - name: api
-          value: $(params.api)
-        - name: apikey
-          value: $(params.apikey)
-        - name: appname
-          value: $(params.app-name)
-        - name: inventory-repo
-          value: $(params.inventory-repo)
-        - name: target
-          value: $(params.target)
-        - name: build_number
-          value: $(tasks.download-artifacts.results.build_number)
-      workspaces:
-        - name: output
-          workspace: pipeline-ws     
+          workspace: pipeline-ws

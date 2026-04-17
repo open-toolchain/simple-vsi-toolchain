@@ -38,8 +38,6 @@ spec:
 
     - name: cos-api-key
       description: The API Key to interact with the Cloud Object Storage Instance
-    - name: insights
-      description: The variable storing DevOps Insight integration with the toolchain
     - name: scripts-subpath
       description: TThe subpath to the scripts repo from root
     - name: scripts-repo-branch
@@ -129,19 +127,6 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: code-risk-analyzer
-      runAfter:
-        - build-source
-      taskRef:
-        name: cra-v2-cra
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: strict
-          value: $(params.strict)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
     - name: unit-tests
       taskRef:
         name: tester-run-tests
@@ -216,93 +201,6 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws      
-    - name: publish-doi-buildrecord
-      runAfter: 
-        - build-artifacts-info
-      when:
-        - input: $(params.insights)
-          operator: in
-          values: ["draservicebroker"]
-      taskRef:
-        name: doi-publish-buildrecord
-      params:
-        - name: toolchain-apikey-secret-key
-          value: "apikey"
-        - name: app-name
-          value: $(params.app-name)
-        - name: git-repository
-          value: $(tasks.git-clone-application-repo.results.git-repository)
-        - name: git-branch
-          value: $(tasks.git-clone-application-repo.results.git-branch)
-        - name: git-commit
-          value: $(tasks.git-clone-application-repo.results.git-commit)
-    - name: publish-doi-code-tests
-      runAfter: 
-        - unit-tests
-      when:
-        - input: $(params.insights)
-          operator: in
-          values: ["draservicebroker"]
-      taskRef:
-        name: doi-publish-testrecord
-      params:
-        - name: toolchain-apikey-secret-key
-          value: "apikey"
-        - name: build-number
-          value: "$(tasks.publish-doi-buildrecord.results.build-number)"
-        - name: app-name
-          value: $(params.app-name)
-        - name: file-locations
-          value: "$(tasks.unit-tests.results.test-result-file-paths)"
-        - name: test-types
-          value: "$(tasks.unit-tests.results.test-types)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-    - name: publish-doi-code-coverage-tests
-      runAfter: 
-        - code-coverage
-      when:
-        - input: $(params.insights)
-          operator: in
-          values: ["draservicebroker"]
-      taskRef:
-        name: doi-publish-testrecord
-      params:
-        - name: toolchain-apikey-secret-key
-          value: "apikey"
-        - name: build-number
-          value: "$(tasks.publish-doi-buildrecord.results.build-number)"
-        - name: app-name
-          value: $(params.app-name)
-        - name: file-locations
-          value: "$(tasks.code-coverage.results.test-result-file-paths)"
-        - name: test-types
-          value: "$(tasks.code-coverage.results.test-types)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-    - name: evaluate-gate-task 
-      runAfter: 
-        - publish-doi-code-tests
-        - publish-doi-code-coverage-tests
-      when:
-        - input: $(params.insights)
-          operator: in
-          values: ["draservicebroker"]        
-      taskRef:
-        name: doi-evaluate-gate
-      params:
-        - name: toolchain-apikey-secret-key
-          value: "apikey"
-        - name: build-number
-          value: "$(tasks.publish-doi-buildrecord.results.build-number)"
-        - name: app-name
-          value: $(params.app-name)
         - name: policy
           value: "Policy to check Unit Tests and code coverage"
         - name: pipeline-debug

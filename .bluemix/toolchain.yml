@@ -151,7 +151,6 @@ services:
       services:
         - repo
         - tekton-catalog-repo
-        - devops-insights
       name: 'pr-pipeline'
       type: tekton
       ui-pipeline: true
@@ -163,7 +162,6 @@ services:
           PIPELINE_REPO: pipeline-repo
           REGION: "{{form.pipeline_rolling.parameters.vpcRegion}}"
           APP_REPO: repo
-          INSIGHTS: devops-insights
           API_KEY: '{{form.pipeline_rolling.parameters.api-key}}'
           APP_NAME: "{{form.pipeline_rolling.parameters.app-name}}"
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
@@ -204,7 +202,6 @@ services:
       services:
         - repo
         - inventory-repo
-        - devops-insights
       name: 'ci-pipeline'
       ui-pipeline: true
       type: tekton
@@ -222,7 +219,6 @@ services:
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           PIPELINE_REPO: pipeline-repo
           INVENTORY_REPO: inventory-repo
-          INSIGHTS: devops-insights
           PIPELINE_REPO_BRANCH: >
             $env.branch ? $env.branch : 
             $env.template.info.hosted_region !== "" ? 'master': 'master'
@@ -255,7 +251,6 @@ services:
       services:
         - repo
         - inventory-repo
-        - devops-insights
       name: 'cd-pipeline'
       ui-pipeline: true
       type: tekton
@@ -267,7 +262,6 @@ services:
           APP_NAME: "{{form.pipeline_rolling.parameters.app-name}}"
           API_KEY: "{{form.pipeline_rolling.parameters.api-key}}"
           ARTIFACTORY: artifactory
-          INSIGHTS: devops-insights
           RESOURCE_GROUP: "{{form.pipeline_rolling.parameters.resource-group}}"
           VIRTUAL_SERVER_INSTANCE: "{{form.pipeline_rolling.parameters.virtual-server-instance}}" 
           HOST_SSH_KEYS: '{{form.pipeline.parameters.host-ssh-keys}}'
@@ -319,9 +313,6 @@ services:
             $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/commons/-/raw/main':
             'https://raw.githubusercontent.com/open-toolchain/commons/master'
         execute: false
-  devops-insights:
-    service_id: 'draservicebroker' 
-    $ref: dra.yml 
   sm-vault:
     service_id: secretsmanager
     parameters:

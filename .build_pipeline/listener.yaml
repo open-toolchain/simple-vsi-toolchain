@@ -44,8 +44,6 @@ spec:
     - name: cos-bucket-name
       description: The Cloud Object Storage Bucket name where build artifact will be stored
 
-    - name: insights
-      description: The variable storing DevOps Insight integration with the toolchain
     - name: toolchain-build-image
       description: Image to use for `build` task
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
@@ -119,9 +117,7 @@ spec:
           - name: inventory-repo
             value: $(params.inventory-repo)
           - name: scripts-repo
-            value: $(params.scripts-repo)                   
-          - name: insights
-            value: $(params.insights) 
+            value: $(params.scripts-repo)
           - name: scripts-subpath
             value: $(params.scripts-subpath)
           - name: scripts-repo-branch

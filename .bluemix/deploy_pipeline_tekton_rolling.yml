@@ -15,14 +15,6 @@ inputs:
   - type: git
     branch: ${DEFINITIONS_BRANCH}
     service: ${TEKTON_CATALOG_REPO}
-    path: cra
-  - type: git
-    service: ${TEKTON_CATALOG_REPO}
-    branch: ${DEFINITIONS_BRANCH}
-    path: devops-insights
-  - type: git
-    branch: ${DEFINITIONS_BRANCH}
-    service: ${TEKTON_CATALOG_REPO}
     path: tester
   - type: git
     branch: ${DEFINITIONS_BRANCH}
@@ -97,11 +89,7 @@ properties:
   - name: scripts-repo
     value: ${APP_REPO}
     type: integration
-    path: parameters.repo_url    
-  - name: insights
-    value: ${INSIGHTS}
-    type: integration
-    path: service_id
+    path: parameters.repo_url
   - name: scripts-repo-branch
     type: text
     value: 'master'
